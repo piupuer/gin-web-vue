@@ -74,11 +74,15 @@
       <div style="position:relative">
         <div class="tips">
           <span>{{ $t('login.username') }} : admin </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
+          <span>{{ $t('login.password') }} : 123456 </span>
         </div>
         <div class="tips">
-          <span>{{ $t('login.username') }} : editor </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }} </span>
+          <span>{{ $t('login.username') }} : zhangsan </span>
+          <span>{{ $t('login.password') }} : 123456 </span>
+        </div>
+        <div class="tips">
+          <span>{{ $t('login.username') }} : lisi </span>
+          <span>{{ $t('login.password') }} : 123456 </span>
         </div>
 
         <el-button
@@ -140,7 +144,7 @@ export default class extends Vue {
 
   private loginForm = {
     username: 'admin',
-    password: '111111'
+    password: '123456'
   }
 
   private loginRules = {

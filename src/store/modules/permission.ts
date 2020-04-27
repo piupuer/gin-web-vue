@@ -1,26 +1,38 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import { RouteConfig } from 'vue-router'
-import { asyncRoutes, constantRoutes } from '@/router'
+import { constantRoutes } from '@/router'
 import store from '@/store'
+import { getMenuTree } from '@/api/roles'
 
-const hasPermission = (roles: string[], route: RouteConfig) => {
-  if (route.meta && route.meta.roles) {
-    return roles.some(role => route.meta.roles.includes(role))
-  } else {
-    return true
+// 动态加载组件
+export const loadComponent = (component: string) => {
+  if (component == '' || component === 'Layout') {
+    return () => import(`@/layout/index.vue`)
   }
+  return () => import(`@/views${component}`)
 }
 
-export const filterAsyncRoutes = (routes: RouteConfig[], roles: string[]) => {
+// 将后端返回的菜单转为前端路由
+export const getRoutesFromMenus = (menus: any) => {
   const res: RouteConfig[] = []
-  routes.forEach(route => {
-    const r = { ...route }
-    if (hasPermission(roles, r)) {
-      if (r.children) {
-        r.children = filterAsyncRoutes(r.children, roles)
-      }
-      res.push(r)
+  menus.forEach((menu: any) => {
+    if (menu.children.length > 0) {
+      menu.children = getRoutesFromMenus(menu.children)
+    } else {
+      // 这里需要清理children, 否则右侧会显示下拉图标
+      delete menu.children
     }
+    res.push({
+      path: menu.path,
+      name: menu.name,
+      component: loadComponent(''),
+      children: menu.children,
+      meta: {
+        title: menu.name,
+        icon: menu.icon,
+        hidden: !menu.visible,
+      },
+    })
   })
   return res
 }
@@ -37,19 +49,15 @@ class Permission extends VuexModule implements IPermissionState {
 
   @Mutation
   private SET_ROUTES(routes: RouteConfig[]) {
-    this.routes = constantRoutes.concat(routes)
+    this.routes = routes
     this.dynamicRoutes = routes
   }
 
   @Action
-  public GenerateRoutes(roles: string[]) {
-    let accessedRoutes
-    if (roles.includes('admin')) {
-      accessedRoutes = asyncRoutes
-    } else {
-      accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-    }
-    this.SET_ROUTES(accessedRoutes)
+  public async GenerateRoutes(roles: string[]) {
+    // 请求菜单树
+    const { data } = await getMenuTree({})
+    this.SET_ROUTES(getRoutesFromMenus(data))
   }
 }
 

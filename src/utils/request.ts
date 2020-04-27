@@ -11,9 +11,9 @@ const service = axios.create({
 // Request interceptors
 service.interceptors.request.use(
   (config) => {
-    // Add X-Access-Token header to every request, you can add other custom headers here
+    // Add Authorization header to every request, you can add other custom headers here
     if (UserModule.token) {
-      config.headers['X-Access-Token'] = UserModule.token
+      config.headers['Authorization'] = 'Bearer ' + UserModule.token
     }
     return config
   },
@@ -34,9 +34,9 @@ service.interceptors.response.use(
     // code == 50005: username or password is incorrect
     // You can change this part for your own usage.
     const res = response.data
-    if (res.code !== 20000) {
+    if (res.code !== 201) {
       Message({
-        message: res.message || 'Error',
+        message: res.msg || 'Error',
         type: 'error',
         duration: 5 * 1000
       })

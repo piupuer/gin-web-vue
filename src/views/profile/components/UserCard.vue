@@ -4,67 +4,50 @@
       slot="header"
       class="clearfix"
     >
-      <span>About me</span>
+      <span>{{ $t('profile.userCardTitle') }}</span>
     </div>
 
     <div class="user-profile">
       <div class="box-center">
-        <pan-thumb
-          :image="user.avatar"
+        <img
+          :src="user.avatar"
+          style="border-radius: 50%"
           :height="'100px'"
           :width="'100px'"
-          :hoverable="false"
         >
-          <div>Hello</div>
-          {{ user.roles }}
-        </pan-thumb>
       </div>
       <div class="box-center">
-        <div class="user-name text-center">
-          {{ user.name }}
-        </div>
-        <div class="user-role text-center text-muted">
-          {{ user.roles | uppercaseFirstChar }}
-        </div>
+        {{ $t('profile.userCardHello') }},
+        <span class="user-name text-center">
+          {{ user.nickname }}
+        </span>
       </div>
     </div>
 
     <div class="user-bio">
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>Education</span>
-        </div>
-        <div class="user-bio-section-body">
-          <div class="text-muted">
-            JS in Computer Science from the University of Technology
-          </div>
+          <svg-icon name="user" /><span>用户名</span><span class="span-right">{{ user.username }}</span>
         </div>
       </div>
-
-      <div class="user-skills user-bio-section">
+      <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="skill" /><span>Skills</span>
+          <svg-icon name="guide" /><span>昵称</span><span class="span-right">{{ user.nickname }}</span>
         </div>
-        <div class="user-bio-section-body">
-          <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="51" />
-          </div>
-          <div class="progress-item">
-            <span>Typescript</span>
-            <el-progress :percentage="45" />
-          </div>
-          <div class="progress-item">
-            <span>Css</span>
-            <el-progress :percentage="4" />
-          </div>
-          <div class="progress-item">
-            <span>ESLint</span>
-            <el-progress
-              :percentage="100"
-              status="success"
-            />
-          </div>
+      </div>
+      <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <i class="el-icon-mobile-phone" /><span>手机</span><span class="span-right">{{ user.mobile }}</span>
+        </div>
+      </div>
+      <div class="user-education user-bio-section">
+        <div class="user-bio-section-header">
+          <svg-icon name="education" /><span>简介</span>
+        </div>
+      </div>
+      <div class="user-bio-section-body">
+        <div class="text-muted">
+          {{ user.introduction }}
         </div>
       </div>
     </div>
@@ -135,7 +118,7 @@ export default class extends Vue {
 
   .user-bio-section {
     font-size: 14px;
-    padding: 15px 0;
+    padding: 0;
 
     .user-bio-section-header {
       border-bottom: 1px solid #dfe6ec;
@@ -143,6 +126,16 @@ export default class extends Vue {
       margin-bottom: 10px;
       font-weight: bold;
     }
+
+    .span-right {
+      float: right;
+      font-weight: normal;
+      font-size: 14px;
+    }
+  }
+  .user-bio-section-body {
+    font-size: 12px;
+    text-indent: 24px;
   }
 }
 </style>
