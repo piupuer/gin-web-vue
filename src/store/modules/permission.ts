@@ -7,7 +7,6 @@ import { constantRoutes } from '@/router'
 
 // 动态加载组件
 export const loadComponent = (component: string) => {
-  console.log(component)
   if (component == '' || component === 'Layout') {
     // 组件不存在使用默认布局
     return Layout

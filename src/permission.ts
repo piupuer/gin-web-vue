@@ -1,4 +1,4 @@
-import router from './router'
+import router, { asyncRoutes } from './router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { Message } from 'element-ui'
@@ -40,6 +40,12 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
           const roles = UserModule.roles
           // Generate accessible routes map based on role
           await PermissionModule.GenerateRoutes(roles)
+          // 动态加载404页面, 如果加到constantRoutes会导致菜单刷新未加载完菜单, 先跳转到404
+          asyncRoutes.push({
+            path: '*',
+            redirect: '/404',
+            meta: { hidden: true }
+          })
           // Dynamically add accessible routes
           router.addRoutes(PermissionModule.dynamicRoutes)
           // Hack: ensure addRoutes is complete
