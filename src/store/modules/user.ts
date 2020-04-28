@@ -115,8 +115,9 @@ class User extends VuexModule implements IUserState {
     setToken(token)
     await this.GetUserInfo()
     resetRouter()
+    // 这里一定要等待后端加载菜单完毕, 否则可能动态路由为空, 无法显示页面
     // Generate dynamic accessible routes based on roles
-    PermissionModule.GenerateRoutes(this.roles)
+    await PermissionModule.GenerateRoutes(this.roles)
     // Add generated routes
     router.addRoutes(PermissionModule.dynamicRoutes)
     // Reset visited views and cached views

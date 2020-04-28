@@ -14,7 +14,7 @@
       </pan-thumb>
       <github-corner style="position: absolute; top: 0px; border: 0; right: 0;" />
       <div class="info-container">
-        <span class="display_name">{{ name }}</span>
+        <span class="display_name">{{ nickname }}</span>
         <span style="font-size:20px;padding-top:20px;display:inline-block;">Editor's Dashboard</span>
       </div>
     </div>
@@ -43,8 +43,8 @@ import GithubCorner from '@/components/GithubCorner/index.vue'
 export default class extends Vue {
   private emptyGif = 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
 
-  get name() {
-    return UserModule.name
+  get nickname() {
+    return UserModule.nickname
   }
 
   get avatar() {

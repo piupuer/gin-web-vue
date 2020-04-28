@@ -75,49 +75,8 @@ export const constantRoutes: RouteConfig[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
-        name: 'Dashboard',
-        meta: {
-          title: 'dashboard',
-          icon: 'dashboard',
-          affix: true
-        }
-      }
-    ]
+    redirect: '/profile',
   },
-  // {
-  //   path: '/documentation',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import(/* webpackChunkName: "documentation" */ '@/views/documentation/index.vue'),
-  //       name: 'Documentation',
-  //       meta: { title: 'documentation', icon: 'documentation', affix: true }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/guide',
-  //   component: Layout,
-  //   redirect: '/guide/index',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import(/* webpackChunkName: "guide" */ '@/views/guide/index.vue'),
-  //       name: 'Guide',
-  //       meta: {
-  //         title: 'guide',
-  //         icon: 'guide',
-  //         noCache: true
-  //       }
-  //     }
-  //   ]
-  // },
   {
     path: '/profile',
     component: Layout,
@@ -135,6 +94,11 @@ export const constantRoutes: RouteConfig[] = [
         }
       }
     ]
+  },
+  {
+    path: '*',
+    redirect: '/404',
+    meta: { hidden: true }
   }
 ]
 

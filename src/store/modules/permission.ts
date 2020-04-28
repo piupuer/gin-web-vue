@@ -1,19 +1,23 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import { RouteConfig } from 'vue-router'
-import { constantRoutes } from '@/router'
+import Layout from '@/layout/index.vue'
 import store from '@/store'
 import { getMenuTree } from '@/api/roles'
+import { constantRoutes } from '@/router'
 
 // 动态加载组件
 export const loadComponent = (component: string) => {
+  console.log(component)
   if (component == '' || component === 'Layout') {
-    return () => import(`@/layout/index.vue`)
+    // 组件不存在使用默认布局
+    return Layout
   }
+  // 动态获取组件
   return () => import(`@/views${component}`)
 }
 
 // 将后端返回的菜单转为前端路由
-export const getRoutesFromMenus = (menus: any) => {
+export const getRoutesFromMenus = (menus: any):RouteConfig[] => {
   const res: RouteConfig[] = []
   menus.forEach((menu: any) => {
     if (menu.children.length > 0) {
@@ -25,12 +29,15 @@ export const getRoutesFromMenus = (menus: any) => {
     res.push({
       path: menu.path,
       name: menu.name,
-      component: loadComponent(''),
+      component: loadComponent(menu.component),
+      redirect: menu.redirect,
       children: menu.children,
       meta: {
+        // 由于国际化, 这里用name, 如果无需兼容多语言, 则直接用title
         title: menu.name,
         icon: menu.icon,
         hidden: !menu.visible,
+        breadcrumb: menu.breadcrumb,
       },
     })
   })
@@ -49,7 +56,7 @@ class Permission extends VuexModule implements IPermissionState {
 
   @Mutation
   private SET_ROUTES(routes: RouteConfig[]) {
-    this.routes = routes
+    this.routes = constantRoutes.concat(routes)
     this.dynamicRoutes = routes
   }
 
