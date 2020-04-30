@@ -2,29 +2,32 @@ import request from '@/utils/request'
 
 export const getRoles = (params: any) =>
   request({
-    url: '/roles',
+    url: '/role/list',
     method: 'get',
     params
   })
 
 export const createRole = (data: any) =>
   request({
-    url: '/roles',
+    url: '/role/create',
     method: 'post',
     data
   })
 
 export const updateRole = (id: number, data: any) =>
   request({
-    url: `/roles/${id}`,
-    method: 'put',
+    url: `/role/${id}`,
+    method: 'patch',
     data
   })
 
-export const deleteRole = (id: number) =>
+export const batchDeleteRole = (ids: string) =>
   request({
-    url: `/roles/${id}`,
-    method: 'delete'
+    url: `/role/batch`,
+    method: 'delete',
+    params: {
+      ids
+    }
   })
 
 export const getRoutes = (params: any) =>
