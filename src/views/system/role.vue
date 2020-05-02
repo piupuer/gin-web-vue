@@ -254,6 +254,11 @@ import { batchDeleteRole, createRole, getRoles, updateRole } from '@/api/roles'
   }
 })
 export default class extends Vue {
+  private readonly defaultConfig: any = {
+    pageNum: 1,
+    pageSize: 5
+  }
+
   private updateDialog: any = {
     // 类型(0:创建, 1更新)
     type: 0,
@@ -291,7 +296,7 @@ export default class extends Vue {
     form: {
       name: '',
       keyword: '',
-      status: true,
+      status: '',
       creator: ''
     }
   }
@@ -302,11 +307,15 @@ export default class extends Vue {
 
   private async getData() {
     this.table.loading = true
-    const { data } = await getRoles({
+    const params: any = {
       ...this.table.form,
       pageNum: this.table.pageNum,
       pageSize: this.table.pageSize
-    })
+    }
+    if (params.status === '') {
+      delete params.status
+    }
+    const { data } = await getRoles(params)
     this.table.list = data.list
     this.table.pageNum = data.pageNum
     this.table.pageSize = data.pageSize
@@ -435,6 +444,9 @@ export default class extends Vue {
   }
 
   private resetForm(formName: string) {
+    // 重置分页
+    this.table.pageNum = this.defaultConfig.pageNum
+    this.table.pageSize = this.defaultConfig.pageSize
     // 仅对el-form-item设置prop的字段有效
     // 这种写法可能导致无法正确执行: (this.$refs[formName] as Form).resetFields()
     const form = this.$refs[formName] as Form
