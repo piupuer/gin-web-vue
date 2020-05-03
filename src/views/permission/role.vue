@@ -53,7 +53,6 @@
           <el-button
             type="danger"
             size="small"
-            @click="handleDelete(scope)"
           >
             {{ $t('permission.delete') }}
           </el-button>
@@ -120,7 +119,7 @@ import { cloneDeep } from 'lodash'
 import { Component, Vue } from 'vue-property-decorator'
 import { RouteConfig } from 'vue-router'
 import { Tree } from 'element-ui'
-import { getRoutes, getRoles, createRole, deleteRole, updateRole } from '@/api/roles'
+import { getRoutes, getRoles, createRole, updateRole } from '@/api/roles'
 
 interface IRole {
   key: number
@@ -260,24 +259,6 @@ export default class extends Vue {
       // set checked state of a node not affects its father and child nodes
       this.checkStrictly = false
     })
-  }
-
-  private handleDelete(scope: any) {
-    const { $index, row } = scope
-    this.$confirm('Confirm to remove the role?', 'Warning', {
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      type: 'warning'
-    })
-      .then(async() => {
-        await deleteRole(row.key)
-        this.rolesList.splice($index, 1)
-        this.$message({
-          type: 'success',
-          message: 'Deleted!'
-        })
-      })
-      .catch(err => { console.error(err) })
   }
 
   private generateTree(routes: RouteConfig[], basePath = '/', checkedKeys: string[]) {

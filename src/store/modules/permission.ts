@@ -2,7 +2,7 @@ import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-dec
 import { RouteConfig } from 'vue-router'
 import Layout from '@/layout/index.vue'
 import store from '@/store'
-import { getMenuTree } from '@/api/roles'
+import { getMenuTree } from '@/api/menus'
 import { constantRoutes } from '@/router'
 
 // 动态加载组件
@@ -12,7 +12,7 @@ export const loadComponent = (component: string) => {
     return Layout
   }
   // 动态获取组件
-  return () => import(`@/views${component}`)
+  return (resolve: any) => require([`@/views${component}`], resolve)
 }
 
 // 将后端返回的菜单转为前端路由
@@ -32,8 +32,8 @@ export const getRoutesFromMenus = (menus: any):RouteConfig[] => {
       redirect: menu.redirect,
       children: menu.children,
       meta: {
-        // 由于国际化, 这里用name, 如果无需兼容多语言, 则直接用title
-        title: menu.name,
+        name: menu.name,
+        title: menu.title,
         icon: menu.icon,
         hidden: !menu.visible,
         breadcrumb: menu.breadcrumb,

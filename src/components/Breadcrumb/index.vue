@@ -11,11 +11,11 @@
         <span
           v-if="item.redirect === 'noredirect' || index === breadcrumbs.length-1"
           class="no-redirect"
-        >{{ $t('route.' + item.meta.title) }}</span>
+        >{{ $t('route.' + item.meta.name) === 'route.' + item.meta.name ? item.meta.title : $t('route.' + item.meta.name) }}</span>
         <a
           v-else
           @click.prevent="handleLink(item)"
-        >{{ $t('route.' + item.meta.title) }}</a>
+        >{{ $t('route.' + item.meta.name) === 'route.' + item.meta.name ? item.meta.title : $t('route.' + item.meta.name) }}</a>
       </el-breadcrumb-item>
     </transition-group>
   </el-breadcrumb>
@@ -46,22 +46,10 @@ export default class extends Vue {
   }
 
   private getBreadcrumb() {
-    let matched = this.$route.matched.filter((item) => item.meta && item.meta.title)
-    const first = matched[0]
-    if (!this.isDashboard(first)) {
-      matched = [{ path: '/dashboard', meta: { title: 'dashboard' } } as RouteRecord].concat(matched)
-    }
+    const matched = this.$route.matched.filter((item) => item.meta && item.meta.title)
     this.breadcrumbs = matched.filter((item) => {
       return item.meta && item.meta.title && item.meta.breadcrumb !== false
     })
-  }
-
-  private isDashboard(route: RouteRecord) {
-    const name = route && route.name
-    if (!name) {
-      return false
-    }
-    return name.trim().toLocaleLowerCase() === 'Dashboard'.toLocaleLowerCase()
   }
 
   private pathCompile(path: string) {

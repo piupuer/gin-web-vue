@@ -362,7 +362,6 @@ export default class extends Vue {
   }
 
   private async handleCreate() {
-    console.log(this.updateDialog.type)
     // 之前的类型为更新
     if (this.updateDialog.type === 1) {
       // 清理字段

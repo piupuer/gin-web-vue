@@ -36,10 +36,3 @@ export const getRoutes = (params: any) =>
     method: 'get',
     params
   })
-
-export const getMenuTree = (params: any) =>
-  request({
-    url: '/menu/tree',
-    method: 'get',
-    params
-  })

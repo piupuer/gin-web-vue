@@ -18,7 +18,7 @@
         @click.middle.native="!isAffix(tag)?closeSelectedTag(tag):''"
         @contextmenu.prevent.native="openMenu(tag, $event)"
       >
-        {{ $t('route.' + tag.meta.title) }}
+        {{ $t('route.' + tag.meta.name) === 'route.' + tag.meta.name ? tag.meta.title : $t('route.' + tag.meta.name) }}
         <span
           v-if="!isAffix(tag)"
           class="el-icon-close"
