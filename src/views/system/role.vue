@@ -244,7 +244,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteRole, createRole, getRoles, updateRole } from '@/api/roles'
+import { batchDeleteRole, createRole, getRoles, updateRole } from '@/api/system/roles'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告

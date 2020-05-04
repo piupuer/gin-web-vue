@@ -2,7 +2,7 @@ import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-dec
 import { RouteConfig } from 'vue-router'
 import Layout from '@/layout/index.vue'
 import store from '@/store'
-import { getMenuTree } from '@/api/menus'
+import { getMenuTree } from '@/api/system/menus'
 import { constantRoutes } from '@/router'
 
 // 动态加载组件

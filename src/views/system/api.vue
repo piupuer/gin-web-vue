@@ -8,61 +8,47 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="用户名"
-        prop="username"
+        label="访问路径"
+        prop="path"
       >
         <el-input
-          v-model="table.form.username"
-          placeholder="用户名"
+          v-model="table.form.path"
+          placeholder="访问路径"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="手机号"
-        prop="mobile"
-      >
-        <el-input
-          v-model="table.form.mobile"
-          placeholder="手机号"
-          clearable
-          @clear="doSearch"
-          @keyup.enter.native="doSearch"
-        />
-      </el-form-item>
-      <el-form-item
-        label="昵称"
-        prop="nickname"
-      >
-        <el-input
-          v-model="table.form.nickname"
-          placeholder="昵称"
-          clearable
-          @clear="doSearch"
-          @keyup.enter.native="doSearch"
-        />
-      </el-form-item>
-      <el-form-item
-        label="状态"
-        prop="status"
+        label="请求方式"
+        prop="method"
       >
         <el-select
-          v-model="table.form.status"
+          v-model="table.form.method"
+          placeholder="请选择请求方式"
           clearable
-          placeholder="用户状态"
+          @clear="doSearch"
+          @change="doSearch"
         >
           <el-option
-            key="true"
-            label="正常"
-            :value="true"
-          />
-          <el-option
-            key="false"
-            label="禁用"
-            :value="false"
+            v-for="item in defaultConfig.methods"
+            :key="item.name"
+            :label="item.label"
+            :value="item.name"
           />
         </el-select>
+      </el-form-item>
+      <el-form-item
+        label="所属类别"
+        prop="category"
+      >
+        <el-input
+          v-model="table.form.category"
+          placeholder="所属类别"
+          clearable
+          @clear="doSearch"
+          @keyup.enter.native="doSearch"
+        />
       </el-form-item>
       <el-form-item
         label="创建人"
@@ -121,30 +107,32 @@
           width="55"
         />
         <el-table-column
-          prop="username"
-          label="用户名"
+          prop="path"
+          label="访问路径"
           sortable
         />
         <el-table-column
-          prop="mobile"
-          label="手机号"
+          prop="category"
+          label="所属类别"
           sortable
         />
         <el-table-column
-          prop="nickname"
-          label="昵称"
-        />
-        <el-table-column
-          prop="status"
-          label="状态"
+          prop="method"
+          label="请求方式"
+          align="center"
         >
           <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.status"
-              @change="handleStatusChange(scope.row)"
-            />
+            <el-tag
+              :type="getMethodTagType(scope.row.method)"
+            >
+              {{ scope.row.method }}
+            </el-tag>
           </template>
         </el-table-column>
+        <el-table-column
+          prop="desc"
+          label="说明"
+        />
         <el-table-column
           prop="creator"
           label="创建人"
@@ -184,7 +172,7 @@
       />
     </el-form>
 
-    <!-- 用户配置对话框 -->
+    <!-- 接口配置对话框 -->
     <el-dialog
       :title="updateDialog.title"
       :visible.sync="updateDialog.visible"
@@ -197,40 +185,47 @@
         label-width="80px"
       >
         <el-form-item
-          label="用户名"
-          prop="username"
+          label="访问路径"
+          prop="path"
         >
           <el-input
-            v-model="updateDialog.form.username"
-            placeholder="请输入用户名(用于登录系统)"
+            v-model="updateDialog.form.path"
+            placeholder="请输入接口访问路径"
           />
         </el-form-item>
         <el-form-item
-          label="手机号"
-          prop="mobile"
+          label="所属类别"
+          prop="category"
         >
           <el-input
-            v-model="updateDialog.form.mobile"
-            placeholder="请输入手机号"
+            v-model="updateDialog.form.category"
+            placeholder="请输入接口所属类别"
           />
         </el-form-item>
         <el-form-item
-          label="昵称"
-          prop="nickname"
+          label="请求方式"
+          prop="method"
         >
-          <el-input
-            v-model="updateDialog.form.nickname"
-            placeholder="请输入昵称"
-          />
+          <el-select
+            v-model="updateDialog.form.method"
+            placeholder="请选择请求方式"
+          >
+            <el-option
+              v-for="item in defaultConfig.methods"
+              :key="item.name"
+              :label="item.label"
+              :value="item.name"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item
-          label="状态"
-          prop="status"
+          label="说明"
+          prop="desc"
         >
-          <el-switch
-            v-model="updateDialog.form.status"
-            active-text="正常"
-            inactive-text="禁用"
+          <el-input
+            v-model="updateDialog.form.desc"
+            type="textarea"
+            placeholder="请输入内容"
           />
         </el-form-item>
       </el-form>
@@ -255,11 +250,11 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteUser, createUser, getUsers, updateUser } from '@/api/system/users'
+import { batchDeleteApi, createApi, getApis, updateApi } from '@/api/system/apis'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
-  name: 'User',
+  name: 'Api',
   components: {
     Pagination
   }
@@ -267,7 +262,28 @@ import { batchDeleteUser, createUser, getUsers, updateUser } from '@/api/system/
 export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
-    pageSize: 5
+    pageSize: 5,
+    methods: [{
+      name: 'GET',
+      label: 'GET[获取资源]',
+      type: ''
+    }, {
+      name: 'POST',
+      label: 'POST[创建资源]',
+      type: 'success'
+    }, {
+      name: 'PUT',
+      label: 'PUT[创建/更新资源]',
+      type: 'info'
+    }, {
+      name: 'PATCH',
+      label: 'PATCH[创建/更新资源(区别于PUT, 增量更新)]',
+      type: 'warning'
+    }, {
+      name: 'DELETE',
+      label: 'DELETE[删除资源]',
+      type: 'danger'
+    }]
   }
 
   private updateDialog: any = {
@@ -280,19 +296,21 @@ export default class extends Vue {
     // 表单
     form: {
       id: 0,
-      username: '',
-      mobile: '',
-      nickname: '',
-      status: true,
-      creator: ''
+      path: '',
+      method: '',
+      category: '',
+      desc: ''
     },
     // 表单校验
     rules: {
-      username: [
-        { required: true, message: '用户名不能为空', trigger: 'blur' }
+      path: [
+        { required: true, message: '访问路径不能为空', trigger: 'blur' }
       ],
-      mobile: [
-        { required: true, message: '手机号不能为空', trigger: 'blur' }
+      method: [
+        { required: true, message: '请求方式不能为空', trigger: 'blur' }
+      ],
+      category: [
+        { required: true, message: '所属类别不能为空', trigger: 'blur' }
       ]
     }
   }
@@ -306,11 +324,10 @@ export default class extends Vue {
     pageSize: 5,
     total: 0,
     form: {
-      username: '',
-      mobile: '',
-      nickname: '',
-      status: '',
-      creator: ''
+      path: '',
+      method: '',
+      category: '',
+      desc: ''
     }
   }
 
@@ -328,7 +345,7 @@ export default class extends Vue {
     if (params.status === '') {
       delete params.status
     }
-    const { data } = await getUsers(params)
+    const { data } = await getApis(params)
     this.table.list = data.list
     this.table.pageNum = data.pageNum
     this.table.pageSize = data.pageSize
@@ -344,9 +361,9 @@ export default class extends Vue {
     (this.$refs.updateForm as Form).validate(async(valid) => {
       if (valid) {
         if (this.updateDialog.type === 0) {
-          await createUser(this.updateDialog.form)
+          await createApi(this.updateDialog.form)
         } else {
-          await updateUser(this.updateDialog.form.id, this.updateDialog.form)
+          await updateApi(this.updateDialog.form.id, this.updateDialog.form)
         }
         // 关闭弹窗
         this.updateDialog.visible = false
@@ -356,7 +373,7 @@ export default class extends Vue {
         this.resetUpdateForm()
         this.$notify({
           title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}用户成功`,
+          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}接口成功`,
           type: 'success',
           duration: 2000
         })
@@ -383,7 +400,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
-    this.updateDialog.title = '创建新用户'
+    this.updateDialog.title = '创建新接口'
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -391,14 +408,15 @@ export default class extends Vue {
   private async handleUpdate(row: any) {
     // 弹窗表单赋值
     this.updateDialog.form.id = row.id
-    this.updateDialog.form.username = row.username
-    this.updateDialog.form.mobile = row.mobile
-    this.updateDialog.form.nickname = row.nickname
-    this.updateDialog.form.status = row.status
+    this.updateDialog.form.path = row.path
+    this.updateDialog.form.method = row.method
+    this.updateDialog.form.category = row.category
+    this.updateDialog.form.creator = row.creator
+    this.updateDialog.form.desc = row.desc
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
-    this.updateDialog.title = '修改用户信息'
+    this.updateDialog.title = '修改接口信息'
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -413,46 +431,24 @@ export default class extends Vue {
 
   private async batchDelete(rows: any) {
     const ids: number[] = []
-    const usernames: string[] = []
+    const paths: string[] = []
     for (let i = 0, len = rows.length; i < len; i++) {
       const row = rows[i]
       ids.push(row.id)
-      usernames.push(row.username)
+      paths.push(row.path)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除用户[${usernames.join(',')}]吗, 此操作不可逆?`
+      const msg = `确定要删除接口[${paths.join(',')}]吗, 此操作不可逆?`
       this.$confirm(msg, '请谨慎操作', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(async() => {
-          await batchDeleteUser(ids.join(','))
+          await batchDeleteApi(ids.join(','))
           this.getData()
         })
     }
-  }
-
-  // 改变用户状态
-  private async handleStatusChange(row: any) {
-    let msg = `确定要恢复用户[${row.username}]吗?`
-    if (!row.status) {
-      msg = `确定要禁用用户[${row.username}]吗?该操作可能导致该用户无法正常使用系统`
-    }
-    this.$confirm(msg, '请谨慎操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(async() => {
-        await updateUser(row.id, {
-          status: row.status
-        })
-        this.getData()
-      })
-      .catch(() => {
-        row.status = !row.status
-      })
   }
 
   private resetForm(formName: string) {
@@ -480,6 +476,17 @@ export default class extends Vue {
   private handlePageNumChange(val: number) {
     this.table.pageNum = val
     this.doSearch()
+  }
+
+  // 获取请求方式对应的tag颜色
+  private getMethodTagType(method: string) {
+    for (let i = 0, len = this.defaultConfig.methods.length; i < len; i++) {
+      const item = this.defaultConfig.methods[i]
+      if (method === item.name) {
+        return item.type
+      }
+    }
+    return ''
   }
 }
 </script>

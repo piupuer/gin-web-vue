@@ -297,7 +297,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { Form } from 'element-ui'
-import { batchDeleteMenu, createMenu, getMenus, updateMenu } from '@/api/menus'
+import { batchDeleteMenu, createMenu, getMenus, updateMenu } from '@/api/system/menus'
 import i18n from '@/lang'
 
 @Component({
