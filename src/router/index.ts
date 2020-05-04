@@ -84,6 +84,7 @@ export const constantRoutes: RouteConfig[] = [
         component: () => import(/* webpackChunkName: "profile" */ '@/views/profile/index.vue'),
         name: 'Profile',
         meta: {
+          name: 'profile',
           title: 'profile',
           icon: 'user',
           noCache: true
