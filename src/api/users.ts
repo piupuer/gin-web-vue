@@ -1,36 +1,10 @@
 import request from '@/utils/request'
 
-export const getUsers = (params: any) =>
-  request({
-    url: '/users',
-    method: 'get',
-    params
-  })
-
 export const getUserInfo = (data: any) =>
   request({
     url: '/user/info',
     method: 'post',
     data
-  })
-
-export const getUserByName = (username: string) =>
-  request({
-    url: `/users/${username}`,
-    method: 'get'
-  })
-
-export const updateUser = (username: string, data: any) =>
-  request({
-    url: `/users/${username}`,
-    method: 'put',
-    data
-  })
-
-export const deleteUser = (username: string) =>
-  request({
-    url: `/users/${username}`,
-    method: 'delete'
   })
 
 export const login = (data: any) =>
@@ -46,9 +20,32 @@ export const logout = () =>
     method: 'post'
   })
 
-export const register = (data: any) =>
+export const getUsers = (params: any) =>
   request({
-    url: '/users/register',
+    url: '/user/list',
+    method: 'get',
+    params
+  })
+
+export const createUser = (data: any) =>
+  request({
+    url: '/user/create',
     method: 'post',
     data
+  })
+
+export const updateUser = (id: number, data: any) =>
+  request({
+    url: `/user/${id}`,
+    method: 'patch',
+    data
+  })
+
+export const batchDeleteUser = (ids: string) =>
+  request({
+    url: `/user/batch`,
+    method: 'delete',
+    params: {
+      ids
+    }
   })
