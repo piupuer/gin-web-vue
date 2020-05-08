@@ -16,23 +16,22 @@ export const createApi = (data: any) =>
 
 export const updateApi = (id: number, data: any) =>
   request({
-    url: `/api/${id}`,
+    url: '/api/' + id,
     method: 'patch',
     data
   })
 
 export const batchDeleteApi = (ids: string) =>
   request({
-    url: `/api/batch`,
+    url: '/api/batch',
     method: 'delete',
     params: {
       ids
     }
   })
 
-export const getRoutes = (params: any) =>
+export const getAllApiGroupByCategoryByRoleId = (id: number) =>
   request({
-    url: '/routes',
-    method: 'get',
-    params
+    url: '/api/all/category/' + id,
+    method: 'get'
   })

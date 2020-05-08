@@ -141,17 +141,21 @@
           fixed="right"
           label="操作"
           align="center"
-          width="180"
+          width="220"
         >
           <template slot-scope="scope">
             <el-button
-              size="mini"
+              type="primary"
+              @click="handleRole(scope.row)"
+            >
+              权限
+            </el-button>
+            <el-button
               @click="handleUpdate(scope.row)"
             >
               编辑
             </el-button>
             <el-button
-              size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
             >
@@ -238,6 +242,57 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <!-- 权限对话框 -->
+    <el-dialog
+      :title="roleDialog.title"
+      :visible.sync="roleDialog.visible"
+      custom-class="role-dialog"
+      width="500px"
+    >
+      <el-tabs v-model="roleDialog.tab.activeName">
+        <el-tab-pane
+          label="菜单权限"
+          name="menu"
+        >
+          <el-tree
+            ref="roleMenuTree"
+            :data="roleDialog.tab.menus"
+            :props="defaultConfig.roleMenuTreeProps"
+            :default-checked-keys="roleDialog.tab.checkedMenus"
+            show-checkbox
+            node-key="id"
+          />
+        </el-tab-pane>
+        <el-tab-pane
+          label="接口权限"
+          name="api"
+        >
+          <el-tree
+            ref="roleApiTree"
+            :data="roleDialog.tab.apis"
+            :props="defaultConfig.roleApiTreeProps"
+            :default-checked-keys="roleDialog.tab.checkedApis"
+            show-checkbox
+            node-key="id"
+          />
+        </el-tab-pane>
+      </el-tabs>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="primary"
+          @click="doRoleUpdate"
+        >
+          确 定
+        </el-button>
+        <el-button @click="cancelRoleUpdate">
+          取 消
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -245,6 +300,8 @@ import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteRole, createRole, getRoles, updateRole } from '@/api/system/roles'
+import { getAllApiGroupByCategoryByRoleId } from '@/api/system/apis'
+import { getAllMenuByRoleId } from '@/api/system/menus'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -256,7 +313,15 @@ import { batchDeleteRole, createRole, getRoles, updateRole } from '@/api/system/
 export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
-    pageSize: 5
+    pageSize: 5,
+    roleMenuTreeProps: {
+      children: 'children',
+      label: 'title'
+    },
+    roleApiTreeProps: {
+      children: 'children',
+      label: 'title'
+    }
   }
 
   private updateDialog: any = {
@@ -282,6 +347,22 @@ export default class extends Vue {
       keyword: [
         { required: true, message: '关键字不能为空', trigger: 'blur' }
       ]
+    }
+  }
+
+  private roleDialog: any = {
+    title: '修改权限',
+    // 是否打开
+    visible: false,
+    // 标签页
+    tab: {
+      activeName: 'menu',
+      // 权限菜单集合
+      menus: [],
+      checkedMenus: [],
+      // 权限api集合
+      apis: [],
+      checkedApis: []
     }
   }
 
@@ -356,9 +437,31 @@ export default class extends Vue {
     form.resetFields()
   }
 
+  private async doRoleUpdate() {
+    if (this.roleDialog.tab.activeName === 'menu') {
+      await this.doRoleMenuUpdate()
+    } else if (this.roleDialog.tab.activeName === 'api') {
+      await this.doRoleApiUpdate()
+    }
+  }
+
+  private async doRoleMenuUpdate() {
+    console.log('更新权限菜单')
+  }
+
+  private async doRoleApiUpdate() {
+    console.log('更新api菜单')
+  }
+
   private async cancelUpdate() {
     // 关闭弹窗
     this.updateDialog.visible = false
+  }
+
+  private async cancelRoleUpdate() {
+    // 关闭弹窗
+    this.roleDialog.visible = false
+    this.roleDialog.tab.activeName = 'menu'
   }
 
   private async handleCreate() {
@@ -388,6 +491,19 @@ export default class extends Vue {
     this.updateDialog.title = '修改角色信息'
     // 开启弹窗
     this.updateDialog.visible = true
+  }
+
+  private async handleRole(row: any) {
+    // 刷新权限菜单
+    const { data: data1 } = await getAllMenuByRoleId(row.id)
+    const { data: data2 } = await getAllApiGroupByCategoryByRoleId(row.id)
+    this.roleDialog.tab.menus = data1.list
+    this.roleDialog.tab.checkedMenus = data1.accessIds
+    // 刷新权限接口
+    this.roleDialog.tab.apis = data2.list
+    this.roleDialog.tab.checkedApis = data2.accessIds
+    // 打开弹窗
+    this.roleDialog.visible = true
   }
 
   private handleDelete(row: any) {
@@ -475,5 +591,10 @@ export default class extends Vue {
     .el-row {
       margin-bottom: 15px;
     }
+  }
+</style>
+<style lang="scss">
+  .role-dialog > .el-dialog__body {
+    padding: 0 20px 30px;
   }
 </style>
