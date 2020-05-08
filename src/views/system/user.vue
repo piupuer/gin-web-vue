@@ -256,6 +256,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteUser, createUser, getUsers, updateUser } from '@/api/system/users'
+import { diffObjUpdate } from '@/utils/diff'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -277,8 +278,8 @@ export default class extends Vue {
     visible: false,
     // 标题
     title: '',
-    // 表单
-    form: {
+    // 默认数据
+    defaultForm: {
       id: 0,
       username: '',
       mobile: '',
@@ -286,6 +287,9 @@ export default class extends Vue {
       status: true,
       creator: ''
     },
+    // 表单
+    form: {},
+    oldData: {},
     // 表单校验
     rules: {
       username: [
@@ -315,6 +319,7 @@ export default class extends Vue {
   }
 
   created() {
+    this.resetUpdateForm()
     this.getData()
   }
 
@@ -346,7 +351,16 @@ export default class extends Vue {
         if (this.updateDialog.type === 0) {
           await createUser(this.updateDialog.form)
         } else {
-          await updateUser(this.updateDialog.form.id, this.updateDialog.form)
+          const update = diffObjUpdate(this.updateDialog.oldData, this.updateDialog.form)
+          // 编号存在则更新, 不存在给出提示
+          if (!update.id) {
+            this.$message({
+              type: 'warning',
+              message: '数据没有发生变化, 请重新输入~'
+            })
+            return
+          }
+          await updateUser(update.id, update)
         }
         // 关闭弹窗
         this.updateDialog.visible = false
@@ -365,8 +379,7 @@ export default class extends Vue {
   }
 
   private async resetUpdateForm() {
-    const form = this.$refs.updateForm as Form
-    form.resetFields()
+    this.updateDialog.form = JSON.parse(JSON.stringify(this.updateDialog.defaultForm))
   }
 
   private async cancelUpdate() {
@@ -395,6 +408,8 @@ export default class extends Vue {
     this.updateDialog.form.mobile = row.mobile
     this.updateDialog.form.nickname = row.nickname
     this.updateDialog.form.status = row.status
+    // 记录旧数据
+    this.updateDialog.oldData = JSON.parse(JSON.stringify(this.updateDialog.form))
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题

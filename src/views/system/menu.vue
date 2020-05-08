@@ -152,7 +152,7 @@
         >
           <el-cascader
             v-model="updateDialog.form.parentIdStr"
-            :options="updateDialog.form.menuTreeOptions"
+            :options="updateDialog.menuTreeOptions"
             :show-all-levels="false"
             :props="{checkStrictly: true,label: 'title',value: 'id',emitPath: false}"
             filterable
@@ -296,9 +296,10 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { Form } from 'element-ui'
 import { batchDeleteMenu, createMenu, getMenus, updateMenu } from '@/api/system/menus'
+import { Form } from 'element-ui'
 import i18n from '@/lang'
+import { diffObjUpdate } from '@/utils/diff'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -312,26 +313,32 @@ export default class extends Vue {
     visible: false,
     // 标题
     title: '',
-    // 表单
-    form: {
+    // 菜单树参数
+    menuTreeOptions: [],
+    // 默认数据
+    defaultForm: {
       id: 0,
       root: true,
       parentId: 0,
-      parentIdStr: '0',
-      menuTreeOptions: [],
       name: '',
       title: '',
       icon: '',
       sort: 0,
-      rootPath: '',
       path: '',
-      fullPath: '/',
       component: '',
       redirect: '',
       visible: true,
       breadcrumb: true,
-      status: true
+      status: true,
+      // 表单辅助参数, 不参与提交
+      parentIdStr: '0',
+      rootPath: '',
+      fullPath: '/'
     },
+    // 表单数据
+    form: {},
+    // 旧数据
+    oldData: {},
     // 表单校验
     rules: {
       name: [
@@ -352,6 +359,7 @@ export default class extends Vue {
   }
 
   created() {
+    this.resetUpdateForm()
     this.getData()
   }
 
@@ -367,16 +375,15 @@ export default class extends Vue {
     }
     const { data } = await getMenus(params)
     this.table.list = data
-    this.refreshMenuTreeOptions(data)
     this.table.loading = false
   }
 
   // 重置下拉选择框
-  private async refreshMenuTreeOptions(data: any) {
-    this.updateDialog.form.menuTreeOptions = []
+  private async refreshMenuTreeOptions() {
+    this.updateDialog.menuTreeOptions = []
     // 包裹根菜单
-    const menu = { id: '0', title: '顶级目录', children: this.getMenuOptions(data) }
-    this.updateDialog.form.menuTreeOptions.push(menu)
+    const menu = { id: '0', title: '顶级目录', children: this.getMenuOptions(this.table.list) }
+    this.updateDialog.menuTreeOptions.push(menu)
   }
 
   private getMenuOptions(data: any) {
@@ -399,13 +406,16 @@ export default class extends Vue {
           children: this.getMenuOptions(item.children)
         }
       }
+      if (this.updateDialog.type === 1) {
+        // 更新数据需要禁用部分子菜单
+        if (this.isChildMenu(this.updateDialog.form.parentId, item.id, this.table.list)) {
+        // 子菜单不允许被选中
+          menu.disabled = true
+        }
+      }
       menus.push(menu)
     }
     return menus
-  }
-
-  private async doSearch() {
-    this.getData()
   }
 
   private async doUpdate() {
@@ -419,10 +429,23 @@ export default class extends Vue {
             path: this.updateDialog.form.fullPath
           }
         }
+        // 以下参数不提交
+        delete params.parentIdStr
+        delete params.rootPath
+        delete params.fullPath
         if (this.updateDialog.type === 0) {
           await createMenu(params)
         } else {
-          await updateMenu(this.updateDialog.form.id, params)
+          const update = diffObjUpdate(this.updateDialog.oldData, params)
+          // 编号存在则更新, 不存在给出提示
+          if (!update.id) {
+            this.$message({
+              type: 'warning',
+              message: '数据没有发生变化, 请重新输入~'
+            })
+            return
+          }
+          await updateMenu(update.id, update)
         }
         // 关闭弹窗
         this.updateDialog.visible = false
@@ -441,8 +464,7 @@ export default class extends Vue {
   }
 
   private async resetUpdateForm() {
-    const form = this.$refs.updateForm as Form
-    form.resetFields()
+    this.updateDialog.form = JSON.parse(JSON.stringify(this.updateDialog.defaultForm))
   }
 
   private async cancelUpdate() {
@@ -458,6 +480,8 @@ export default class extends Vue {
     }
     // 修改类型
     this.updateDialog.type = 0
+    // 刷新菜单参数
+    this.refreshMenuTreeOptions()
     // 修改标题
     this.updateDialog.title = '创建新菜单'
     // 开启弹窗
@@ -490,8 +514,12 @@ export default class extends Vue {
     }
     this.updateDialog.form.path = row.path
     this.updateDialog.form.redirect = row.redirect
+    // 记录旧数据
+    this.updateDialog.oldData = JSON.parse(JSON.stringify(this.updateDialog.form))
     // 修改类型
     this.updateDialog.type = 1
+    // 刷新菜单参数
+    this.refreshMenuTreeOptions()
     // 修改标题
     this.updateDialog.title = '修改菜单信息'
     // 开启弹窗
@@ -552,9 +580,17 @@ export default class extends Vue {
   private async handleMenuTreeChange() {
     this.updateDialog.form.parentId = Number(this.updateDialog.form.parentIdStr)
     this.updateDialog.form.root = this.updateDialog.form.parentId === 0
-    // 清空路径
-    this.updateDialog.form.path = ''
-    this.updateDialog.form.rootPath = ''
+    if (this.updateDialog.form.parentId === this.updateDialog.oldData.parentId) {
+      // 恢复路径
+      this.updateDialog.form.path = this.updateDialog.oldData.path
+      this.updateDialog.form.rootPath = this.updateDialog.oldData.rootPath
+      this.updateDialog.form.component = this.updateDialog.oldData.component
+    } else {
+      // 清空路径
+      this.updateDialog.form.path = ''
+      this.updateDialog.form.rootPath = ''
+      this.updateDialog.form.component = ''
+    }
     if (!this.updateDialog.form.root) {
       this.updateDialog.form.rootPath = this.getMenuFullPath(this.updateDialog.form.parentId)
     }
@@ -594,13 +630,21 @@ export default class extends Vue {
     return res
   }
 
-  private resetForm(formName: string) {
-    // 仅对el-form-item设置prop的字段有效
-    // 这种写法可能导致无法正确执行: (this.$refs[formName] as Form).resetFields()
-    const form = this.$refs[formName] as Form
-    form.resetFields()
-    // 重新获取数据
-    this.getData()
+  // 根据编号判断childId是否id的子节点
+  private isChildMenu(id: number, childId: number, menus: any): boolean {
+    if (childId === 0) {
+      return false
+    }
+    // 获取父菜单编号
+    const parentId = this.getParentMenu(childId, menus)
+    // 要么等于找到父菜单, 要么继续向上找
+    return id === parentId || this.isChildMenu(id, parentId, menus)
+  }
+
+  // 获取父级菜单
+  private getParentMenu(id: number, menus: any) {
+    const leaf = this.getMenuTreeLeaf(id, menus)
+    return leaf.parentId
   }
 
   @Watch('updateDialog.form.rootPath')
