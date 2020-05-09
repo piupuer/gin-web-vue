@@ -21,6 +21,20 @@ export const updateRole = (id: number, data: any) =>
     data
   })
 
+export const updateRoleMenus = (id: number, data: any) =>
+  request({
+    url: `/role/menus/update/${id}`,
+    method: 'patch',
+    data
+  })
+
+export const updateRoleApis = (id: number, data: any) =>
+  request({
+    url: `/role/apis/update/${id}`,
+    method: 'patch',
+    data
+  })
+
 export const batchDeleteRole = (ids: string) =>
   request({
     url: `/role/delete/batch`,

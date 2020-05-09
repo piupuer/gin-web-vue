@@ -43,10 +43,15 @@ export const diffArrUpdate = (oldArr: any, newArr: any, key = 'id') => {
   for (const key1 in delta) {
     const item = delta[key1]
     if (Array.isArray(item)) {
-      if (key1.indexOf('_') === 0) {
-        res.delete.push(item[0])
-      } else {
-        res.create.push(item[0])
+      // 第一个元素为空表示数组索引发生改变
+      if (item[0] !== '') {
+        // key带下划线表示数据删除
+        // 其余表示创建了新元素
+        if (key1.indexOf('_') === 0) {
+          res.delete.push(item[0])
+        } else {
+          res.create.push(item[0])
+        }
       }
     } else if (item.constructor === Object) {
       const newItem: any = {}

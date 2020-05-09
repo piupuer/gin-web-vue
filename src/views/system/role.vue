@@ -298,11 +298,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
-import { Form } from 'element-ui'
-import { batchDeleteRole, createRole, getRoles, updateRole } from '@/api/system/roles'
+import { Form, Tree } from 'element-ui'
+import { batchDeleteRole, createRole, getRoles, updateRole, updateRoleApis, updateRoleMenus } from '@/api/system/roles'
 import { getAllApiGroupByCategoryByRoleId } from '@/api/system/apis'
 import { getAllMenuByRoleId } from '@/api/system/menus'
-import { diffObjUpdate } from '@/utils/diff'
+import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -359,6 +359,8 @@ export default class extends Vue {
     title: '修改权限',
     // 是否打开
     visible: false,
+    // 当前角色编号
+    roleId: 0,
     // 标签页
     tab: {
       activeName: 'menu',
@@ -366,8 +368,7 @@ export default class extends Vue {
       menus: [],
       checkedMenus: [],
       // 权限api集合
-      apis: [],
-      checkedApis: []
+      apis: []
     }
   }
 
@@ -460,11 +461,37 @@ export default class extends Vue {
   }
 
   private async doRoleMenuUpdate() {
-    console.log('更新权限菜单')
+    const newMenus = (this.$refs.roleMenuTree as Tree).getCheckedKeys()
+    const diff = diffArrUpdate(this.roleDialog.tab.checkedMenus, newMenus)
+    if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
+      this.$message({
+        type: 'warning',
+        message: '数据没有发生变化, 请重新输入~'
+      })
+      return
+    }
+    await updateRoleMenus(this.roleDialog.roleId, diff)
+    // 关闭弹窗
+    this.roleDialog.visible = false
+    // 重新查询
+    this.getData()
   }
 
   private async doRoleApiUpdate() {
-    console.log('更新api菜单')
+    const newApis = (this.$refs.roleApiTree as Tree).getCheckedKeys()
+    const diff = diffArrUpdate(this.roleDialog.tab.checkedApis, newApis)
+    if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
+      this.$message({
+        type: 'warning',
+        message: '数据没有发生变化, 请重新输入~'
+      })
+      return
+    }
+    await updateRoleApis(this.roleDialog.roleId, diff)
+    // 关闭弹窗
+    this.roleDialog.visible = false
+    // 重新查询
+    this.getData()
   }
 
   private async cancelUpdate() {
@@ -475,6 +502,7 @@ export default class extends Vue {
   private async cancelRoleUpdate() {
     // 关闭弹窗
     this.roleDialog.visible = false
+    this.roleDialog.roleId = 0
     this.roleDialog.tab.activeName = 'menu'
   }
 
@@ -515,9 +543,13 @@ export default class extends Vue {
     const { data: data2 } = await getAllApiGroupByCategoryByRoleId(row.id)
     this.roleDialog.tab.menus = data1.list
     this.roleDialog.tab.checkedMenus = data1.accessIds
+    this.roleDialog.tab.oldCheckedMenus = data1.accessIds
     // 刷新权限接口
     this.roleDialog.tab.apis = data2.list
     this.roleDialog.tab.checkedApis = data2.accessIds
+    this.roleDialog.tab.oldCheckedApis = data2.accessIds
+    // 记录当前权限编号
+    this.roleDialog.roleId = row.id
     // 打开弹窗
     this.roleDialog.visible = true
   }
