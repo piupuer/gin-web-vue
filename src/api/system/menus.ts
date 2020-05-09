@@ -23,14 +23,14 @@ export const createMenu = (data: any) =>
 
 export const updateMenu = (id: number, data: any) =>
   request({
-    url: '/menu/' + id,
+    url: `/menu/update/${id}`,
     method: 'patch',
     data
   })
 
 export const batchDeleteMenu = (ids: string) =>
   request({
-    url: '/menu/batch',
+    url: '/menu/delete/batch',
     method: 'delete',
     params: {
       ids

@@ -16,14 +16,14 @@ export const createApi = (data: any) =>
 
 export const updateApi = (id: number, data: any) =>
   request({
-    url: '/api/' + id,
+    url: `/api/update/${id}`,
     method: 'patch',
     data
   })
 
 export const batchDeleteApi = (ids: string) =>
   request({
-    url: '/api/batch',
+    url: '/api/delete/batch',
     method: 'delete',
     params: {
       ids
@@ -32,6 +32,6 @@ export const batchDeleteApi = (ids: string) =>
 
 export const getAllApiGroupByCategoryByRoleId = (id: number) =>
   request({
-    url: '/api/all/category/' + id,
+    url:  `/api/all/category/${id}`,
     method: 'get'
   })

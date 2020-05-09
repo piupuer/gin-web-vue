@@ -36,14 +36,14 @@ export const createUser = (data: any) =>
 
 export const updateUser = (id: number, data: any) =>
   request({
-    url: `/user/${id}`,
+    url: `/user/update/${id}`,
     method: 'patch',
     data
   })
 
 export const batchDeleteUser = (ids: string) =>
   request({
-    url: `/user/batch`,
+    url: '/user/delete/batch',
     method: 'delete',
     params: {
       ids

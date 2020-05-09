@@ -16,14 +16,14 @@ export const createRole = (data: any) =>
 
 export const updateRole = (id: number, data: any) =>
   request({
-    url: `/role/${id}`,
+    url: `/role/update/${id}`,
     method: 'patch',
     data
   })
 
 export const batchDeleteRole = (ids: string) =>
   request({
-    url: `/role/batch`,
+    url: `/role/delete/batch`,
     method: 'delete',
     params: {
       ids
