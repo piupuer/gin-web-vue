@@ -20,6 +20,7 @@ export interface IUserState {
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
   public token = getToken() || ''
+  public id = 0
   public username = ''
   public nickname = ''
   public mobile = ''
@@ -31,6 +32,11 @@ class User extends VuexModule implements IUserState {
   @Mutation
   private SET_TOKEN(token: string) {
     this.token = token
+  }
+
+  @Mutation
+  private SET_ID(id: number) {
+    this.id = id
   }
 
   @Mutation
@@ -93,11 +99,12 @@ class User extends VuexModule implements IUserState {
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
-    const { roles, username, nickname, mobile, avatar, introduction, email } = data
+    const { id, roles, username, nickname, mobile, avatar, introduction, email } = data
     // roles must be a non-empty array
     if (!roles || roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
     }
+    this.SET_ID(id)
     this.SET_ROLES(roles)
     this.SET_USERNAME(username)
     this.SET_NICKNAME(nickname)

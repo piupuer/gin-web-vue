@@ -42,6 +42,7 @@ import Password from './components/Password.vue'
 import UserCard from './components/UserCard.vue'
 
 export interface IProfile {
+  id: number
   username: string
   nickname: string
   mobile: string
@@ -52,6 +53,7 @@ export interface IProfile {
 }
 
 const defaultProfile: IProfile = {
+  id: 0,
   username: 'Loading...',
   nickname: 'Loading...',
   mobile: 'Loading...',
@@ -72,6 +74,10 @@ const defaultProfile: IProfile = {
 export default class extends Vue {
   private user = defaultProfile
   private activeTab = 'account'
+
+  get id() {
+    return UserModule.id
+  }
 
   get username() {
     return UserModule.username
@@ -107,6 +113,7 @@ export default class extends Vue {
 
   private getUser() {
     this.user = {
+      id: this.id,
       username: this.username,
       nickname: this.nickname,
       mobile: this.mobile,

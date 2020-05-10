@@ -1,14 +1,27 @@
 <template>
-  <el-form>
-    <el-form-item :label="$t('profile.accountNickname')">
-      <el-input v-model.trim="user.nickname" />
+  <el-form
+    ref="accountForm"
+    :rules="accountForm.rules"
+    :model="accountForm.form"
+  >
+    <el-form-item
+      :label="$t('profile.accountNickname')"
+      prop="nickname"
+    >
+      <el-input v-model.trim="accountForm.form.nickname" />
     </el-form-item>
-    <el-form-item :label="$t('profile.accountMobile')">
-      <el-input v-model.trim="user.mobile" />
+    <el-form-item
+      :label="$t('profile.accountMobile')"
+      prop="mobile"
+    >
+      <el-input v-model.trim="accountForm.form.mobile" />
     </el-form-item>
-    <el-form-item :label="$t('profile.accountIntroduction')">
+    <el-form-item
+      :label="$t('profile.accountIntroduction')"
+      prop="introduction"
+    >
       <el-input
-        v-model.trim="user.introduction"
+        v-model.trim="accountForm.form.introduction"
         type="textarea"
         :rows="2"
         placeholder="简单描述一下自己吧~"
@@ -17,7 +30,7 @@
     <el-form-item>
       <el-button
         type="primary"
-        @click="submit"
+        @click="doUpdate"
       >
         {{ $t('profile.submit') }}
       </el-button>
@@ -27,7 +40,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { IProfile } from '../index.vue'
+import { Form } from 'element-ui'
+import IProfile from '../index.vue'
+import { diffObjUpdate } from '@/utils/diff'
+import { updateUser } from '@/api/system/users'
+import { UserModule } from '@/store/modules/user'
 
 @Component({
   name: 'Account'
@@ -35,11 +52,55 @@ import { IProfile } from '../index.vue'
 export default class extends Vue {
   @Prop({ required: true }) private user!: IProfile
 
-  private submit() {
-    this.$message({
-      message: 'User information has been updated successfully',
-      type: 'success',
-      duration: 5 * 1000
+  private accountForm: any = {
+    form: {
+      nickname: '',
+      mobile: '',
+      introduction: ''
+    },
+    // 旧数据
+    oldData: {},
+    // 表单校验
+    rules: {
+      nickname: [
+        { required: true, message: '昵称不能为空', trigger: 'blur' }
+      ]
+    }
+  }
+
+  created() {
+    this.getData()
+  }
+
+  private async getData() {
+    this.accountForm.form = this.user
+    this.accountForm.oldData = JSON.parse(JSON.stringify(this.user))
+  }
+
+  private async doUpdate() {
+    (this.$refs.accountForm as Form).validate(async(valid) => {
+      if (valid) {
+        const update = diffObjUpdate(this.accountForm.oldData, this.accountForm.form)
+        // 编号存在则更新, 不存在给出提示
+        if (!update.id) {
+          this.$message({
+            type: 'warning',
+            message: '数据没有发生变化, 请重新输入~'
+          })
+          return
+        }
+        // 更新用户信息
+        await updateUser(update.id, update)
+        this.$notify({
+          title: '恭喜',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+        // 重新拉取用户信息
+        await UserModule.GetUserInfo()
+        this.getData()
+      }
     })
   }
 }

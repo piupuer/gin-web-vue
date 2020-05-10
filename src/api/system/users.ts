@@ -41,6 +41,13 @@ export const updateUser = (id: number, data: any) =>
     data
   })
 
+export const changePwd = (data: any) =>
+  request({
+    url: '/user/changePwd',
+    method: 'put',
+    data
+  })
+
 export const batchDeleteUser = (ids: string) =>
   request({
     url: '/user/delete/batch',
