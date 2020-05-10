@@ -12,7 +12,7 @@
         prop="username"
       >
         <el-input
-          v-model="table.form.username"
+          v-model.trim="table.form.username"
           placeholder="用户名"
           clearable
           @clear="doSearch"
@@ -24,7 +24,7 @@
         prop="mobile"
       >
         <el-input
-          v-model="table.form.mobile"
+          v-model.trim="table.form.mobile"
           placeholder="手机号"
           clearable
           @clear="doSearch"
@@ -36,7 +36,7 @@
         prop="nickname"
       >
         <el-input
-          v-model="table.form.nickname"
+          v-model.trim="table.form.nickname"
           placeholder="昵称"
           clearable
           @clear="doSearch"
@@ -48,7 +48,7 @@
         prop="status"
       >
         <el-select
-          v-model="table.form.status"
+          v-model.trim="table.form.status"
           clearable
           placeholder="用户状态"
         >
@@ -69,7 +69,7 @@
         prop="creator"
       >
         <el-input
-          v-model="table.form.creator"
+          v-model.trim="table.form.creator"
           placeholder="创建人"
           clearable
           @clear="doSearch"
@@ -140,7 +140,7 @@
         >
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.status"
+              v-model.trim="scope.row.status"
               @change="handleStatusChange(scope.row)"
             />
           </template>
@@ -201,7 +201,7 @@
           prop="username"
         >
           <el-input
-            v-model="updateDialog.form.username"
+            v-model.trim="updateDialog.form.username"
             placeholder="请输入用户名(用于登录系统)"
           />
         </el-form-item>
@@ -210,7 +210,7 @@
           prop="mobile"
         >
           <el-input
-            v-model="updateDialog.form.mobile"
+            v-model.trim="updateDialog.form.mobile"
             placeholder="请输入手机号"
           />
         </el-form-item>
@@ -219,7 +219,7 @@
           prop="nickname"
         >
           <el-input
-            v-model="updateDialog.form.nickname"
+            v-model.trim="updateDialog.form.nickname"
             placeholder="请输入昵称"
           />
         </el-form-item>
@@ -228,7 +228,7 @@
           prop="status"
         >
           <el-switch
-            v-model="updateDialog.form.status"
+            v-model.trim="updateDialog.form.status"
             active-text="正常"
             inactive-text="禁用"
           />

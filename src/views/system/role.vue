@@ -12,7 +12,7 @@
         prop="name"
       >
         <el-input
-          v-model="table.form.name"
+          v-model.trim="table.form.name"
           placeholder="角色名称"
           clearable
           @clear="doSearch"
@@ -24,7 +24,7 @@
         prop="keyword"
       >
         <el-input
-          v-model="table.form.keyword"
+          v-model.trim="table.form.keyword"
           placeholder="关键字"
           clearable
           @clear="doSearch"
@@ -36,7 +36,7 @@
         prop="status"
       >
         <el-select
-          v-model="table.form.status"
+          v-model.trim="table.form.status"
           clearable
           placeholder="角色状态"
         >
@@ -57,7 +57,7 @@
         prop="creator"
       >
         <el-input
-          v-model="table.form.creator"
+          v-model.trim="table.form.creator"
           placeholder="创建人"
           clearable
           @clear="doSearch"
@@ -128,7 +128,7 @@
         >
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.status"
+              v-model.trim="scope.row.status"
               @change="handleStatusChange(scope.row)"
             />
           </template>
@@ -193,7 +193,7 @@
           prop="name"
         >
           <el-input
-            v-model="updateDialog.form.name"
+            v-model.trim="updateDialog.form.name"
             placeholder="请输入角色名称"
           />
         </el-form-item>
@@ -202,7 +202,7 @@
           prop="keyword"
         >
           <el-input
-            v-model="updateDialog.form.keyword"
+            v-model.trim="updateDialog.form.keyword"
             placeholder="请输入关键字"
           />
         </el-form-item>
@@ -211,7 +211,7 @@
           prop="status"
         >
           <el-switch
-            v-model="updateDialog.form.status"
+            v-model.trim="updateDialog.form.status"
             active-text="正常"
             inactive-text="禁用"
           />
@@ -221,7 +221,7 @@
           prop="desc"
         >
           <el-input
-            v-model="updateDialog.form.desc"
+            v-model.trim="updateDialog.form.desc"
             type="textarea"
             placeholder="请输入内容"
           />
@@ -250,7 +250,7 @@
       custom-class="role-dialog"
       width="500px"
     >
-      <el-tabs v-model="roleDialog.tab.activeName">
+      <el-tabs v-model.trim="roleDialog.tab.activeName">
         <el-tab-pane
           label="菜单权限"
           name="menu"

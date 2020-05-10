@@ -73,7 +73,7 @@
         >
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.visible"
+              v-model.trim="scope.row.visible"
               @change="handleVisibleChange(scope.row)"
             />
           </template>
@@ -86,7 +86,7 @@
         >
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.breadcrumb"
+              v-model.trim="scope.row.breadcrumb"
               @change="handleBreadcrumbChange(scope.row)"
             />
           </template>
@@ -99,7 +99,7 @@
         >
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.status"
+              v-model.trim="scope.row.status"
               @change="handleStatusChange(scope.row)"
             />
           </template>
@@ -151,7 +151,7 @@
           prop="parentId"
         >
           <el-cascader
-            v-model="updateDialog.form.parentIdStr"
+            v-model.trim="updateDialog.form.parentIdStr"
             :options="updateDialog.menuTreeOptions"
             :show-all-levels="false"
             :props="{checkStrictly: true,label: 'title',value: 'id',emitPath: false}"
@@ -165,7 +165,7 @@
           prop="name"
         >
           <el-input
-            v-model="updateDialog.form.name"
+            v-model.trim="updateDialog.form.name"
             placeholder="请输入英文名称"
           />
         </el-form-item>
@@ -174,7 +174,7 @@
           prop="title"
         >
           <el-input
-            v-model="updateDialog.form.title"
+            v-model.trim="updateDialog.form.title"
             placeholder="请输入标题"
           />
         </el-form-item>
@@ -183,7 +183,7 @@
           prop="icon"
         >
           <el-input
-            v-model="updateDialog.form.icon"
+            v-model.trim="updateDialog.form.icon"
             placeholder="请输入图标"
           />
         </el-form-item>
@@ -192,7 +192,7 @@
           prop="sort"
         >
           <el-input-number
-            v-model="updateDialog.form.sort"
+            v-model.trim="updateDialog.form.sort"
             :min="0"
             :max="99"
             label="同级菜单排序序号"
@@ -203,7 +203,7 @@
           prop="rootPath"
         >
           <el-input
-            v-model="updateDialog.form.rootPath"
+            v-model.trim="updateDialog.form.rootPath"
             :disabled="!updateDialog.form.root"
             placeholder="请输入URL根路径"
           />
@@ -214,7 +214,7 @@
           prop="path"
         >
           <el-input
-            v-model="updateDialog.form.path"
+            v-model.trim="updateDialog.form.path"
             placeholder="请输入URL子路径"
           />
         </el-form-item>
@@ -223,7 +223,7 @@
           prop="fullPath"
         >
           <el-input
-            v-model="updateDialog.form.fullPath"
+            v-model.trim="updateDialog.form.fullPath"
             :disabled="true"
           />
         </el-form-item>
@@ -233,7 +233,7 @@
           prop="component"
         >
           <el-input
-            v-model="updateDialog.form.component"
+            v-model.trim="updateDialog.form.component"
             placeholder="请输入组件路径(默认在views目录)"
           />
         </el-form-item>
@@ -242,7 +242,7 @@
           prop="redirect"
         >
           <el-input
-            v-model="updateDialog.form.redirect"
+            v-model.trim="updateDialog.form.redirect"
             placeholder="请输入重定向地址"
           />
         </el-form-item>
@@ -251,7 +251,7 @@
           prop="visible"
         >
           <el-switch
-            v-model="updateDialog.form.visible"
+            v-model.trim="updateDialog.form.visible"
             active-text="可见"
             inactive-text="隐藏"
           />
@@ -261,7 +261,7 @@
           prop="breadcrumb"
         >
           <el-switch
-            v-model="updateDialog.form.breadcrumb"
+            v-model.trim="updateDialog.form.breadcrumb"
             active-text="可见"
             inactive-text="隐藏"
           />
@@ -271,7 +271,7 @@
           prop="status"
         >
           <el-switch
-            v-model="updateDialog.form.status"
+            v-model.trim="updateDialog.form.status"
             active-text="正常"
             inactive-text="禁用"
           />

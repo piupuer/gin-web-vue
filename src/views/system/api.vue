@@ -12,7 +12,7 @@
         prop="path"
       >
         <el-input
-          v-model="table.form.path"
+          v-model.trim="table.form.path"
           placeholder="访问路径"
           clearable
           @clear="doSearch"
@@ -24,7 +24,7 @@
         prop="method"
       >
         <el-select
-          v-model="table.form.method"
+          v-model.trim="table.form.method"
           placeholder="请选择请求方式"
           clearable
           @clear="doSearch"
@@ -43,7 +43,7 @@
         prop="category"
       >
         <el-input
-          v-model="table.form.category"
+          v-model.trim="table.form.category"
           placeholder="所属类别"
           clearable
           @clear="doSearch"
@@ -55,7 +55,7 @@
         prop="creator"
       >
         <el-input
-          v-model="table.form.creator"
+          v-model.trim="table.form.creator"
           placeholder="创建人"
           clearable
           @clear="doSearch"
@@ -189,7 +189,7 @@
           prop="path"
         >
           <el-input
-            v-model="updateDialog.form.path"
+            v-model.trim="updateDialog.form.path"
             placeholder="请输入接口访问路径"
           />
         </el-form-item>
@@ -198,7 +198,7 @@
           prop="category"
         >
           <el-input
-            v-model="updateDialog.form.category"
+            v-model.trim="updateDialog.form.category"
             placeholder="请输入接口所属类别"
           />
         </el-form-item>
@@ -207,7 +207,7 @@
           prop="method"
         >
           <el-select
-            v-model="updateDialog.form.method"
+            v-model.trim="updateDialog.form.method"
             placeholder="请选择请求方式"
           >
             <el-option
@@ -223,7 +223,7 @@
           prop="desc"
         >
           <el-input
-            v-model="updateDialog.form.desc"
+            v-model.trim="updateDialog.form.desc"
             type="textarea"
             placeholder="请输入内容"
           />
