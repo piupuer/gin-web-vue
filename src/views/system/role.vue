@@ -478,7 +478,15 @@ export default class extends Vue {
   }
 
   private async doRoleApiUpdate() {
-    const newApis = (this.$refs.roleApiTree as Tree).getCheckedKeys()
+    const checkedApis = (this.$refs.roleApiTree as Tree).getCheckedKeys()
+    const newApis: any[] = []
+    // 由于根目录为空, 需要去除无效元素
+    for (let i = 0, len = checkedApis.length; i < len; i++) {
+      const api = checkedApis[i]
+      if (api) {
+        newApis.push(api)
+      }
+    }
     const diff = diffArrUpdate(this.roleDialog.tab.checkedApis, newApis)
     if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
       this.$message({
