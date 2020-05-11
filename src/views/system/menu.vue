@@ -490,6 +490,13 @@ export default class extends Vue {
   }
 
   private async resetUpdateForm() {
+    this.$nextTick(() => {
+      // 重置校验信息
+      const form = this.$refs.updateForm as Form
+      if (form) {
+        form.clearValidate()
+      }
+    })
     this.updateDialog.form = JSON.parse(JSON.stringify(this.updateDialog.defaultForm))
   }
 
@@ -515,6 +522,8 @@ export default class extends Vue {
   }
 
   private async handleUpdate(row: any) {
+    // 清理字段
+    this.resetUpdateForm()
     // 弹窗表单赋值
     this.updateDialog.form.id = row.id
     this.updateDialog.form.parentId = row.parentId

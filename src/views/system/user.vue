@@ -471,6 +471,13 @@ export default class extends Vue {
   }
 
   private async resetUpdateForm() {
+    this.$nextTick(() => {
+      // 重置校验信息
+      const form = this.$refs.updateForm as Form
+      if (form) {
+        form.clearValidate()
+      }
+    })
     this.updateDialog.form = JSON.parse(JSON.stringify(this.updateDialog.defaultForm))
   }
 
@@ -514,6 +521,8 @@ export default class extends Vue {
       this.$message.error('读取系统角色信息失败')
       return
     }
+    // 清理字段
+    this.resetUpdateForm()
     // 弹窗表单赋值
     this.updateDialog.form.id = row.id
     this.updateDialog.form.username = row.username
