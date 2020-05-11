@@ -328,6 +328,16 @@ export default class extends Vue {
     }
   }
 
+  private validateKeyword(rule: any, value: string, callback: Function) {
+    if (!/^[a-zA-Z]/.test(value)) {
+      callback(new Error('必须以字母开头, 如a12345'))
+    } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
+      callback(new Error('不允许出现汉字或特殊字符, 如a+,sa、a张三'))
+    } else {
+      callback()
+    }
+  }
+
   private updateDialog: any = {
     loading: false,
     // 类型(0:创建, 1更新)
@@ -354,7 +364,8 @@ export default class extends Vue {
         { required: true, message: '角色名称不能为空', trigger: 'blur' }
       ],
       keyword: [
-        { required: true, message: '关键字不能为空', trigger: 'blur' }
+        { required: true, message: '关键字不能为空', trigger: 'blur' },
+        { validator: this.validateKeyword, trigger: 'blur' }
       ]
     }
   }

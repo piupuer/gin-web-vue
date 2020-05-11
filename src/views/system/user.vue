@@ -312,6 +312,24 @@ export default class extends Vue {
     pageSize: 5
   }
 
+  private validateUsername(rule: any, value: string, callback: Function) {
+    if (!/^[a-zA-Z]/.test(value)) {
+      callback(new Error('必须以字母开头, 如a12345'))
+    } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
+      callback(new Error('不允许出现汉字或特殊字符, 如a+,sa、a张三'))
+    } else {
+      callback()
+    }
+  }
+
+  private validateMobile(rule: any, value: string, callback: Function) {
+    if (!/^[1-9]([0-9]{10})+$/.test(value)) {
+      callback(new Error('手机号格式不正确'))
+    } else {
+      callback()
+    }
+  }
+
   private updateDialog: any = {
     loading: false,
     // 类型(0:创建, 1更新)
@@ -340,11 +358,18 @@ export default class extends Vue {
     // 表单校验
     rules: {
       username: [
-        { required: true, message: '用户名不能为空', trigger: 'blur' }
+        { required: true, message: '用户名不能为空', trigger: 'blur' },
+        { min: 4, message: '用户名至少4个字符', trigger: 'blur' },
+        { max: 20, message: '用户名至多20个字符', trigger: 'blur' },
+        { validator: this.validateUsername, trigger: 'blur' }
+      ],
+      initPassword: [
+        { required: true, message: '用户初始密码不能为空', trigger: 'blur' },
+        { min: 6, message: '用户初始密码至少6个字符', trigger: 'blur' }
       ],
       mobile: [
-        { required: true, message: '手机号不能为空', trigger: 'blur' }
-        // { validator: this.validateMobile, trigger: 'blur' }
+        { required: true, message: '手机号不能为空', trigger: 'blur' },
+        { validator: this.validateMobile, trigger: 'blur' }
       ],
       roleId: [
         { required: true, message: '请为用户绑定角色', trigger: 'blur' }
