@@ -220,6 +220,36 @@
           </el-select>
         </el-form-item>
         <el-form-item
+          v-if="updateDialog.type===0"
+          label="访问授权"
+          prop="showRoleSelect"
+        >
+          <el-switch
+            v-model.trim="updateDialog.form.showRoleSelect"
+          />
+          <el-tag>可避免到角色管理中添加</el-tag>
+        </el-form-item>
+        <el-form-item
+          v-if="updateDialog.form.showRoleSelect"
+          label="绑定角色"
+          prop="roleIds"
+        >
+          <el-select
+            v-model.trim="updateDialog.form.roleIds"
+            clearable
+            filterable
+            multiple
+            placeholder="请选择角色"
+          >
+            <el-option
+              v-for="item in updateDialog.roleSelectOptions"
+              :key="item.id"
+              :label="item.name + '(' + item.desc + ')'"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
           label="说明"
           prop="desc"
         >
@@ -249,11 +279,12 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteApi, createApi, getApis, updateApi } from '@/api/system/apis'
 import { diffObjUpdate } from '@/utils/diff'
+import { getRoles } from '@/api/system/roles'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -307,13 +338,17 @@ export default class extends Vue {
     visible: false,
     // 标题
     title: '',
+    // 角色选择参数
+    roleSelectOptions: [],
     // 默认数据
     defaultForm: {
       id: 0,
       path: '',
       method: '',
       category: '',
-      desc: ''
+      desc: '',
+      showRoleSelect: false,
+      roleIds: []
     },
     // 表单
     form: {},
@@ -451,6 +486,21 @@ export default class extends Vue {
     this.updateDialog.title = '创建新接口'
     // 开启弹窗
     this.updateDialog.visible = true
+  }
+
+  @Watch('updateDialog.form.showRoleSelect')
+  private async showRoleSelectChange() {
+    if (this.updateDialog.form.showRoleSelect) {
+      try {
+        // 读取当前角色
+        const { data } = await getRoles({
+          noPagination: true
+        })
+        this.updateDialog.roleSelectOptions = data.list
+      } catch (e) {
+        this.$message.error('读取系统角色信息失败')
+      }
+    }
   }
 
   private async handleUpdate(row: any) {
