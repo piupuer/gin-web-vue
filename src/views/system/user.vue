@@ -79,6 +79,7 @@
       <el-form-item>
         <el-button
           type="primary"
+          :loading="table.loading"
           @click="doSearch"
         >
           查询
@@ -240,6 +241,7 @@
       >
         <el-button
           type="primary"
+          :loading="updateDialog.loading"
           @click="doUpdate"
         >
           确 定
@@ -272,6 +274,7 @@ export default class extends Vue {
   }
 
   private updateDialog: any = {
+    loading: false,
     // 类型(0:创建, 1更新)
     type: 0,
     // 是否打开
@@ -325,20 +328,23 @@ export default class extends Vue {
 
   private async getData() {
     this.table.loading = true
-    const params: any = {
-      ...this.table.form,
-      pageNum: this.table.pageNum,
-      pageSize: this.table.pageSize
+    try {
+      const params: any = {
+        ...this.table.form,
+        pageNum: this.table.pageNum,
+        pageSize: this.table.pageSize
+      }
+      if (params.status === '') {
+        delete params.status
+      }
+      const { data } = await getUsers(params)
+      this.table.list = data.list
+      this.table.pageNum = data.pageNum
+      this.table.pageSize = data.pageSize
+      this.table.total = data.total
+    } finally {
+      this.table.loading = false
     }
-    if (params.status === '') {
-      delete params.status
-    }
-    const { data } = await getUsers(params)
-    this.table.list = data.list
-    this.table.pageNum = data.pageNum
-    this.table.pageSize = data.pageSize
-    this.table.total = data.total
-    this.table.loading = false
   }
 
   private async doSearch() {
@@ -349,7 +355,12 @@ export default class extends Vue {
     (this.$refs.updateForm as Form).validate(async(valid) => {
       if (valid) {
         if (this.updateDialog.type === 0) {
-          await createUser(this.updateDialog.form)
+          try {
+            this.updateDialog.loading = true
+            await createUser(this.updateDialog.form)
+          } finally {
+            this.updateDialog.loading = false
+          }
         } else {
           const update = diffObjUpdate(this.updateDialog.oldData, this.updateDialog.form)
           // 编号存在则更新, 不存在给出提示
@@ -360,7 +371,12 @@ export default class extends Vue {
             })
             return
           }
-          await updateUser(update.id, update)
+          try {
+            this.updateDialog.loading = true
+            await updateUser(update.id, update)
+          } finally {
+            this.updateDialog.loading = false
+          }
         }
         // 关闭弹窗
         this.updateDialog.visible = false

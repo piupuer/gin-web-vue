@@ -29,6 +29,7 @@
     </el-form-item>
     <el-form-item>
       <el-button
+        :loading="accountForm.loading"
         type="primary"
         @click="doUpdate"
       >
@@ -53,6 +54,7 @@ export default class extends Vue {
   @Prop({ required: true }) private user!: IProfile
 
   private accountForm: any = {
+    loading: false,
     form: {
       nickname: '',
       mobile: '',
@@ -89,14 +91,19 @@ export default class extends Vue {
           })
           return
         }
-        // 更新用户信息
-        await updateUser(update.id, update)
-        this.$notify({
-          title: '恭喜',
-          message: '更新成功',
-          type: 'success',
-          duration: 2000
-        })
+        this.accountForm.loading = true
+        try {
+          // 更新用户信息
+          await updateUser(update.id, update)
+          this.$notify({
+            title: '恭喜',
+            message: '更新成功',
+            type: 'success',
+            duration: 2000
+          })
+        } finally {
+          this.accountForm.loading = false
+        }
         // 重新拉取用户信息
         await UserModule.GetUserInfo()
         this.getData()

@@ -37,6 +37,7 @@
     <el-form-item>
       <el-button
         type="primary"
+        :loading="passwordForm.loading"
         @click="doUpdate"
       >
         {{ $t('profile.submit') }}
@@ -63,6 +64,7 @@ export default class extends Vue {
   }
 
   private passwordForm: any = {
+    loading: false,
     form: {
       oldPassword: '',
       newPassword: '',
@@ -87,13 +89,18 @@ export default class extends Vue {
   private async doUpdate() {
     (this.$refs.passwordForm as Form).validate(async(valid) => {
       if (valid) {
-        await changePwd(this.passwordForm.form)
-        this.$notify({
-          title: '恭喜',
-          message: '修改密码成功',
-          type: 'success',
-          duration: 2000
-        })
+        this.passwordForm.loading = true
+        try {
+          await changePwd(this.passwordForm.form)
+          this.$notify({
+            title: '恭喜',
+            message: '修改密码成功',
+            type: 'success',
+            duration: 2000
+          })
+        } finally {
+          this.passwordForm.loading = false
+        }
       }
     })
   }
