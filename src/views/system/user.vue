@@ -207,12 +207,50 @@
           />
         </el-form-item>
         <el-form-item
+          v-if="updateDialog.type===0"
+          label="初始密码"
+          prop="initPassword"
+        >
+          <el-input
+            v-model.trim="updateDialog.form.initPassword"
+            placeholder="请输入用户初始密码(用于登录系统)"
+          />
+        </el-form-item>
+        <el-form-item
           label="手机号"
           prop="mobile"
         >
           <el-input
             v-model.trim="updateDialog.form.mobile"
             placeholder="请输入手机号"
+          />
+        </el-form-item>
+        <el-form-item
+          label="绑定角色"
+          prop="roleId"
+        >
+          <el-select
+            v-model.trim="updateDialog.form.roleId"
+            clearable
+            filterable
+            placeholder="请为该用户指定角色"
+          >
+            <el-option
+              v-for="item in updateDialog.roleSelectOptions"
+              :key="item.id"
+              :label="item.name + '(' + item.desc + ')'"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="updateDialog.type===1"
+          label="重置密码"
+          prop="newPassword"
+        >
+          <el-input
+            v-model.trim="updateDialog.form.newPassword"
+            placeholder="请输入新的用户密码"
           />
         </el-form-item>
         <el-form-item
@@ -259,6 +297,7 @@ import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteUser, createUser, getUsers, updateUser } from '@/api/system/users'
 import { diffObjUpdate } from '@/utils/diff'
+import { getRoles } from '@/api/system/roles'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -281,14 +320,19 @@ export default class extends Vue {
     visible: false,
     // 标题
     title: '',
+    // 角色选择参数
+    roleSelectOptions: [],
     // 默认数据
     defaultForm: {
       id: 0,
       username: '',
+      initPassword: '',
+      newPassword: '',
       mobile: '',
       nickname: '',
       status: true,
-      creator: ''
+      creator: '',
+      roleId: ''
     },
     // 表单
     form: {},
@@ -300,6 +344,13 @@ export default class extends Vue {
       ],
       mobile: [
         { required: true, message: '手机号不能为空', trigger: 'blur' }
+        // { validator: this.validateMobile, trigger: 'blur' }
+      ],
+      roleId: [
+        { required: true, message: '请为用户绑定角色', trigger: 'blur' }
+      ],
+      newPassword: [
+        { min: 6, message: '重置用户密码至少6个字符', trigger: 'blur' }
       ]
     }
   }
@@ -409,6 +460,16 @@ export default class extends Vue {
       // 清理字段
       this.resetUpdateForm()
     }
+    try {
+      // 读取当前角色
+      const { data } = await getRoles({
+        noPagination: true
+      })
+      this.updateDialog.roleSelectOptions = data.list
+    } catch (e) {
+      this.$message.error('读取系统角色信息失败')
+      return
+    }
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
@@ -418,12 +479,23 @@ export default class extends Vue {
   }
 
   private async handleUpdate(row: any) {
+    try {
+      // 读取当前角色
+      const { data } = await getRoles({
+        noPagination: true
+      })
+      this.updateDialog.roleSelectOptions = data.list
+    } catch (e) {
+      this.$message.error('读取系统角色信息失败')
+      return
+    }
     // 弹窗表单赋值
     this.updateDialog.form.id = row.id
     this.updateDialog.form.username = row.username
     this.updateDialog.form.mobile = row.mobile
     this.updateDialog.form.nickname = row.nickname
     this.updateDialog.form.status = row.status
+    this.updateDialog.form.roleId = row.roleId
     // 记录旧数据
     this.updateDialog.oldData = JSON.parse(JSON.stringify(this.updateDialog.form))
     // 修改类型
