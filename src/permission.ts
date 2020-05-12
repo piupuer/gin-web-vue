@@ -41,7 +41,7 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
           // Generate accessible routes map based on role
           await PermissionModule.GenerateRoutes(roles)
           // 动态加载404页面, 如果加到constantRoutes会导致菜单刷新未加载完菜单, 先跳转到404
-          asyncRoutes.push({
+          PermissionModule.dynamicRoutes.push({
             path: '*',
             redirect: '/404',
             meta: { hidden: true }

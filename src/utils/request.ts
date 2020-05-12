@@ -26,35 +26,36 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     // Some example codes here:
-    // code == 20000: success
-    // code == 50001: invalid access token
-    // code == 50002: already login in other place
-    // code == 50003: access token expired
-    // code == 50004: invalid user (user not exist)
-    // code == 50005: username or password is incorrect
-    // You can change this part for your own usage.
+    // code == 201: 请求成功
+    // code == 401: 登录失效
     const res = response.data
     if (res.code !== 201) {
-      Message({
-        message: res.msg || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      let msg = '网络异常, 请稍后再试'
+      if (res.code === 401) {
+        msg = '登录超时'
         MessageBox.confirm(
-          '你已被登出，可以取消继续留在该页面，或者重新登录',
+          '登录超时, 重新登录或继续停留？',
           '确定登出',
           {
             confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
+            cancelButtonText: '继续停留',
             type: 'warning'
           }
         ).then(() => {
           UserModule.ResetToken()
           location.reload() // To prevent bugs from vue-router
         })
+      } else {
+        if (res.msg) {
+          msg = res.msg
+        }
+        Message({
+          message: msg,
+          type: 'error',
+          duration: 5 * 1000
+        })
       }
-      return Promise.reject(new Error(res.message || 'Error'))
+      return Promise.reject(new Error(msg))
     } else {
       return response.data
     }
