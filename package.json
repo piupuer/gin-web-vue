@@ -1,8 +1,8 @@
 {
-  "name": "vue-typescript-admin-template",
+  "name": "gin-web-vue",
   "version": "1.0.0",
   "private": true,
-  "author": "Chong Guo <armourcy@gmail.com>",
+  "author": "piupuer <piupuer@gmail.com>",
   "scripts": {
     "serve": "concurrently \"npm:mock\" \"vue-cli-service serve\"",
     "build:prod": "vue-cli-service build",
@@ -119,7 +119,7 @@
     "webpack": "^4.42.1"
   },
   "bugs": {
-    "url": "https://github.com/armour/vue-typescript-admin-template/issues"
+    "url": "https://github.com/piupuer/gin-web-vue/issues"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
@@ -138,6 +138,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/armour/vue-typescript-admin-template.git"
+    "url": "git+https://github.com/piupuer/gin-web-vue.git"
   }
 }
