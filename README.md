@@ -21,7 +21,7 @@ git clone https://github.com/piupuer/gin-web-vue
 cd gin-web-vue
 # 安装依赖文件, 可以使用cnpm镜像加速
 # npm install -g cnpm --registry=https://registry.npm.taobao.org
-# cnpm
+# cnpm install
 npm install
 # 本地调试
 npm run serve
