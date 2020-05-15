@@ -7,20 +7,18 @@ interface ISettings {
   errorLog: string[] // The env to enable the errorlog component, default 'production' only
   sidebarTextTheme: boolean // If true, will change active text color for sidebar based on theme
   devServerPort: number // Port number for webpack-dev-server
-  mockServerPort: number // Port number for mock server
 }
 
 // You can customize below settings :)
 const settings: ISettings = {
-  title: 'Vue Typescript Admin',
+  title: 'Gin Web',
   showSettings: true,
   showTagsView: true,
   fixedHeader: false,
   showSidebarLogo: false,
   errorLog: ['production'],
   sidebarTextTheme: true,
-  devServerPort: 9998,
-  mockServerPort: 9999
+  devServerPort: 8888
 }
 
 export default settings
