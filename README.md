@@ -19,12 +19,14 @@
 ```
 git clone https://github.com/piupuer/gin-web-vue
 cd gin-web-vue
-# 安装依赖文件, 不建议用npm/cnpm
-yarn install
+# 安装依赖文件, 可以使用cnpm镜像加速
+# npm install -g cnpm --registry=https://registry.npm.taobao.org
+# cnpm
+npm install
 # 本地调试
-yarn run serve
+npm run serve
 # 正式发布
-yarn run build:prod
+npm run build:prod
 ```
 
 > 启动成功之后, 可在浏览器中输入: [http://127.0.0.1:8888](http://127.0.0.1:8888), 若不能访问请检查node依赖是否安装成功
