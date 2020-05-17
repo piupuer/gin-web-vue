@@ -4,12 +4,12 @@ const path = require('path')
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
 // For example, on Mac: sudo npm run / sudo yarn
-const devServerPort = 8888 // TODO: get this variable from setting.ts
-const mockServerPort = 9128 // TODO: get this variable from setting.ts
-const name = 'Vue Typescript Admin' // TODO: get this variable from setting.ts
+const devServerPort = 10001 // TODO: get this variable from setting.ts
+const name = 'Gin Web Vue' // TODO: get this variable from setting.ts
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/vue-typescript-admin-template/' : '/',
+  // 发布时是否需要添加path前缀
+  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
@@ -19,19 +19,7 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    progress: false,
-    proxy: {
-      // change xxx-api/login => /mock-api/v1/login
-      // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost:${mockServerPort}/mock-api/v1`,
-        changeOrigin: true, // needed for virtual hosted sites
-        ws: true, // proxy websockets
-        pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
-        }
-      }
-    }
+    progress: false
   },
   pwa: {
     name: name,

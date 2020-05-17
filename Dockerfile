@@ -36,7 +36,7 @@ COPY ./gin-web-vue/nginx/nginx.conf /etc/nginx/
 COPY --from=gin-web-vue /app/gin-web-vue/dist /usr/share/nginx/html
 
 # 暴露端口
-EXPOSE 80
+EXPOSE 10001
 
 # 注: CMD不同于RUN, CMD用于指定在容器启动时所要执行的命令, 而RUN用于指定镜像构建时所要执行的命令.
 #     RUN指令创建的中间镜像会被缓存, 并会在下次构建中使用.
