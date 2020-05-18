@@ -2,6 +2,11 @@
 
 <div align="center">
 由gin + gorm + jwt + casbin组合实现的RBAC权限管理脚手架前端Vue Typescript版本, 搭建完成即可快速、高效投入业务开发
+<p align="center">
+<img src="https://img.shields.io/badge/Vue-2.6.11-brightgreen" alt="Vue version"/>
+<img src="https://img.shields.io/badge/Element-ui-2.13.0-brightgreen" alt="Element-ui version"/>
+<img src="https://img.shields.io/github/license/piupuer/gin-web-vue" alt="License"/>
+</p>
 </div>
 
 ## 默认菜单
