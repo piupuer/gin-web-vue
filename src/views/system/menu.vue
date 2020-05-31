@@ -445,6 +445,8 @@ export default class extends Vue {
             path: this.updateDialog.form.fullPath
           }
         }
+        // 暂存parentId, 避免delete params.parentIdStr改变跟随变化
+        const parentId = params.parentId
         // 以下参数不提交
         delete params.parentIdStr
         delete params.rootPath
@@ -452,7 +454,10 @@ export default class extends Vue {
         if (this.updateDialog.type === 0) {
           try {
             this.updateDialog.loading = true
-            await createMenu(params)
+            await createMenu({
+              ...params,
+              parentId
+            })
           } finally {
             this.updateDialog.loading = false
           }
