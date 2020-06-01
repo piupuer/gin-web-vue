@@ -384,7 +384,8 @@ export default class extends Vue {
       menus: [],
       checkedMenus: [],
       // 权限api集合
-      apis: []
+      apis: [],
+      checkedApis: []
     }
   }
 
