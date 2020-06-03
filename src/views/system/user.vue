@@ -493,7 +493,7 @@ export default class extends Vue {
       this.resetUpdateForm()
     }
     try {
-      // 读取当前角色
+      // 读取所有角色
       const { data } = await getRoles({
         noPagination: true
       })

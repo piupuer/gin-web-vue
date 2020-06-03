@@ -7,10 +7,24 @@ export const getWorkflows = (params: any) =>
     params
   })
 
+export const getWorkflowLines = (params: any) =>
+  request({
+    url: '/workflow/line/list',
+    method: 'get',
+    params
+  })
+
 export const createWorkflow = (data: any) =>
   request({
     url: '/workflow/create',
     method: 'post',
+    data
+  })
+
+export const updateWorkflowLine = (data: any) =>
+  request({
+    url: '/workflow/line/update',
+    method: 'patch',
     data
   })
 

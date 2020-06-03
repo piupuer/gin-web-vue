@@ -1,5 +1,7 @@
 // 数据比较工具包
 
+import AppMain from '@/layout/components/AppMain.vue'
+
 const jsondiffpatch = require('jsondiffpatch')
 
 // 比较对象中产生更新的字段, 不支持深层对象
@@ -29,7 +31,7 @@ export const diffArrUpdate = (oldArr: any, newArr: any, key = 'id') => {
   const instance = jsondiffpatch.create({
     objectHash: (obj: any) => {
       return obj[key]
-    }
+    },
   })
   if (!Array.isArray(oldArr) || !Array.isArray(newArr)) {
     throw new Error('非数组类型无法比较')
@@ -38,8 +40,9 @@ export const diffArrUpdate = (oldArr: any, newArr: any, key = 'id') => {
   const res: any = {
     create: [],
     update: [],
-    delete: []
+    delete: [],
   }
+  console.log(delta)
   for (const key1 in delta) {
     const item = delta[key1]
     if (Array.isArray(item)) {
@@ -55,9 +58,12 @@ export const diffArrUpdate = (oldArr: any, newArr: any, key = 'id') => {
       }
     } else if (item.constructor === Object) {
       const newItem: any = {}
-      for (const key2 in item) {
-        const item2 = item[key2]
-        newItem[key2] = item2[1]
+      // 对象非空说明数据有更新
+      if (Object.keys(item).length > 0){
+        for (const key2 in item) {
+          // 由于是深层对象, 只记录全部更新, 不细分create/update/delete
+          newItem[key2] = newArr[Number(key1)][key2]
+        }
       }
       // 将更新的数据对应的id记录下来
       newItem[key] = newArr[Number(key1)][key]

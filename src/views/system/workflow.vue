@@ -216,9 +216,15 @@
           fixed="right"
           label="操作"
           align="center"
-          width="180"
+          width="240"
         >
           <template slot-scope="scope">
+            <el-button
+              type="primary"
+              @click="handleLine(scope.row)"
+            >
+              流水线
+            </el-button>
             <el-button
               size="mini"
               @click="handleUpdate(scope.row)"
@@ -352,14 +358,140 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <!-- 流水线对话框 -->
+    <el-dialog
+      :title="lineDialog.title"
+      :visible.sync="lineDialog.visible"
+      width="500px"
+    >
+      <el-form
+        v-for="(node, index) in lineDialog.form.nodes"
+        ref="lineForm"
+        :key="index"
+        :data-ref="'lineForm' + index"
+        class="line-node-form"
+        :rules="lineDialog.rules"
+        :model="node"
+      >
+        <div class="node-form-title">
+          <span>第{{ index+1 }}级审批：</span>
+          <i
+            class="el-icon-delete node-form-delete"
+            @click="lineNodeDelete(index)"
+          />
+        </div>
+
+        <el-form-item
+          label="节点名称"
+          prop="name"
+        >
+          <el-input
+            v-model.trim="node.name"
+            placeholder="请输入当前审批节点名称"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item
+          label="类型"
+          prop="roleBase"
+        >
+          <el-switch
+            v-model.trim="node.roleBase"
+            active-text="指定角色"
+            inactive-text="指定用户"
+            @change="handleRoleBaseChange(index)"
+          />
+        </el-form-item>
+        <el-form-item
+          v-if="node.roleBase"
+          label="角色"
+          prop="roleId"
+        >
+          <el-select
+            v-model="node.roleId"
+            filterable
+            default-first-option
+            placeholder="请选择审批人所属角色"
+          >
+            <el-option
+              v-for="item in node.roleSelectOptions"
+              :key="item.id"
+              :label="item.name + '(' + item.desc + ')'"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-else
+          label="用户"
+          prop="userIds"
+        >
+          <el-select
+            v-model="node.userIds"
+            multiple
+            filterable
+            default-first-option
+            placeholder="请选择具体审批人"
+          >
+            <el-option
+              v-for="item in node.userSelectOptions"
+              :key="item.id"
+              :label="item.nickname + '(用户名: ' + item.username + ', 手机号: ' + item.mobile + ')'"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="编辑权限"
+          prop="edit"
+        >
+          <el-switch
+            v-model.trim="node.edit"
+            active-text="开启"
+            inactive-text="关闭"
+          />
+        </el-form-item>
+      </el-form>
+      <div class="node-form-plus-box">
+        <i
+          class="el-icon-circle-plus-outline node-form-plus"
+          @click="lineNodeCreate"
+        />
+      </div>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="primary"
+          :loading="lineDialog.loading"
+          @click="doLine"
+        >
+          确 定
+        </el-button>
+        <el-button @click="cancelLine">
+          取 消
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteWorkflow, createWorkflow, getWorkflows, updateWorkflow } from '@/api/system/workflows'
-import { diffObjUpdate } from '@/utils/diff'
+import {
+  batchDeleteWorkflow,
+  createWorkflow,
+  getWorkflowLines,
+  getWorkflows,
+  updateWorkflow,
+  updateWorkflowLine
+} from '@/api/system/workflows'
+import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
+import { getRoles } from '@/api/system/roles'
+import { getUsers } from '@/api/system/users'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -371,7 +503,14 @@ import { diffObjUpdate } from '@/utils/diff'
 export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
-    pageSize: 5
+    pageSize: 5,
+    lineNode: {
+      roleBase: true,
+      name: '',
+      edit: true,
+      roleId: '',
+      userIds: []
+    }
   }
 
   private updateDialog: any = {
@@ -409,6 +548,38 @@ export default class extends Vue {
       ],
       targetCategory: [
         { required: true, message: '目标类别不能为空', trigger: 'blur' }
+      ]
+    }
+  }
+
+  private lineDialog: any = {
+    loading: false,
+    // 是否打开
+    visible: false,
+    // 标题
+    title: '流水线配置',
+    // 角色选择参数
+    roleSelectOptions: [],
+    // 用户选择参数
+    userSelectOptions: [],
+    // 默认数据
+    defaultForm: {
+      flowId: 0,
+      nodes: []
+    },
+    // 表单
+    form: {},
+    oldData: {},
+    // 表单校验
+    rules: {
+      name: [
+        { required: true, message: '节点名称不能为空(尽量简单通俗易懂)', trigger: 'blur' }
+      ],
+      roleId: [
+        { required: true, message: '审批角色不能为空', trigger: 'blur' }
+      ],
+      userIds: [
+        { required: true, message: '审批用户不能为空', trigger: 'blur' }
       ]
     }
   }
@@ -520,6 +691,19 @@ export default class extends Vue {
     this.updateDialog.form = JSON.parse(JSON.stringify(this.updateDialog.defaultForm))
   }
 
+  private async resetLineForm() {
+    this.$nextTick(() => {
+      const len = this.lineDialog.form.nodes.length
+      for (let i = 0; i < len; i++) {
+        const form: any = this.$refs.lineForm
+        if (form[i] && form[i].clearValidate) {
+          form[i].clearValidate()
+        }
+      }
+    })
+    this.lineDialog.form = JSON.parse(JSON.stringify(this.lineDialog.defaultForm))
+  }
+
   private async cancelUpdate() {
     // 关闭弹窗
     this.updateDialog.visible = false
@@ -559,6 +743,173 @@ export default class extends Vue {
     this.updateDialog.title = '修改流程信息'
     // 开启弹窗
     this.updateDialog.visible = true
+  }
+
+  private async handleLine(row: any) {
+    // 清理字段
+    this.resetLineForm()
+    try {
+      // 读取所有角色
+      const { data } = await getRoles({
+        noPagination: true
+      })
+      this.lineDialog.roleSelectOptions = data.list
+    } catch (e) {
+      this.$message.error('读取系统角色信息失败')
+      return
+    }
+    try {
+      // 读取所有用户
+      const { data } = await getUsers({
+        noPagination: true
+      })
+      this.lineDialog.userSelectOptions = data.list
+    } catch (e) {
+      this.$message.error('读取系统用户信息失败')
+      return
+    }
+    try {
+      // 读取所有流水线
+      const { data } = await getWorkflowLines({
+        flowId: row.id,
+        noPagination: true
+      })
+      const nodes: any [] = []
+      for (let i = 0, len = data.list.length; i < len; i++) {
+        const line = data.list[i]
+        if (line.nodes && line.nodes.length > 0) {
+          // 现在取第一个节点即可
+          const currentNode = line.nodes[0]
+          const lineNode = JSON.parse(JSON.stringify(this.defaultConfig.lineNode))
+          if (currentNode.roleId > 0) {
+            lineNode.roleId = currentNode.roleId
+          } else {
+            lineNode.roleBase = false
+            // 将用户转为id集合
+            const userIds: any[] = []
+            for (let j = 0, len2 = currentNode.users.length; j < len2; j++) {
+              userIds.push(currentNode.users[j].id)
+            }
+            lineNode.userIds = userIds
+          }
+          lineNode.id = currentNode.id
+          lineNode.name = currentNode.name
+          lineNode.edit = currentNode.edit
+          nodes.push({
+            ...lineNode,
+            roleSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.roleSelectOptions)),
+            userSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.userSelectOptions))
+          })
+        }
+      }
+      this.lineDialog.form.nodes = nodes
+    } catch (e) {
+      this.$message.error('读取流水线信息失败')
+      return
+    }
+    // 弹窗表单赋值
+    this.lineDialog.form.flowId = row.id
+    // 记录旧数据
+    this.lineDialog.oldData = JSON.parse(JSON.stringify(this.lineDialog.form))
+    // 开启弹窗
+    this.lineDialog.visible = true
+  }
+
+  // 改变角色/用户类型
+  private async handleRoleBaseChange(index: number) {
+    const roleBase = this.lineDialog.form.nodes[index].roleBase
+    if (roleBase) {
+      // 选中角色, 清空userIds
+      this.lineDialog.form.nodes[index].userIds = []
+    } else {
+      // 选中用户, 清空role
+      this.lineDialog.form.nodes[index].roleId = ''
+    }
+  }
+
+  private async lineNodeCreate() {
+    // 新增元素
+    this.lineDialog.form.nodes.push({
+      ...this.defaultConfig.lineNode,
+      roleSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.roleSelectOptions)),
+      userSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.userSelectOptions))
+    })
+  }
+
+  private async lineNodeDelete(index: number) {
+    // 移除元素
+    this.lineDialog.form.nodes.splice(index, 1)
+  }
+
+  private async doLine() {
+    const len = this.lineDialog.form.nodes.length
+    // 校验所有表单, 一个不通过都不提交数据
+    let validCount = 0
+    for (let i = 0; i < len; i++) {
+      const form: any = this.$refs.lineForm
+      if (form[i] && form[i].validate) {
+        form[i].validate(async(valid: boolean) => {
+          if (valid) {
+            validCount++
+          }
+        })
+      }
+    }
+    if (validCount === len) {
+      const diff = diffArrUpdate(this.lineDialog.oldData.nodes, this.lineDialog.form.nodes)
+      if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: '数据没有发生变化, 请重新输入~'
+        })
+        return
+      }
+      // roleId为空时设置为0
+      for (let i = 0, l1 = diff.create.length; i < l1; i++) {
+        if (diff.create[i].roleId === '') {
+          diff.create[i].roleId = 0
+        }
+      }
+      for (let j = 0, l2 = diff.update.length; j < l2; j++) {
+        if (diff.update[j].roleId === '') {
+          diff.update[j].roleId = 0
+        }
+      }
+      for (let k = 0, l3 = diff.delete.length; k < l3; k++) {
+        if (diff.delete[k].roleId === '') {
+          diff.delete[k].roleId = 0
+        }
+      }
+      // 构建参数
+      const params = {
+        flowId: this.lineDialog.form.flowId,
+        ...diff
+      }
+      console.log(params)
+      try {
+        this.lineDialog.loading = true
+        await updateWorkflowLine(params)
+      } finally {
+        this.lineDialog.loading = false
+      }
+      // 关闭弹窗
+      this.lineDialog.visible = false
+      // 重新查询
+      this.getData()
+      // 清理字段
+      this.resetLineForm()
+      this.$notify({
+        title: '恭喜',
+        message: `${this.lineDialog.type === 0 ? '创建' : '更新'}流程流水线成功`,
+        type: 'success',
+        duration: 2000
+      })
+    }
+  }
+
+  private async cancelLine() {
+    // 关闭弹窗
+    this.lineDialog.visible = false
   }
 
   private handleDelete(row: any) {
@@ -666,6 +1017,31 @@ export default class extends Vue {
   .app-container {
     .el-row {
       margin-bottom: 15px;
+    }
+    .line-node-form {
+      margin-top: 15px;
+      border-radius: 5px;
+      border: 1px dashed #efefef;
+      .node-form-title {
+        margin: 15px 15px 0 15px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #666;
+      }
+      .el-form-item {
+        margin: 10px 20px;
+      }
+      .node-form-delete {
+        float: right;
+      }
+    }
+    .node-form-delete, .node-form-plus {
+      cursor: pointer;
+    }
+    .node-form-plus-box {
+      margin-top: 20px;
+      font-size: 25px;
+      text-align: center;
     }
   }
 </style>
