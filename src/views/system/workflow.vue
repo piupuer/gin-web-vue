@@ -777,9 +777,9 @@ export default class extends Vue {
       const nodes: any [] = []
       for (let i = 0, len = data.list.length; i < len; i++) {
         const line = data.list[i]
-        if (line.nodes && line.nodes.length > 0) {
-          // 现在取第一个节点即可
-          const currentNode = line.nodes[0]
+        if (line.node) {
+          // 获取流水线节点
+          const currentNode = line.node
           const lineNode = JSON.parse(JSON.stringify(this.defaultConfig.lineNode))
           if (currentNode.roleId > 0) {
             lineNode.roleId = currentNode.roleId
@@ -787,8 +787,8 @@ export default class extends Vue {
             lineNode.roleBase = false
             // 将用户转为id集合
             const userIds: any[] = []
-            for (let j = 0, len2 = currentNode.users.length; j < len2; j++) {
-              userIds.push(currentNode.users[j].id)
+            for (let j = 0, len2 = currentNode.userIds.length; j < len2; j++) {
+              userIds.push(currentNode.userIds[j])
             }
             lineNode.userIds = userIds
           }
@@ -885,7 +885,6 @@ export default class extends Vue {
         flowId: this.lineDialog.form.flowId,
         ...diff
       }
-      console.log(params)
       try {
         this.lineDialog.loading = true
         await updateWorkflowLine(params)

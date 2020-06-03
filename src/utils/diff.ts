@@ -42,7 +42,6 @@ export const diffArrUpdate = (oldArr: any, newArr: any, key = 'id') => {
     update: [],
     delete: [],
   }
-  console.log(delta)
   for (const key1 in delta) {
     const item = delta[key1]
     if (Array.isArray(item)) {
