@@ -101,9 +101,16 @@
           fixed="right"
           label="操作"
           align="center"
-          width="180"
+          width="260"
         >
           <template slot-scope="scope">
+            <el-button
+              type="primary"
+              :loading="table.approvalLoading"
+              @click="handleApproval(scope.row)"
+            >
+              审批记录
+            </el-button>
             <el-button
               size="mini"
               @click="handleUpdate(scope.row)"
@@ -171,13 +178,46 @@
         </el-button>
       </div>
     </el-dialog>
+    <!-- 审批记录对话框 -->
+    <el-dialog
+      :title="approvalDialog.title"
+      :visible.sync="approvalDialog.visible"
+      width="500px"
+    >
+      <el-steps
+        :active="approvalDialog.stepsActive"
+        :align-center="true"
+        :space="80"
+        direction="vertical"
+        finish-status="success"
+      >
+        <el-step
+          v-for="(item, index) in approvalDialog.steps"
+          :key="index"
+          :title="item.title"
+          :status="item.status"
+          :description="item.description"
+        />
+      </el-steps>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="primary"
+          @click="approvalDialog.visible=false"
+        >
+          确 定
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteLeave, createLeave, getLeaves, updateLeave } from '@/api/test/leaves'
+import { batchDeleteLeave, createLeave, getApprovalLeaves, getLeaves, updateLeave } from '@/api/test/leaves'
 import { diffObjUpdate } from '@/utils/diff'
 
 @Component({
@@ -243,8 +283,19 @@ export default class extends Vue {
     }
   }
 
+  private approvalDialog: any = {
+    // 是否打开
+    visible: false,
+    // 标题
+    title: '审批记录',
+    // 历史步骤
+    stepsActive: 0,
+    steps: []
+  }
+
   private table: any = {
     loading: false,
+    approvalLoading: false,
     batchDeleteBtnDisabled: true,
     selection: [],
     list: [],
@@ -361,6 +412,57 @@ export default class extends Vue {
     this.updateDialog.visible = true
   }
 
+  private async handleApproval(row: any) {
+    this.table.approvalLoading = true
+    try {
+      const { data } = await getApprovalLeaves(row.id)
+      this.approvalDialog.stepsActive = data.list.length - 1
+      const logs: any [] = []
+      for (let i = 0, len = data.list.length; i < len; i++) {
+        const item = data.list[i].log
+        if (i === 0) {
+          logs.push({
+            title: item.approvalOpinion,
+            description: item.createdAt,
+            status: 'success'
+          })
+        } else if (i < len - 1 || item.status > 0) {
+          let status = 'success'
+          let description = item.updatedAt
+          if (item.status === 2) {
+            status = 'error'
+            if (item.approvalOpinion !== '') {
+              description = `拒绝原因: ${item.approvalOpinion}, 时间: ${item.updatedAt}`
+            }
+          } else if (item.status === 3) {
+            status = 'error'
+          } else if (item.status === 4) {
+            status = 'process'
+          } else if (item.status === 5) {
+            status = 'finish'
+          }
+          logs.push({
+            title: `${item.approvalUserNickname}[${item.approvalUsername}]${item.approvalOpinion}`,
+            description,
+            status
+          })
+        } else {
+          logs.push({
+            title: '待审批',
+            description: '请耐心等待~',
+            status: 'wait'
+          })
+        }
+      }
+      this.approvalDialog.steps = logs
+      this.approvalDialog.visible = true
+    } catch (e) {
+      this.$message.error('读取审批记录失败')
+    } finally {
+      this.table.approvalLoading = false
+    }
+  }
+
   private async handleUpdate(row: any) {
     // 清理字段
     this.resetUpdateForm()
@@ -461,6 +563,10 @@ export default class extends Vue {
   .app-container {
     .el-row {
       margin-bottom: 15px;
+    }
+    .el-steps {
+      width: 50%;
+      margin: 0 auto;
     }
   }
 </style>

@@ -7,6 +7,12 @@ export const getLeaves = (params: any) =>
     params
   })
 
+export const getApprovalLeaves = (id: number) =>
+  request({
+    url: `/leave/approval/list/${id}`,
+    method: 'get'
+  })
+
 export const createLeave = (data: any) =>
   request({
     url: '/leave/create',
