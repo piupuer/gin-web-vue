@@ -14,6 +14,13 @@ export const getWorkflowLines = (params: any) =>
     params
   })
 
+export const getWorkflowApprovings = (params: any) =>
+  request({
+    url: '/workflow/approving/list',
+    method: 'get',
+    params
+  })
+
 export const createWorkflow = (data: any) =>
   request({
     url: '/workflow/create',
@@ -31,6 +38,13 @@ export const updateWorkflowLine = (data: any) =>
 export const updateWorkflow = (id: number, data: any) =>
   request({
     url: `/workflow/update/${id}`,
+    method: 'patch',
+    data
+  })
+
+export const updateWorkflowLogApproval = (data: any) =>
+  request({
+    url: '/workflow/log/approval',
     method: 'patch',
     data
   })

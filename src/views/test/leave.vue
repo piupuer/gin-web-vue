@@ -548,7 +548,7 @@ export default class extends Vue {
   }
 
   // 获取审批状态对应的tag label
-  private getStatusTagLabel(status: string) {
+  private getStatusTagLabel(status: number) {
     for (let i = 0, len = this.defaultConfig.status.length; i < len; i++) {
       const item = this.defaultConfig.status[i]
       if (status === item.name) {
