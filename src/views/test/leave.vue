@@ -442,7 +442,7 @@ export default class extends Vue {
             status = 'finish'
           }
           logs.push({
-            title: `${item.approvalUserNickname}[${item.approvalUsername}]${item.approvalOpinion}`,
+            title: `${item.approvalUserNickname}[${item.approvalUsername}]${item.statusStr}`,
             description,
             status
           })

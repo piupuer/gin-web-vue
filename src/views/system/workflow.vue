@@ -366,29 +366,29 @@
       width="500px"
     >
       <el-form
-        v-for="(node, index) in lineDialog.form.nodes"
+        v-for="(line, index) in lineDialog.form.lines"
         ref="lineForm"
         :key="index"
         :data-ref="'lineForm' + index"
-        class="line-node-form"
+        class="line-form"
         :rules="lineDialog.rules"
-        :model="node"
+        :model="line"
       >
-        <div class="node-form-title">
+        <div class="line-form-title">
           <span>第{{ index+1 }}级审批：</span>
           <i
-            class="el-icon-delete node-form-delete"
-            @click="lineNodeDelete(index)"
+            class="el-icon-delete line-form-delete"
+            @click="lineDelete(index)"
           />
         </div>
 
         <el-form-item
-          label="节点名称"
+          label="名称"
           prop="name"
         >
           <el-input
-            v-model.trim="node.name"
-            placeholder="请输入当前审批节点名称"
+            v-model.trim="line.name"
+            placeholder="请输入当前审批流水线名称"
             clearable
           />
         </el-form-item>
@@ -397,25 +397,25 @@
           prop="roleBase"
         >
           <el-switch
-            v-model.trim="node.roleBase"
+            v-model.trim="line.roleBase"
             active-text="指定角色"
             inactive-text="指定用户"
             @change="handleRoleBaseChange(index)"
           />
         </el-form-item>
         <el-form-item
-          v-if="node.roleBase"
+          v-if="line.roleBase"
           label="角色"
           prop="roleId"
         >
           <el-select
-            v-model="node.roleId"
+            v-model="line.roleId"
             filterable
             default-first-option
             placeholder="请选择审批人所属角色"
           >
             <el-option
-              v-for="item in node.roleSelectOptions"
+              v-for="item in line.roleSelectOptions"
               :key="item.id"
               :label="item.name + '(' + item.desc + ')'"
               :value="item.id"
@@ -428,14 +428,14 @@
           prop="userIds"
         >
           <el-select
-            v-model="node.userIds"
+            v-model="line.userIds"
             multiple
             filterable
             default-first-option
             placeholder="请选择具体审批人"
           >
             <el-option
-              v-for="item in node.userSelectOptions"
+              v-for="item in line.userSelectOptions"
               :key="item.id"
               :label="item.nickname + '(用户名: ' + item.username + ', 手机号: ' + item.mobile + ')'"
               :value="item.id"
@@ -447,16 +447,16 @@
           prop="edit"
         >
           <el-switch
-            v-model.trim="node.edit"
+            v-model.trim="line.edit"
             active-text="开启"
             inactive-text="关闭"
           />
         </el-form-item>
       </el-form>
-      <div class="node-form-plus-box">
+      <div class="line-form-plus-box">
         <i
-          class="el-icon-circle-plus-outline node-form-plus"
-          @click="lineNodeCreate"
+          class="el-icon-circle-plus-outline line-form-plus"
+          @click="lineCreate"
         />
       </div>
       <div
@@ -504,7 +504,7 @@ export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
     pageSize: 5,
-    lineNode: {
+    line: {
       roleBase: true,
       name: '',
       edit: true,
@@ -565,7 +565,7 @@ export default class extends Vue {
     // 默认数据
     defaultForm: {
       flowId: 0,
-      nodes: []
+      lines: []
     },
     // 表单
     form: {},
@@ -573,7 +573,7 @@ export default class extends Vue {
     // 表单校验
     rules: {
       name: [
-        { required: true, message: '节点名称不能为空(尽量简单通俗易懂)', trigger: 'blur' }
+        { required: true, message: '流水线名称不能为空(尽量简单通俗易懂)', trigger: 'blur' }
       ],
       roleId: [
         { required: true, message: '审批角色不能为空', trigger: 'blur' }
@@ -693,7 +693,7 @@ export default class extends Vue {
 
   private async resetLineForm() {
     this.$nextTick(() => {
-      const len = this.lineDialog.form.nodes.length
+      const len = this.lineDialog.form.lines.length
       for (let i = 0; i < len; i++) {
         const form: any = this.$refs.lineForm
         if (form[i] && form[i].clearValidate) {
@@ -774,35 +774,31 @@ export default class extends Vue {
         flowId: row.id,
         noPagination: true
       })
-      const nodes: any [] = []
+      const lines: any [] = []
       for (let i = 0, len = data.list.length; i < len; i++) {
         const line = data.list[i]
-        if (line.node) {
-          // 获取流水线节点
-          const currentNode = line.node
-          const lineNode = JSON.parse(JSON.stringify(this.defaultConfig.lineNode))
-          if (currentNode.roleId > 0) {
-            lineNode.roleId = currentNode.roleId
-          } else {
-            lineNode.roleBase = false
-            // 将用户转为id集合
-            const userIds: any[] = []
-            for (let j = 0, len2 = currentNode.userIds.length; j < len2; j++) {
-              userIds.push(currentNode.userIds[j])
-            }
-            lineNode.userIds = userIds
+        const newLine = JSON.parse(JSON.stringify(this.defaultConfig.line))
+        if (line.roleId > 0) {
+          newLine.roleId = line.roleId
+        } else {
+          newLine.roleBase = false
+          // 将用户转为id集合
+          const userIds: any[] = []
+          for (let j = 0, len2 = line.userIds.length; j < len2; j++) {
+            userIds.push(line.userIds[j])
           }
-          lineNode.id = currentNode.id
-          lineNode.name = currentNode.name
-          lineNode.edit = currentNode.edit
-          nodes.push({
-            ...lineNode,
-            roleSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.roleSelectOptions)),
-            userSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.userSelectOptions))
-          })
+          newLine.userIds = userIds
         }
+        newLine.id = line.id
+        newLine.name = line.name
+        newLine.edit = line.edit
+        lines.push({
+          ...newLine,
+          roleSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.roleSelectOptions)),
+          userSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.userSelectOptions))
+        })
       }
-      this.lineDialog.form.nodes = nodes
+      this.lineDialog.form.lines = lines
     } catch (e) {
       this.$message.error('读取流水线信息失败')
       return
@@ -817,32 +813,32 @@ export default class extends Vue {
 
   // 改变角色/用户类型
   private async handleRoleBaseChange(index: number) {
-    const roleBase = this.lineDialog.form.nodes[index].roleBase
+    const roleBase = this.lineDialog.form.lines[index].roleBase
     if (roleBase) {
       // 选中角色, 清空userIds
-      this.lineDialog.form.nodes[index].userIds = []
+      this.lineDialog.form.lines[index].userIds = []
     } else {
       // 选中用户, 清空role
-      this.lineDialog.form.nodes[index].roleId = ''
+      this.lineDialog.form.lines[index].roleId = ''
     }
   }
 
-  private async lineNodeCreate() {
+  private async lineCreate() {
     // 新增元素
-    this.lineDialog.form.nodes.push({
-      ...this.defaultConfig.lineNode,
+    this.lineDialog.form.lines.push({
+      ...this.defaultConfig.line,
       roleSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.roleSelectOptions)),
       userSelectOptions: JSON.parse(JSON.stringify(this.lineDialog.userSelectOptions))
     })
   }
 
-  private async lineNodeDelete(index: number) {
+  private async lineDelete(index: number) {
     // 移除元素
-    this.lineDialog.form.nodes.splice(index, 1)
+    this.lineDialog.form.lines.splice(index, 1)
   }
 
   private async doLine() {
-    const len = this.lineDialog.form.nodes.length
+    const len = this.lineDialog.form.lines.length
     // 校验所有表单, 一个不通过都不提交数据
     let validCount = 0
     for (let i = 0; i < len; i++) {
@@ -856,7 +852,7 @@ export default class extends Vue {
       }
     }
     if (validCount === len) {
-      const diff = diffArrUpdate(this.lineDialog.oldData.nodes, this.lineDialog.form.nodes)
+      const diff = diffArrUpdate(this.lineDialog.oldData.lines, this.lineDialog.form.lines)
       if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
         this.$message({
           type: 'warning',
@@ -1017,11 +1013,11 @@ export default class extends Vue {
     .el-row {
       margin-bottom: 15px;
     }
-    .line-node-form {
+    .line-form {
       margin-top: 15px;
       border-radius: 5px;
       border: 1px dashed #efefef;
-      .node-form-title {
+      .line-form-title {
         margin: 15px 15px 0 15px;
         font-size: 15px;
         font-weight: bold;
@@ -1030,14 +1026,14 @@ export default class extends Vue {
       .el-form-item {
         margin: 10px 20px;
       }
-      .node-form-delete {
+      .line-form-delete {
         float: right;
       }
     }
-    .node-form-delete, .node-form-plus {
+    .line-form-delete, .line-form-plus {
       cursor: pointer;
     }
-    .node-form-plus-box {
+    .line-form-plus-box {
       margin-top: 20px;
       font-size: 25px;
       text-align: center;
