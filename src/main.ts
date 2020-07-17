@@ -3,7 +3,7 @@ import Vue, { DirectiveOptions } from 'vue'
 import 'normalize.css'
 import ElementUI from 'element-ui'
 import SvgIcon from 'vue-svgicon'
-
+import uploader from 'vue-simple-uploader'
 import '@/styles/element-variables.scss'
 import '@/styles/index.scss'
 
@@ -23,6 +23,8 @@ Vue.use(ElementUI, {
   size: AppModule.size, // Set element-ui default size
   i18n: (key: string, value: string) => i18n.t(key, value)
 })
+
+Vue.use(uploader)
 
 Vue.use(SvgIcon, {
   tagName: 'svg-icon',
