@@ -56,8 +56,8 @@ export const getLocale = () => {
     }
   }
 
-  // Default language is english
-  return 'en'
+  // Default language is chinese
+  return 'zh';
 }
 
 const i18n = new VueI18n({
