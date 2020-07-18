@@ -1,0 +1,456 @@
+<template>
+  <div class="app-container">
+    <el-form
+      ref="searchForm"
+      v-loading="table.loading"
+      :inline="true"
+      :model="table.form"
+      class="demo-form-inline"
+    >
+      <el-form-item
+        label="访问路径"
+        prop="path"
+      >
+        <el-input
+          v-model.trim="table.form.path"
+          placeholder="访问路径"
+          clearable
+          @clear="doSearch"
+          @keyup.enter.native="doSearch"
+        />
+      </el-form-item>
+      <el-form-item
+        label="请求方式"
+        prop="method"
+      >
+        <el-select
+          v-model.trim="table.form.method"
+          placeholder="请选择请求方式"
+          clearable
+          @clear="doSearch"
+          @change="doSearch"
+        >
+          <el-option
+            v-for="item in defaultConfig.methods"
+            :key="item.name"
+            :label="item.label"
+            :value="item.name"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item
+        label="用户名"
+        prop="username"
+      >
+        <el-input
+          v-model.trim="table.form.username"
+          placeholder="用户名"
+          clearable
+          @clear="doSearch"
+          @keyup.enter.native="doSearch"
+        />
+      </el-form-item>
+      <el-form-item
+        label="IP"
+        prop="ip"
+      >
+        <el-input
+          v-model.trim="table.form.ip"
+          placeholder="IP地址"
+          clearable
+          @clear="doSearch"
+          @keyup.enter.native="doSearch"
+        />
+      </el-form-item>
+      <el-form-item
+        label="状态码"
+        prop="status"
+      >
+        <el-input
+          v-model.trim="table.form.status"
+          placeholder="响应状态码"
+          clearable
+          @clear="doSearch"
+          @keyup.enter.native="doSearch"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button
+          type="primary"
+          :loading="table.loading"
+          @click="doSearch"
+        >
+          查询
+        </el-button>
+        <el-button @click="resetForm('searchForm')">
+          重置
+        </el-button>
+      </el-form-item>
+      <el-row :gutter="10">
+        <el-col :span="1.5">
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            :disabled="table.batchDeleteBtnDisabled"
+            @click="handleBatchDelete"
+          >
+            批量删除
+          </el-button>
+        </el-col>
+      </el-row>
+      <el-table
+        :data="table.list"
+        style="width: 100%;margin-bottom: 20px;"
+        row-key="id"
+        border
+        stripe
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="55"
+        />
+        <el-table-column
+          prop="apiDesc"
+          label="接口说明"
+        />
+        <el-table-column
+          prop="path"
+          label="访问路径"
+        />
+        <el-table-column
+          prop="method"
+          label="请求方式"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-tag
+              :type="getMethodTagType(scope.row.method)"
+            >
+              {{ scope.row.method }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="status"
+          label="响应状态码"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-tag
+              v-if="scope.row.status < 300"
+              type="success"
+            >
+              {{ scope.row.status }}
+            </el-tag>
+            <el-tag
+              v-else-if="scope.row.status < 400"
+              type="warning"
+            >
+              {{ scope.row.status }}
+            </el-tag>
+            <el-tag
+              v-else-if="scope.row.status < 500"
+              type="info"
+            >
+              {{ scope.row.status }}
+            </el-tag>
+            <el-tag
+              v-else
+              type="danger"
+            >
+              {{ scope.row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="username"
+          label="用户登录名"
+          align="center"
+        />
+        <el-table-column
+          prop="roleName"
+          label="角色"
+          align="center"
+        />
+        <el-table-column
+          prop="ip"
+          label="IP"
+          align="center"
+        />
+        <el-table-column
+          prop="ipAddress"
+          label="IP所在地"
+          align="center"
+        />
+        <el-table-column
+          prop="latency"
+          label="请求耗时(毫秒)"
+          align="center"
+        >
+          <template slot-scope="scope">
+            {{ (scope.row.latency / 1000000).toFixed(2) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="userAgent"
+          label="浏览器标识"
+          align="center"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          fixed="right"
+          label="操作"
+          align="center"
+          width="180"
+        >
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        :current-page="table.pageNum"
+        :page-sizes="[1, 5, 20, 50]"
+        :page-size="table.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="table.total"
+        background
+        @size-change="handlePagSizeChange"
+        @current-change="handlePageNumChange"
+      />
+    </el-form>
+
+    <!-- 操作日志配置对话框 -->
+    <el-dialog
+      :title="updateDialog.title"
+      :visible.sync="updateDialog.visible"
+      width="500px"
+    >
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="primary"
+        >
+          确 定
+        </el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+<script lang="ts">
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import Pagination from '@/components/Pagination/index.vue'
+import { Form } from 'element-ui'
+import { batchDeleteOperationLog, getOperationLogs } from '@/api/system/operationLogs'
+import { diffObjUpdate } from '@/utils/diff'
+import { getRoles } from '@/api/system/roles'
+
+@Component({
+  // 组件名称首字母需大写, 否则会报警告
+  name: 'OperationLog',
+  components: {
+    Pagination
+  }
+})
+export default class extends Vue {
+  private readonly defaultConfig: any = {
+    pageNum: 1,
+    pageSize: 5,
+    methods: [{
+      name: 'POST',
+      label: 'POST[创建资源]',
+      type: 'success'
+    }, {
+      name: 'PUT',
+      label: 'PUT[创建/更新资源]',
+      type: 'info'
+    }, {
+      name: 'PATCH',
+      label: 'PATCH[创建/更新资源(区别于PUT, 增量更新)]',
+      type: 'warning'
+    }, {
+      name: 'DELETE',
+      label: 'DELETE[删除资源]',
+      type: 'danger'
+    }]
+  }
+
+  private validateCategory(rule: any, value: string, callback: Function) {
+    if (!/^[a-zA-Z]/.test(value)) {
+      callback(new Error('必须以字母开头, 如a12345'))
+    } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
+      callback(new Error('不允许出现汉字或特殊字符, 如a+,sa、a张三'))
+    } else {
+      callback()
+    }
+  }
+
+  private updateDialog: any = {
+    loading: false,
+    // 类型(0:创建, 1更新)
+    type: 0,
+    // 是否打开
+    visible: false,
+    // 标题
+    title: '',
+    // 角色选择参数
+    roleSelectOptions: [],
+    // 默认数据
+    defaultForm: {
+      id: 0,
+      path: '',
+      method: '',
+      category: '',
+      desc: '',
+      showRoleSelect: false,
+      roleIds: []
+    },
+    // 表单
+    form: {},
+    oldData: {},
+    // 表单校验
+    rules: {
+      path: [
+        { required: true, message: '访问路径不能为空', trigger: 'blur' }
+      ],
+      method: [
+        { required: true, message: '请求方式不能为空', trigger: 'blur' }
+      ],
+      category: [
+        { required: true, message: '所属类别不能为空', trigger: 'blur' },
+        { validator: this.validateCategory, trigger: 'blur' }
+      ]
+    }
+  }
+
+  private table: any = {
+    loading: false,
+    batchDeleteBtnDisabled: true,
+    selection: [],
+    list: [],
+    pageNum: 1,
+    pageSize: 5,
+    total: 0,
+    form: {
+      path: '',
+      method: '',
+      category: '',
+      desc: ''
+    }
+  }
+
+  created() {
+    this.getData()
+  }
+
+  private async getData() {
+    this.table.loading = true
+    try {
+      const params: any = {
+        ...this.table.form,
+        pageNum: this.table.pageNum,
+        pageSize: this.table.pageSize
+      }
+      if (params.status === '') {
+        delete params.status
+      }
+      const { data } = await getOperationLogs(params)
+      this.table.list = data.list
+      this.table.pageNum = data.pageNum
+      this.table.pageSize = data.pageSize
+      this.table.total = data.total
+    } finally {
+      // 不管是否异常自动停止loading
+      this.table.loading = false
+    }
+  }
+
+  private async doSearch() {
+    this.getData()
+  }
+
+  private handleDelete(row: any) {
+    this.batchDelete([row])
+  }
+
+  private handleBatchDelete() {
+    this.batchDelete(this.table.selection)
+  }
+
+  private async batchDelete(rows: any) {
+    const ids: number[] = []
+    const paths: string[] = []
+    for (let i = 0, len = rows.length; i < len; i++) {
+      const row = rows[i]
+      ids.push(row.id)
+      paths.push(row.path)
+    }
+    if (ids.length > 0) {
+      const msg = `确定要删除操作日志[${paths.join(',')}]吗, 此操作不可逆?`
+      this.$confirm(msg, '请谨慎操作', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          await batchDeleteOperationLog(ids.join(','))
+          this.getData()
+        })
+    }
+  }
+
+  private resetForm(formName: string) {
+    // 重置分页
+    this.table.pageNum = this.defaultConfig.pageNum
+    this.table.pageSize = this.defaultConfig.pageSize
+    // 仅对el-form-item设置prop的字段有效
+    // 这种写法可能导致无法正确执行: (this.$refs[formName] as Form).resetFields()
+    const form = this.$refs[formName] as Form
+    form.resetFields()
+    // 重新获取数据
+    this.getData()
+  }
+
+  private async handleSelectionChange(rows: any) {
+    this.table.batchDeleteBtnDisabled = rows.length === 0
+    this.table.selection = rows
+  }
+
+  private handlePagSizeChange(val: number) {
+    this.table.pageSize = val
+    this.doSearch()
+  }
+
+  private handlePageNumChange(val: number) {
+    this.table.pageNum = val
+    this.doSearch()
+  }
+
+  // 获取请求方式对应的tag颜色
+  private getMethodTagType(method: string) {
+    for (let i = 0, len = this.defaultConfig.methods.length; i < len; i++) {
+      const item = this.defaultConfig.methods[i]
+      if (method === item.name) {
+        return item.type
+      }
+    }
+    return ''
+  }
+}
+</script>
+<style lang="scss" scoped>
+  .app-container {
+    .el-row {
+      margin-bottom: 15px;
+    }
+  }
+</style>
