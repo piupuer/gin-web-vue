@@ -283,13 +283,11 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import jsonView from 'vue-json-views'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteOperationLog, getOperationLogs } from '@/api/system/operationLogs'
-import { diffObjUpdate } from '@/utils/diff'
-import { getRoles } from '@/api/system/roles'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -353,8 +351,9 @@ export default class extends Vue {
     form: {
       path: '',
       method: '',
-      category: '',
-      desc: ''
+      username: '',
+      ip: '',
+      status: ''
     }
   }
 
@@ -419,7 +418,7 @@ export default class extends Vue {
   }
 
   private async showJson(type: number, row: any) {
-    if (type == 1) {
+    if (type === 1) {
       this.jsonDialog.title = '请求参数详细内容'
       this.jsonDialog.data = JSON.parse(row.body)
     } else {
