@@ -199,6 +199,40 @@
           show-overflow-tooltip
         />
         <el-table-column
+          prop="body"
+          label="请求参数"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span
+              class="svg-container"
+              title="查看详情"
+            >
+              <svg-icon
+                name="eye-on"
+                @click="showJson(1, scope.row)"
+              />
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="data"
+          label="响应数据"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span
+              class="svg-container"
+              title="查看详情"
+            >
+              <svg-icon
+                name="eye-on"
+                @click="showJson(2, scope.row)"
+              />
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
           fixed="right"
           label="操作"
           align="center"
@@ -227,18 +261,20 @@
       />
     </el-form>
 
-    <!-- 操作日志配置对话框 -->
+    <!-- 操作日志json视图对话框 -->
     <el-dialog
-      :title="updateDialog.title"
-      :visible.sync="updateDialog.visible"
+      :title="jsonDialog.title"
+      :visible.sync="jsonDialog.visible"
       width="500px"
     >
+      <json-view :data="jsonDialog.data" />
       <div
         slot="footer"
         class="dialog-footer"
       >
         <el-button
           type="primary"
+          @click="jsonDialog.visible=false"
         >
           确 定
         </el-button>
@@ -248,6 +284,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
+import jsonView from 'vue-json-views'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteOperationLog, getOperationLogs } from '@/api/system/operationLogs'
@@ -258,7 +295,8 @@ import { getRoles } from '@/api/system/roles'
   // 组件名称首字母需大写, 否则会报警告
   name: 'OperationLog',
   components: {
-    Pagination
+    Pagination,
+    jsonView
   }
 })
 export default class extends Vue {
@@ -294,42 +332,14 @@ export default class extends Vue {
     }
   }
 
-  private updateDialog: any = {
+  private jsonDialog: any = {
     loading: false,
-    // 类型(0:创建, 1更新)
-    type: 0,
     // 是否打开
     visible: false,
     // 标题
     title: '',
-    // 角色选择参数
-    roleSelectOptions: [],
-    // 默认数据
-    defaultForm: {
-      id: 0,
-      path: '',
-      method: '',
-      category: '',
-      desc: '',
-      showRoleSelect: false,
-      roleIds: []
-    },
-    // 表单
-    form: {},
-    oldData: {},
-    // 表单校验
-    rules: {
-      path: [
-        { required: true, message: '访问路径不能为空', trigger: 'blur' }
-      ],
-      method: [
-        { required: true, message: '请求方式不能为空', trigger: 'blur' }
-      ],
-      category: [
-        { required: true, message: '所属类别不能为空', trigger: 'blur' },
-        { validator: this.validateCategory, trigger: 'blur' }
-      ]
-    }
+    // 数据内容
+    data: {}
   }
 
   private table: any = {
@@ -406,6 +416,17 @@ export default class extends Vue {
           this.getData()
         })
     }
+  }
+
+  private async showJson(type: number, row: any) {
+    if (type == 1) {
+      this.jsonDialog.title = '请求参数详细内容'
+      this.jsonDialog.data = JSON.parse(row.body)
+    } else {
+      this.jsonDialog.title = '响应数据详细内容'
+      this.jsonDialog.data = JSON.parse(row.data)
+    }
+    this.jsonDialog.visible = true
   }
 
   private resetForm(formName: string) {
