@@ -1,4 +1,5 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
+import { JSEncrypt } from 'jsencrypt'
 import { login, logout, getUserInfo } from '@/api/system/users'
 import { getToken, setToken, removeToken } from '@/utils/cookies'
 import router, { resetRouter } from '@/router'
@@ -28,6 +29,20 @@ class User extends VuexModule implements IUserState {
   public introduction = ''
   public roles: string[] = []
   public email = ''
+  private publicKey = '-----BEGIN GIN WEB PUBLIC KEY-----\n' +
+    'MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtCtCtXUpF16JnLVjCZJF\n' +
+    '/30x8hfdkwn+mLYu/M64vY6SG4nJJm784tmfQetgeEl5JQXrOxVa6xWwdlU7UooJ\n' +
+    'TmwJbRCahUTY9XBqMLzFBnHwGrM4yTJ09X0qRWF4ca4Zk2CfSaSUp6YI2QmNDavy\n' +
+    'NnP2IsgmVBl4prMkRq8csOM+HcPPjhPTJsqmRYM6o6ZCOEsCI07w5TgjWyffB+xY\n' +
+    'M0h9/tVBHJyicOEbEIJN8IMx1lWi+RNlh1WJVdZmgutF8iEiYkwfqOb2GKj2ptMn\n' +
+    'BwmuTWtTzbm+Tz4/Xc3XO1nN+N0lG9W3c0iCHNdcq069CWhQlDt/vtFMPmKiT6/S\n' +
+    'py8+tYke0b363jHSQG90hLK1ZT+mmcp1CdrsOIX4C1l2AMpRQmtPES11uU6a6W3d\n' +
+    'JxMCj8+K8E3Swt2yaJf0DH9Ej6Kz942sMXuaXOQPot1fT1Y76STmkUa/QPnxTtsU\n' +
+    'sMQAxZnIXodbaeLi40pRmHgtWrAAvEF1BqT3VJRNnarNGITtCvvSNUG8qt7+yCy7\n' +
+    'zCk/h1/g4+dIvRlQsYYrnOkGvNr3SqnA8AlJtDai2tdxQo2mUxoxB6btQL8y/3Pg\n' +
+    'qhkX/2CdjTtLPLSmgZQmBfQLoOELbWdmX58IdLhjI/eIUUlrBP4vQqAaLwJMCC5a\n' +
+    'IeddThz+w43h2ZZdgtLR/B8CAwEAAQ==\n' +
+    '-----END GIN WEB PUBLIC KEY-----\n'
 
   @Mutation
   private SET_TOKEN(token: string) {
@@ -78,6 +93,13 @@ class User extends VuexModule implements IUserState {
   public async Login(userInfo: { username: string, password: string }) {
     let { username, password } = userInfo
     username = username.trim()
+    // 密码RSA加密处理
+    let encryptor = new JSEncrypt();
+    // 设置公钥
+    encryptor.setPublicKey(this.publicKey);
+    // 加密密码
+    password = encryptor.encrypt(password);
+    console.log(password);
     const { data } = await login({ username, password })
     setToken(data.token)
     this.SET_TOKEN(data.token)
