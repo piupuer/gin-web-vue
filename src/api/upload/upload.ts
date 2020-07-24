@@ -6,3 +6,10 @@ export const uploadMerge = (data: any) =>
     method: 'post',
     data
   })
+
+export const uploadUnzip = (data: any) =>
+  request({
+    url: '/upload/unzip',
+    method: 'post',
+    data
+  })
