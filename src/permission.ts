@@ -18,7 +18,7 @@ const getPageTitle = (key: string) => {
     const pageName = i18n.t(`route.${key}`)
     return `${pageName} - ${settings.title}`
   }
-  return `${settings.title}`
+  return `${key} - ${settings.title}`
 }
 
 router.beforeEach(async(to: Route, _: Route, next: any) => {

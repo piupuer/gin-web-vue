@@ -99,7 +99,6 @@ class User extends VuexModule implements IUserState {
     encryptor.setPublicKey(this.publicKey);
     // 加密密码
     password = encryptor.encrypt(password);
-    console.log(password);
     const { data } = await login({ username, password })
     setToken(data.token)
     this.SET_TOKEN(data.token)

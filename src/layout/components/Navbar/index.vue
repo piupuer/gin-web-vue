@@ -56,7 +56,7 @@
           </a>
           <a
             target="_blank"
-            href="https://armour.github.io/vue-typescript-admin-docs/"
+            href="https://github.com/piupuer/gin-web/blob/master/README.md"
           >
             <el-dropdown-item>Docs</el-dropdown-item>
           </a>
