@@ -3,6 +3,7 @@ import Vue, { DirectiveOptions } from 'vue'
 import 'normalize.css'
 import ElementUI from 'element-ui'
 import SvgIcon from 'vue-svgicon'
+// @ts-ignore
 import uploader from 'vue-simple-uploader'
 import '@/styles/element-variables.scss'
 import '@/styles/index.scss'
