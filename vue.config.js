@@ -8,11 +8,13 @@ const devServerPort = 10001 // TODO: get this variable from setting.ts
 const name = 'Gin Web Vue' // TODO: get this variable from setting.ts
 
 module.exports = {
-  // 发布时是否需要添加path前缀
-  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
+  // 使用./替换/可兼容二级域名
+  publicPath: process.env.NODE_ENV === 'production' ? './' : './',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    // 不检测host
+    disableHostCheck: true,
     port: devServerPort,
     open: true,
     overlay: {
