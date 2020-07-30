@@ -284,6 +284,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+// @ts-ignore
 import jsonView from 'vue-json-views'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
