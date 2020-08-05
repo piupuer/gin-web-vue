@@ -12,6 +12,10 @@ module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? './' : './',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
+  // 某些包用的ES6以上语法, 需要在此处转译作兼容处理(IE11以下白屏 / IOS 11.2移动端白屏)
+  transpileDependencies: [
+    'fuse.js'
+  ],
   devServer: {
     // 不检测host
     disableHostCheck: true,
