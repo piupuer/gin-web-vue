@@ -14,11 +14,12 @@ WORKDIR $APP_HOME
 # 拷贝宿主机全部文件到当前目录
 COPY ./gin-web-vue .
 # 设置npm/yarn镜像仓库国内源
-RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
+RUN npm config set registry https://registry.npm.taobao.org
+RUN npm config get registry
 #RUN yarn config set registry https://registry.npm.taobao.org/
 RUN ls -l $APP_HOME
 # 安装依赖
-RUN cnpm install
+RUN npm install
 # 构建
 RUN npm run build:prod
 
