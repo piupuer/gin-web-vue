@@ -179,7 +179,7 @@
           align="center"
         />
         <el-table-column
-          prop="ipAddress"
+          prop="ipLocation"
           label="IP所在地"
           align="center"
         />
