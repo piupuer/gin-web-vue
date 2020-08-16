@@ -23,6 +23,13 @@
           <size-select class="right-menu-item hover-effect" />
         </el-tooltip>
         <lang-select class="right-menu-item hover-effect" />
+        <el-tooltip
+          :content="$t('navbar.message')"
+          effect="dark"
+          placement="bottom"
+        >
+          <message-center class="right-menu-item hover-effect" />
+        </el-tooltip>
       </template>
       <el-dropdown
         class="avatar-container right-menu-item hover-effect"
@@ -85,6 +92,7 @@ import HeaderSearch from '@/components/HeaderSearch/index.vue'
 import LangSelect from '@/components/LangSelect/index.vue'
 import Screenfull from '@/components/Screenfull/index.vue'
 import SizeSelect from '@/components/SizeSelect/index.vue'
+import MessageCenter from '@/components/MessageCenter/index.vue'
 
 @Component({
   name: 'Navbar',
@@ -95,7 +103,8 @@ import SizeSelect from '@/components/SizeSelect/index.vue'
     HeaderSearch,
     LangSelect,
     Screenfull,
-    SizeSelect
+    SizeSelect,
+    MessageCenter
   }
 })
 export default class extends Vue {
@@ -181,6 +190,7 @@ export default class extends Vue {
     }
 
     .avatar-container {
+      margin-left: 30px;
       margin-right: 30px;
 
       .avatar-wrapper {

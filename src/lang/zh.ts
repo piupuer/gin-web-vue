@@ -21,6 +21,7 @@ export default {
     user: '用户管理',
     test: '测试用例',
     profile: '个人中心',
+    message: '消息中心',
   },
   navbar: {
     logOut: '退出登录',
@@ -29,6 +30,7 @@ export default {
     theme: '换肤',
     size: '布局大小',
     profile: '个人中心',
+    message: '消息中心',
   },
   login: {
     title: '系统登录',

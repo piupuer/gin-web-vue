@@ -7,6 +7,7 @@ import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
 import { TagsViewModule } from './tags-view'
 import store from '@/store'
+import { MessageModule } from '@/store/modules/message'
 
 export interface IUserState {
   token: string
@@ -134,6 +135,8 @@ class User extends VuexModule implements IUserState {
     this.SET_AVATAR(avatar)
     this.SET_INTRODUCTION(introduction)
     this.SET_EMAIL(email)
+    // 刷新消息条数
+    await MessageModule.RefreshUnReadCount()
   }
 
   @Action

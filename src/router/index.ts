@@ -91,6 +91,25 @@ export const constantRoutes: RouteConfig[] = [
         }
       }
     ]
+  },
+  {
+    path: '/message',
+    component: Layout,
+    redirect: '/message/index',
+    meta: { hidden: true },
+    children: [
+      {
+        path: 'index',
+        component: () => import(/* webpackChunkName: "message" */ '@/views/message/index.vue'),
+        name: 'Message',
+        meta: {
+          name: 'message',
+          title: 'message',
+          icon: 'bell',
+          noCache: true
+        }
+      }
+    ]
   }
 ]
 
