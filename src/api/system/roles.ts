@@ -43,10 +43,3 @@ export const batchDeleteRole = (ids: string) =>
       ids
     }
   })
-
-export const getRoutes = (params: any) =>
-  request({
-    url: '/routes',
-    method: 'get',
-    params
-  })

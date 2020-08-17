@@ -48,3 +48,10 @@ export const updateAllMessageDeleted = (ids: string) =>
       ids
     }
   })
+
+export const messagePush = (data: any) =>
+  request({
+    url: '/message/push',
+    method: 'post',
+    data
+  })

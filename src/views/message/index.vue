@@ -291,11 +291,9 @@ export default class extends Vue {
 
   private async batchRead(rows: any) {
     const ids: number[] = []
-    const titles: string[] = []
     for (let i = 0, len = rows.length; i < len; i++) {
       const row = rows[i]
       ids.push(row.id)
-      titles.push(row.name)
     }
     if (ids.length > 0) {
       await batchUpdateMessageRead(ids.join(','))
@@ -319,7 +317,7 @@ export default class extends Vue {
     for (let i = 0, len = rows.length; i < len; i++) {
       const row = rows[i]
       ids.push(row.id)
-      titles.push(row.name)
+      titles.push(row.title)
     }
     if (ids.length > 0) {
       const msg = `确定要删除消息[${titles.join(',')}]吗, 此操作不可逆?`
