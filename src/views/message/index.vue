@@ -102,6 +102,22 @@
             批量删除
           </el-button>
         </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="primary"
+            @click="handleAllRead"
+          >
+            全部已读
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="danger"
+            @click="handleAllDelete"
+          >
+            全部清空
+          </el-button>
+        </el-col>
       </el-row>
       <el-table
         :data="table.list"
@@ -196,7 +212,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form, Tree } from 'element-ui'
-import { batchUpdateMessageDeleted, batchUpdateMessageRead, getAllMessages } from '@/api/message/message'
+import { updateAllMessageDeleted, updateAllMessageRead, batchUpdateMessageDeleted, batchUpdateMessageRead, getAllMessages } from '@/api/message/message'
 import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
 import { MessageModule } from '@/store/modules/message'
 
@@ -303,6 +319,13 @@ export default class extends Vue {
     }
   }
 
+  private async handleAllRead() {
+    await updateAllMessageRead()
+    // 刷新消息条数
+    await MessageModule.RefreshUnReadCount()
+    this.getData()
+  }
+
   private handleDelete(row: any) {
     this.batchDelete([row])
   }
@@ -333,6 +356,21 @@ export default class extends Vue {
           this.getData()
         })
     }
+  }
+
+  private async handleAllDelete() {
+    const msg = '确定要清空消息吗, 此操作不可逆?'
+    this.$confirm(msg, '请谨慎操作', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async() => {
+        await updateAllMessageDeleted()
+        // 刷新消息条数
+        await MessageModule.RefreshUnReadCount()
+        this.getData()
+      })
   }
 
   private resetForm(formName: string) {

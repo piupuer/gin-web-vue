@@ -31,22 +31,16 @@ export const batchUpdateMessageDeleted = (ids: string) =>
     }
   })
 
-export const updateAllMessageRead = (ids: string) =>
+export const updateAllMessageRead = () =>
   request({
     url: '/message/read/all',
-    method: 'patch',
-    params: {
-      ids
-    }
+    method: 'patch'
   })
 
-export const updateAllMessageDeleted = (ids: string) =>
+export const updateAllMessageDeleted = () =>
   request({
     url: '/message/deleted/all',
-    method: 'patch',
-    params: {
-      ids
-    }
+    method: 'patch'
   })
 
 export const messagePush = (data: any) =>
