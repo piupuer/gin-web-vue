@@ -24,7 +24,7 @@ RUN npm install
 RUN npm run build:prod
 
 
-FROM nginx:1.17.10
+FROM nginx:1.17.10-alpine
 RUN echo "----------------- Nginx构建 -----------------"
 
 # 移除nginx容器的default.conf/nginx配置文件
