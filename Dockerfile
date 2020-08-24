@@ -13,15 +13,28 @@ WORKDIR $APP_HOME
 # 这里的根目录以docker-compose.yml配置build.context的为准
 # 拷贝宿主机全部文件到当前目录
 COPY ./gin-web-vue .
-# 设置npm/yarn镜像仓库国内源
-RUN npm config set registry https://registry.npm.taobao.org
-RUN npm config get registry
-#RUN yarn config set registry https://registry.npm.taobao.org/
+
 RUN ls -l $APP_HOME
+
+# 官方源
+#RUN npm config set registry https://registry.npmjs.org/
+## 使用npm构建
+## 设置npm/yarn镜像仓库国内源
+#RUN npm config set registry https://registry.npm.taobao.org
+#RUN npm config get registry
+## 安装依赖
+#RUN npm install
+## 构建
+#RUN npm run build:prod
+
+# 使用yarn构建
+RUN yarn config set registry https://registry.npm.taobao.org/
 # 安装依赖
-RUN npm install
+RUN yarn
 # 构建
-RUN npm run build:prod
+RUN yarn build:prod
+
+RUN ls -l $APP_HOME
 
 
 FROM nginx:1.17.10-alpine
