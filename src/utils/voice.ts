@@ -1,7 +1,7 @@
 // 注意浏览器需要允许声音自动播放, 否则可能无法播放
 // 开始播放
 function startPlay(url: string, playEnded: any, playError: any) {
-  let audio = new Audio(url)
+  const audio = new Audio(url)
   audio.play()
   console.log('正在播放' + url)
   // 播放结束
@@ -25,5 +25,5 @@ export const voice = {
   // 播放音频, 指定声音编号
   playUrl: (url: string, playEnded: any, playError: any) => {
     return startPlay(url, playEnded, playError)
-  },
+  }
 }

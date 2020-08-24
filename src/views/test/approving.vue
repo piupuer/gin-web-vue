@@ -158,8 +158,6 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteLeave, createLeave, getApprovalLeaves, getLeaves, updateLeave } from '@/api/test/leaves'
-import { diffObjUpdate } from '@/utils/diff'
 import { getWorkflowApprovings, updateWorkflowLogApproval } from '@/api/system/workflows'
 
 @Component({

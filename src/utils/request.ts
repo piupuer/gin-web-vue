@@ -13,7 +13,7 @@ service.interceptors.request.use(
   (config) => {
     // Add Authorization header to every request, you can add other custom headers here
     if (UserModule.token) {
-      config.headers['Authorization'] = 'Bearer ' + UserModule.token
+      config.headers.Authorization = 'Bearer ' + UserModule.token
     }
     return config
   },

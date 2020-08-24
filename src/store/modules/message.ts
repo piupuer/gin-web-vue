@@ -1,6 +1,6 @@
 import { VuexModule, Module, Mutation, getModule, Action } from 'vuex-module-decorators'
 import store from '@/store'
-import { Notification } from 'element-ui';
+import { Notification } from 'element-ui'
 import { voice } from '@/utils/voice'
 
 export interface IMessageState {
@@ -41,9 +41,9 @@ class Message extends VuexModule implements IMessageState {
       switch (data.type) {
         case 0:
           if (data.detail && data.detail.code === 201) {
-            MessageModule.Send({
+            this.Send({
               type: 0,
-              data: data.detail.data,
+              data: data.detail.data
             })
           }
           break
@@ -77,16 +77,14 @@ class Message extends VuexModule implements IMessageState {
   public Send(data: any) {
     this.ws.send(JSON.stringify(data))
   }
-
 }
 
 export const MessageModule = getModule(Message)
 
 // 连接建立之后执行send方法发送数据
 websocket.onopen = (e: any) => {
-  console.log('已建立连接')
+  console.log('已建立连接', e)
 }
-
 
 // 监听消息接收
 websocket.onmessage = (e: any) => {

@@ -37,7 +37,7 @@ export const updateRoleApis = (id: number, data: any) =>
 
 export const batchDeleteRole = (ids: string) =>
   request({
-    url: `/role/delete/batch`,
+    url: '/role/delete/batch',
     method: 'delete',
     params: {
       ids

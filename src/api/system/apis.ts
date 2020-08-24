@@ -32,6 +32,6 @@ export const batchDeleteApi = (ids: string) =>
 
 export const getAllApiGroupByCategoryByRoleId = (id: number) =>
   request({
-    url:  `/api/all/category/${id}`,
+    url: `/api/all/category/${id}`,
     method: 'get'
   })

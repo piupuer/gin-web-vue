@@ -7,7 +7,7 @@ import { constantRoutes } from '@/router'
 
 // 动态加载组件
 export const loadComponent = (component: string) => {
-  if (component == '' || component === 'Layout') {
+  if (component === '' || component === 'Layout') {
     // 组件不存在使用默认布局
     return Layout
   }
@@ -16,7 +16,7 @@ export const loadComponent = (component: string) => {
 }
 
 // 将后端返回的菜单转为前端路由
-export const getRoutesFromMenus = (menus: any):RouteConfig[] => {
+export const getRoutesFromMenus = (menus: any): RouteConfig[] => {
   const res: RouteConfig[] = []
   menus.forEach((menu: any) => {
     if (menu.children.length > 0) {
@@ -36,8 +36,8 @@ export const getRoutesFromMenus = (menus: any):RouteConfig[] => {
         title: menu.title,
         icon: menu.icon,
         hidden: !menu.visible,
-        breadcrumb: menu.breadcrumb,
-      },
+        breadcrumb: menu.breadcrumb
+      }
     })
   })
   return res

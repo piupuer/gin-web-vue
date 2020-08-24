@@ -1,4 +1,4 @@
-import router, { asyncRoutes } from './router'
+import router from './router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { Message } from 'element-ui'
