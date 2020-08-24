@@ -209,11 +209,10 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
-import { Form, Tree } from 'element-ui'
-import { updateAllMessageDeleted, updateAllMessageRead, batchUpdateMessageDeleted, batchUpdateMessageRead, getAllMessages } from '@/api/message/message'
-import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
+import { Form } from 'element-ui'
+import { getAllMessages } from '@/api/message/message'
 import { MessageModule } from '@/store/modules/message'
 
 @Component({
@@ -312,18 +311,19 @@ export default class extends Vue {
       ids.push(row.id)
     }
     if (ids.length > 0) {
-      await batchUpdateMessageRead(ids.join(','))
-      // 刷新消息条数
-      await MessageModule.RefreshUnReadCount()
-      this.getData()
+      MessageModule.Send({
+        type: 3,
+        data: {
+          ids: ids.join(',')
+        }
+      })
     }
   }
 
   private async handleAllRead() {
-    await updateAllMessageRead()
-    // 刷新消息条数
-    await MessageModule.RefreshUnReadCount()
-    this.getData()
+    MessageModule.Send({
+      type: 5
+    })
   }
 
   private handleDelete(row: any) {
@@ -350,10 +350,13 @@ export default class extends Vue {
         type: 'warning'
       })
         .then(async() => {
-          await batchUpdateMessageDeleted(ids.join(','))
-          // 刷新消息条数
-          await MessageModule.RefreshUnReadCount()
-          this.getData()
+          MessageModule.Send({
+            type: 4,
+            data: {
+              ids: ids.join(',')
+            }
+          })
+          this.refresh()
         })
     }
   }
@@ -366,10 +369,10 @@ export default class extends Vue {
       type: 'warning'
     })
       .then(async() => {
-        await updateAllMessageDeleted()
-        // 刷新消息条数
-        await MessageModule.RefreshUnReadCount()
-        this.getData()
+        MessageModule.Send({
+          type: 6
+        })
+        this.refresh()
       })
   }
 
@@ -432,6 +435,17 @@ export default class extends Vue {
       }
     }
     return ''
+  }
+
+  get unReadCount() {
+    return MessageModule.unReadCount
+  }
+
+  @Watch('unReadCount')
+  private async refresh() {
+    setTimeout(() => {
+      this.getData()
+    }, 500)
   }
 }
 </script>

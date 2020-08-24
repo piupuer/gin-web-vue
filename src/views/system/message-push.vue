@@ -115,7 +115,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { Form } from 'element-ui'
 import { getUsers } from '@/api/system/users'
 import { getRoles } from '@/api/system/roles'
-import { messagePush } from '@/api/message/message'
+import { MessageModule } from '@/store/modules/message'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -185,7 +185,10 @@ export default class extends Vue {
       if (valid) {
         try {
           this.table.pushLoading = true
-          await messagePush(this.table.form)
+          MessageModule.Send({
+            type: 2,
+            data: this.table.form
+          })
           this.$notify({
             title: '恭喜',
             message: '发送消息成功',

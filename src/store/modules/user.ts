@@ -135,8 +135,6 @@ class User extends VuexModule implements IUserState {
     this.SET_AVATAR(avatar)
     this.SET_INTRODUCTION(introduction)
     this.SET_EMAIL(email)
-    // 刷新消息条数
-    await MessageModule.RefreshUnReadCount()
   }
 
   @Action
