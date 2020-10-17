@@ -113,10 +113,12 @@
         <el-table-column
           prop="apiDesc"
           label="接口说明"
+          width="180"
         />
         <el-table-column
           prop="path"
           label="访问路径"
+          width="120"
         />
         <el-table-column
           prop="method"
@@ -133,7 +135,7 @@
         </el-table-column>
         <el-table-column
           prop="status"
-          label="响应状态码"
+          label="状态码"
           align="center"
         >
           <template slot-scope="scope">
@@ -165,7 +167,7 @@
         </el-table-column>
         <el-table-column
           prop="username"
-          label="用户登录名"
+          label="登录用户"
           align="center"
         />
         <el-table-column
@@ -193,9 +195,16 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="createdAt"
+          label="访问时间"
+          align="center"
+          width="180"
+        />
+        <el-table-column
           prop="userAgent"
           label="浏览器标识"
           align="center"
+          width="180"
           show-overflow-tooltip
         />
         <el-table-column
