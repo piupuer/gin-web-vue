@@ -53,14 +53,14 @@
           placeholder="用户状态"
         >
           <el-option
-            key="true"
+            key="1"
             label="正常"
-            :value="true"
+            :value="1"
           />
           <el-option
-            key="false"
+            key="0"
             label="禁用"
-            :value="false"
+            :value="0"
           />
         </el-select>
       </el-form-item>
@@ -142,6 +142,8 @@
           <template slot-scope="scope">
             <el-switch
               v-model.trim="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
               @change="handleStatusChange(scope.row)"
             />
           </template>
@@ -268,6 +270,8 @@
         >
           <el-switch
             v-model.trim="updateDialog.form.status"
+            :active-value="1"
+            :inactive-value="0"
             active-text="正常"
             inactive-text="禁用"
           />
@@ -348,7 +352,7 @@ export default class extends Vue {
       newPassword: '',
       mobile: '',
       nickname: '',
-      status: true,
+      status: 1,
       creator: '',
       roleId: ''
     },
@@ -573,7 +577,7 @@ export default class extends Vue {
   // 改变用户状态
   private async handleStatusChange(row: any) {
     let msg = `确定要恢复用户[${row.username}]吗?`
-    if (!row.status) {
+    if (row.status == 0) {
       msg = `确定要禁用用户[${row.username}]吗?该操作可能导致该用户无法正常使用系统`
     }
     this.$confirm(msg, '请谨慎操作', {
@@ -588,7 +592,7 @@ export default class extends Vue {
         this.getData()
       })
       .catch(() => {
-        row.status = !row.status
+        row.status = row.status == 0 ? 1 : 0
       })
   }
 
