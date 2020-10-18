@@ -50,14 +50,14 @@
           placeholder="提交人确认"
         >
           <el-option
-            key="true"
+            key="1"
             label="是"
-            :value="true"
+            :value="1"
           />
           <el-option
-            key="false"
+            key="0"
             label="否"
-            :value="false"
+            :value="0"
           />
         </el-select>
       </el-form-item>
@@ -87,14 +87,14 @@
           placeholder="自我审批"
         >
           <el-option
-            key="true"
+            key="1"
             label="开启"
-            :value="true"
+            :value="1"
           />
           <el-option
-            key="false"
+            key="0"
             label="关闭"
-            :value="false"
+            :value="0"
           />
         </el-select>
       </el-form-item>
@@ -189,6 +189,8 @@
           <template slot-scope="scope">
             <el-switch
               v-model.trim="scope.row.submitUserConfirm"
+              :active-value="1"
+              :inactive-value="0"
               @change="handleSubmitUserConfirmChange(scope.row)"
             />
           </template>
@@ -200,6 +202,8 @@
           <template slot-scope="scope">
             <el-switch
               v-model.trim="scope.row.self"
+              :active-value="1"
+              :inactive-value="0"
               @change="handleSelfChange(scope.row)"
             />
           </template>
@@ -317,6 +321,8 @@
         >
           <el-switch
             v-model.trim="updateDialog.form.submitUserConfirm"
+            :active-value="1"
+            :inactive-value="0"
             active-text="开启"
             inactive-text="关闭"
           />
@@ -327,6 +333,8 @@
         >
           <el-switch
             v-model.trim="updateDialog.form.self"
+            :active-value="1"
+            :inactive-value="0"
             active-text="开启"
             inactive-text="关闭"
           />
@@ -398,13 +406,15 @@
         >
           <el-switch
             v-model.trim="line.roleBase"
+            :active-value="1"
+            :inactive-value="0"
             active-text="指定角色"
             inactive-text="指定用户"
             @change="handleRoleBaseChange(index)"
           />
         </el-form-item>
         <el-form-item
-          v-if="line.roleBase"
+          v-if="line.roleBase == 1"
           label="角色"
           prop="roleId"
         >
@@ -448,6 +458,8 @@
         >
           <el-switch
             v-model.trim="line.edit"
+            :active-value="1"
+            :inactive-value="0"
             active-text="开启"
             inactive-text="关闭"
           />
@@ -505,9 +517,9 @@ export default class extends Vue {
     pageNum: 1,
     pageSize: 5,
     line: {
-      roleBase: true,
+      roleBase: 1,
       name: '',
-      edit: true,
+      edit: 1,
       roleId: '',
       userIds: []
     }
@@ -940,7 +952,7 @@ export default class extends Vue {
   // 改变
   private async handleSubmitUserConfirmChange(row: any) {
     let msg = `确定要恢复流程[${row.name}][提交人确认]吗?`
-    if (!row.submitUserConfirm) {
+    if (row.submitUserConfirm == 0) {
       msg = `确定要禁用流程[${row.name}][提交人确认]吗?`
     }
     this.$confirm(msg, '请谨慎操作', {
@@ -955,13 +967,13 @@ export default class extends Vue {
         this.getData()
       })
       .catch(() => {
-        row.submitUserConfirm = !row.submitUserConfirm
+        row.submitUserConfirm = row.submitUserConfirm == 0 ? 1 : 0
       })
   }
 
   private async handleSelfChange(row: any) {
     let msg = `确定要恢复流程[${row.name}][自我审批]吗?`
-    if (!row.self) {
+    if (row.self == 0) {
       msg = `确定要禁用流程[${row.name}][自我审批]吗?`
     }
     this.$confirm(msg, '请谨慎操作', {
@@ -976,7 +988,7 @@ export default class extends Vue {
         this.getData()
       })
       .catch(() => {
-        row.self = !row.self
+        row.self = row.self == 0 ? 1 : 0
       })
   }
 

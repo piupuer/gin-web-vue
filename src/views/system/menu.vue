@@ -74,6 +74,8 @@
           <template slot-scope="scope">
             <el-switch
               v-model.trim="scope.row.visible"
+              :active-value="1"
+              :inactive-value="0"
               @change="handleVisibleChange(scope.row)"
             />
           </template>
@@ -87,6 +89,8 @@
           <template slot-scope="scope">
             <el-switch
               v-model.trim="scope.row.breadcrumb"
+              :active-value="1"
+              :inactive-value="0"
               @change="handleBreadcrumbChange(scope.row)"
             />
           </template>
@@ -100,6 +104,8 @@
           <template slot-scope="scope">
             <el-switch
               v-model.trim="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
               @change="handleStatusChange(scope.row)"
             />
           </template>
@@ -252,6 +258,8 @@
         >
           <el-switch
             v-model.trim="updateDialog.form.visible"
+            :active-value="1"
+            :inactive-value="0"
             active-text="可见"
             inactive-text="隐藏"
           />
@@ -262,6 +270,8 @@
         >
           <el-switch
             v-model.trim="updateDialog.form.breadcrumb"
+            :active-value="1"
+            :inactive-value="0"
             active-text="可见"
             inactive-text="隐藏"
           />
@@ -272,6 +282,8 @@
         >
           <el-switch
             v-model.trim="updateDialog.form.status"
+            :active-value="1"
+            :inactive-value="0"
             active-text="正常"
             inactive-text="禁用"
           />
