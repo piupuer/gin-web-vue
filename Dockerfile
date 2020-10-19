@@ -40,6 +40,13 @@ RUN ls -l $APP_HOME
 FROM nginx:1.17.10-alpine
 RUN echo "----------------- Nginx构建 -----------------"
 
+# 定义应用运行目录
+ENV APP_HOME /app/gin-web-vue-prod
+ENV NGINX_HOME /usr/share/nginx/html
+
+# 设置运行目录
+WORKDIR $NGINX_HOME
+
 # 移除nginx容器的default.conf/nginx配置文件
 RUN rm /etc/nginx/conf.d/default.conf
 RUN rm /etc/nginx/nginx.conf
@@ -47,7 +54,8 @@ RUN rm /etc/nginx/nginx.conf
 # 把主机的nginx.conf文件复制到nginx容器的/etc/nginx文件夹下
 COPY ./gin-web-vue/docker-conf/nginx/nginx.conf /etc/nginx/nginx.conf
 # 拷贝前端vue项目打包后生成的文件到nginx下运行
-COPY --from=gin-web-vue /app/gin-web-vue-prod/dist /usr/share/nginx/html
+COPY --from=gin-web-vue $APP_HOME/dist $NGINX_HOME
+COPY --from=gin-web-vue $APP_HOME/gitversion $NGINX_HOME
 
 # 暴露端口
 EXPOSE 8081
