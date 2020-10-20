@@ -13,6 +13,9 @@ WORKDIR $APP_HOME
 # 拷贝宿主机全部文件到当前目录
 COPY . .
 
+# 记录当前版本号
+RUN chmod +x version.sh && ./version.sh
+
 RUN ls -l $APP_HOME
 
 # 官方源
