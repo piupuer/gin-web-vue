@@ -10,9 +10,8 @@ RUN mkdir -p $APP_HOME
 # 设置运行目录
 WORKDIR $APP_HOME
 
-# 这里的根目录以docker-compose.yml配置build.context的为准
 # 拷贝宿主机全部文件到当前目录
-COPY ./gin-web-vue .
+COPY . .
 
 RUN ls -l $APP_HOME
 
