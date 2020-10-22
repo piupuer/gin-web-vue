@@ -59,6 +59,18 @@ COPY docker-conf/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=gin-web-vue $APP_HOME/dist $NGINX_HOME
 COPY --from=gin-web-vue $APP_HOME/gitversion $NGINX_HOME
 
+# alpine时区修改
+# apk仓库使用国内源
+# 设置时区为上海
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN apk update \
+  && apk add tzdata \
+  && apk add curl \
+  && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+  && echo "Asia/Shanghai" > /etc/timezone
+# 验证时区是否已修改
+# RUN date -R
+
 # 暴露端口
 EXPOSE 9091
 
@@ -68,3 +80,7 @@ EXPOSE 9091
 
 # 使用daemon off的方式将nginx运行在前台保证镜像不至于退出
 CMD ["nginx", "-g", "daemon off;"]
+
+# 设置健康检查
+HEALTHCHECK --interval=5s --timeout=3s \
+  CMD curl -fs http://127.0.0.1:9091/ || exit 1
