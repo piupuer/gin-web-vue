@@ -10,9 +10,11 @@ RUN mkdir -p $APP_HOME
 # 设置运行目录
 WORKDIR $APP_HOME
 
-# 这里的根目录以docker-compose.yml配置build.context的为准
 # 拷贝宿主机全部文件到当前目录
-COPY ./gin-web-vue .
+COPY . .
+
+# 记录当前版本号
+RUN chmod +x version.sh && ./version.sh
 
 RUN ls -l $APP_HOME
 
@@ -40,14 +42,34 @@ RUN ls -l $APP_HOME
 FROM nginx:1.17.10-alpine
 RUN echo "----------------- Nginx构建 -----------------"
 
+# 定义应用运行目录
+ENV APP_HOME /app/gin-web-vue-prod
+ENV NGINX_HOME /usr/share/nginx/html
+
+# 设置运行目录
+WORKDIR $NGINX_HOME
+
 # 移除nginx容器的default.conf/nginx配置文件
 RUN rm /etc/nginx/conf.d/default.conf
 RUN rm /etc/nginx/nginx.conf
 
 # 把主机的nginx.conf文件复制到nginx容器的/etc/nginx文件夹下
-COPY ./gin-web-vue/docker-conf/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY docker-conf/nginx/nginx.conf /etc/nginx/nginx.conf
 # 拷贝前端vue项目打包后生成的文件到nginx下运行
-COPY --from=gin-web-vue /app/gin-web-vue-prod/dist /usr/share/nginx/html
+COPY --from=gin-web-vue $APP_HOME/dist $NGINX_HOME
+COPY --from=gin-web-vue $APP_HOME/gitversion $NGINX_HOME
+
+# alpine时区修改
+# apk仓库使用国内源
+# 设置时区为上海
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN apk update \
+  && apk add tzdata \
+  && apk add curl \
+  && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+  && echo "Asia/Shanghai" > /etc/timezone
+# 验证时区是否已修改
+# RUN date -R
 
 # 暴露端口
 EXPOSE 8081
@@ -58,3 +80,7 @@ EXPOSE 8081
 
 # 使用daemon off的方式将nginx运行在前台保证镜像不至于退出
 CMD ["nginx", "-g", "daemon off;"]
+
+# 设置健康检查
+HEALTHCHECK --interval=5s --timeout=3s \
+  CMD curl -fs http://127.0.0.1:8081/ || exit 1

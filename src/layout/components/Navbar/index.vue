@@ -30,6 +30,19 @@
         >
           <message-center class="right-menu-item hover-effect" />
         </el-tooltip>
+        <el-tooltip
+          :content="$t('navbar.loki')"
+          effect="dark"
+          placement="bottom"
+        >
+          <a
+            class="right-menu-item hover-effect"
+            target="_blank"
+            href="http://106.75.132.201:3000/"
+          >
+            <i class="el-icon-document-copy" />
+          </a>
+        </el-tooltip>
       </template>
       <el-dropdown
         class="avatar-container right-menu-item hover-effect"
