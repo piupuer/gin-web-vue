@@ -30,7 +30,8 @@ export default {
     theme: '换肤',
     size: '布局大小',
     profile: '个人中心',
-    message: '消息中心'
+    message: '消息中心',
+    loki: '系统日志(登录test/123456)'
   },
   login: {
     title: '系统登录',
