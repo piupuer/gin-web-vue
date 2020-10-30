@@ -31,7 +31,8 @@ export default {
     size: '布局大小',
     profile: '个人中心',
     message: '消息中心',
-    loki: '系统日志(登录test/123456)'
+    loki: '系统日志(登录test/123456)',
+    minio: '对象存储(登录minio/minio123)'
   },
   login: {
     title: '系统登录',
