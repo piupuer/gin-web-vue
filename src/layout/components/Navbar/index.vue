@@ -38,7 +38,7 @@
           <a
             class="right-menu-item hover-effect"
             target="_blank"
-            href="http://106.75.132.201:3000/"
+            :href="url + ':3000/'"
           >
             <i class="el-icon-document-copy" />
           </a>
@@ -51,7 +51,7 @@
           <a
             class="right-menu-item hover-effect"
             target="_blank"
-            href="http://106.75.132.201:9005/"
+            :href="url + ':9005/'"
           >
             <i class="el-icon-coin" />
           </a>
@@ -134,6 +134,10 @@ import MessageCenter from '@/components/MessageCenter/index.vue'
   }
 })
 export default class extends Vue {
+  get url() {
+    return location.protocol + '//' + location.host
+  }
+
   get sidebar() {
     return AppModule.sidebar
   }
