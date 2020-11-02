@@ -135,7 +135,7 @@ import MessageCenter from '@/components/MessageCenter/index.vue'
 })
 export default class extends Vue {
   get url() {
-    return location.protocol + '//' + location.host
+    return location.protocol + '//' + location.hostname
   }
 
   get sidebar() {
