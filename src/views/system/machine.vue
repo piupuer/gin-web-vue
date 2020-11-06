@@ -308,8 +308,8 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import Pagination from '@/components/Pagination/index'
-import PrShell from '@/components/Shell/index'
+import Pagination from '@/components/Pagination/index.vue'
+import PrShell from '@/components/Shell/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteMachine, createMachine, getMachines, updateMachine, connectMachine } from '@/api/system/machines'
 import { diffObjUpdate } from '@/utils/diff'
