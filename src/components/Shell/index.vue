@@ -80,7 +80,7 @@ export default class extends Vue {
     //   bottom: 5
     // })
 
-    this.ws = new WebSocket('ws://' + window.location.hostname + '/api/v1/machine/shell/ws?host=' + this.host + '&sshPort=' + this.sshPort + '&loginName=' + this.loginName + '&loginPwd=' + this.loginPwd)
+    this.ws = new WebSocket('ws://' + window.location.hostname + '/api/v1/machine/shell/ws?host=' + encodeURIComponent(this.host) + '&sshPort=' + this.sshPort + '&loginName=' + encodeURIComponent(this.loginName) + '&loginPwd=' + encodeURIComponent(this.loginPwd))
 
     const fitAddon = new FitAddon()
     const attachAddon = new AttachAddon(this.ws)
