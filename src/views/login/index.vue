@@ -73,15 +73,23 @@
 
       <div style="position:relative">
         <div class="tips">
-          <span>{{ $t('login.username') }} : admin </span>
+          <span>超级管理员{{ $t('login.username') }} : super </span>
           <span>{{ $t('login.password') }} : 123456 </span>
         </div>
         <div class="tips">
-          <span>{{ $t('login.username') }} : zhangsan </span>
+          <span>系统管理员{{ $t('login.username') }} : admin </span>
           <span>{{ $t('login.password') }} : 123456 </span>
         </div>
         <div class="tips">
-          <span>{{ $t('login.username') }} : lisi </span>
+          <span>普通{{ $t('login.username') }} : zhangsan </span>
+          <span>{{ $t('login.password') }} : 123456 </span>
+        </div>
+        <div class="tips">
+          <span>访客{{ $t('login.username') }} : lisi </span>
+          <span>{{ $t('login.password') }} : 123456 </span>
+        </div>
+        <div class="tips">
+          <span>工作流测试{{ $t('login.username') }} : wangwu </span>
           <span>{{ $t('login.password') }} : 123456 </span>
         </div>
 

@@ -7,7 +7,6 @@ import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
 import { TagsViewModule } from './tags-view'
 import store from '@/store'
-import { MessageModule } from '@/store/modules/message'
 
 export interface IUserState {
   token: string
@@ -16,6 +15,7 @@ export interface IUserState {
   mobile: string
   avatar: string
   introduction: string
+  roleSort: number
   roles: string[]
   email: string
 }
@@ -29,6 +29,7 @@ class User extends VuexModule implements IUserState {
   public mobile = ''
   public avatar = ''
   public introduction = ''
+  public roleSort = 0
   public roles: string[] = []
   public email = ''
   private publicKey = '-----BEGIN GIN WEB PUBLIC KEY-----\n' +
@@ -82,6 +83,11 @@ class User extends VuexModule implements IUserState {
   }
 
   @Mutation
+  private SET_ROLE_SORT(roleSort: number) {
+    this.roleSort = roleSort
+  }
+
+  @Mutation
   private SET_ROLES(roles: string[]) {
     this.roles = roles
   }
@@ -122,7 +128,7 @@ class User extends VuexModule implements IUserState {
     if (!data) {
       throw Error('Verification failed, please Login again.')
     }
-    const { id, roles, username, nickname, mobile, avatar, introduction, email } = data
+    const { id, roles, username, nickname, mobile, avatar, introduction, roleSort, email } = data
     // roles must be a non-empty array
     if (!roles || roles.length <= 0) {
       throw Error('GetUserInfo: roles must be a non-null array!')
@@ -134,6 +140,7 @@ class User extends VuexModule implements IUserState {
     this.SET_MOBILE(mobile)
     this.SET_AVATAR(avatar)
     this.SET_INTRODUCTION(introduction)
+    this.SET_ROLE_SORT(roleSort)
     this.SET_EMAIL(email)
   }
 
