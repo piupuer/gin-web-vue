@@ -1,9 +1,16 @@
-FROM node:13.14 AS gin-web-vue
+FROM node:13.14-alpine AS gin-web-vue
 
 RUN echo "----------------- 前端Gin Web Vue构建(Staging) -----------------"
 # 环境变量
 # 定义应用运行目录
 ENV APP_HOME /app/gin-web-vue-stage
+
+# alpine添加基础软件
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN apk update \
+  && apk add bash \
+  && apk add git \
+  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* $HOME/.cache
 
 RUN mkdir -p $APP_HOME
 
