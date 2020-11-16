@@ -10,6 +10,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk update \
   && apk add bash \
   && apk add git \
+  && apk add python make g++ \
   && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* $HOME/.cache
 
 RUN mkdir -p $APP_HOME
