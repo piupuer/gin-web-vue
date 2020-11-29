@@ -1,4 +1,4 @@
-FROM node:13.14-alpine AS gin-web-vue
+FROM registry.cn-shenzhen.aliyuncs.com/piupuer/node:13.14-alpine AS gin-web-vue
 
 RUN echo "----------------- 前端Gin Web Vue构建(Production) -----------------"
 # 环境变量
@@ -47,7 +47,7 @@ RUN yarn build:prod
 RUN ls -l $APP_HOME
 
 
-FROM nginx:1.17.10-alpine
+FROM registry.cn-shenzhen.aliyuncs.com/piupuer/nginx:1.17.10-alpine
 RUN echo "----------------- Nginx构建 -----------------"
 
 # 定义应用运行目录
