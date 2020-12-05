@@ -37,6 +37,9 @@ RUN ls -l $APP_HOME
 ## 构建
 #RUN npm run build:prod
 
+# 构建时使用环境变量
+RUN echo $WEBPACK_ALIOSS_OPEN
+
 # 使用yarn构建
 RUN yarn config set registry https://registry.npm.taobao.org/
 # 安装依赖
