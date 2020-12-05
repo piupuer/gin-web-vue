@@ -49,20 +49,13 @@ export default {
   login: {
     title: '系统登录',
     logIn: '登录',
+    username: '用户名',
+    password: '密码',
     users: [{
       username: '超级管理员',
       password: '123456'
     }, {
-      username: '系统管理员',
-      password: '123456'
-    }, {
-      username: '普通',
-      password: '123456'
-    }, {
       username: '访客',
-      password: '123456'
-    }, {
-      username: '工作流测试',
       password: '123456'
     }],
     any: '随便填',

@@ -71,7 +71,7 @@ export const constantRoutes: RouteConfig[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/profile'
+    redirect: '/dashboard/index'
   },
   {
     path: '/profile',

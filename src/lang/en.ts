@@ -49,20 +49,13 @@ export default {
   login: {
     title: 'Log In',
     logIn: 'Sign In',
+    username: 'Username',
+    password: 'Password',
     users: [{
       username: 'Super Admin',
       password: '123456'
     }, {
-      username: 'Admin',
-      password: '123456'
-    }, {
-      username: 'Normal',
-      password: '123456'
-    }, {
       username: 'Guest',
-      password: '123456'
-    }, {
-      username: 'Workflow',
       password: '123456'
     }],
     any: 'any',

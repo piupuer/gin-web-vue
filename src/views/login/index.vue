@@ -77,42 +77,11 @@
           <span>{{ $t('login.users[0].password') }} : 123456 </span>
         </div>
         <div class="tips">
-          <span>{{ $t('login.users[1].username') }} : admin </span>
+          <span>{{ $t('login.users[1].username') }} : guest </span>
           <span>{{ $t('login.users[1].password') }} : 123456 </span>
         </div>
-        <div class="tips">
-          <span>{{ $t('login.users[2].username') }} : zhangsan </span>
-          <span>{{ $t('login.users[2].password') }} : 123456 </span>
-        </div>
-        <div class="tips">
-          <span>{{ $t('login.users[3].username') }} : lisi </span>
-          <span>{{ $t('login.users[3].password') }} : 123456 </span>
-        </div>
-        <div class="tips">
-          <span>{{ $t('login.users[4].username') }} : wangwu </span>
-          <span>{{ $t('login.users[0].password') }} : 123456 </span>
-        </div>
-
-        <el-button
-          class="thirdparty-button"
-          type="primary"
-          @click="showDialog=true"
-        >
-          {{ $t('login.thirdparty') }}
-        </el-button>
       </div>
     </el-form>
-
-    <el-dialog
-      :title="$t('login.thirdparty')"
-      :visible.sync="showDialog"
-    >
-      {{ $t('login.thirdpartyTips') }}
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
   </div>
 </template>
 
@@ -151,7 +120,7 @@ export default class extends Vue {
   }
 
   private loginForm = {
-    username: 'admin',
+    username: 'super',
     password: '123456'
   }
 

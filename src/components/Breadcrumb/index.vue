@@ -48,7 +48,7 @@ export default class extends Vue {
   private getBreadcrumb() {
     const matched = this.$route.matched.filter((item) => item.meta && item.meta.title)
     this.breadcrumbs = matched.filter((item) => {
-      return item.meta && item.meta.title && item.meta.breadcrumb !== false
+      return item.meta && item.meta.title && item.meta.breadcrumb !== 0
     })
   }
 
