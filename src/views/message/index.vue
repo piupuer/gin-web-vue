@@ -312,7 +312,7 @@ export default class extends Vue {
     }
     if (ids.length > 0) {
       MessageModule.Send({
-        type: 3,
+        type: '1-2-2',
         data: {
           ids: ids.join(',')
         }
@@ -322,7 +322,7 @@ export default class extends Vue {
 
   private async handleAllRead() {
     MessageModule.Send({
-      type: 5
+      type: '1-2-4'
     })
   }
 
@@ -351,7 +351,7 @@ export default class extends Vue {
       })
         .then(async() => {
           MessageModule.Send({
-            type: 4,
+            type: '1-2-3',
             data: {
               ids: ids.join(',')
             }
@@ -370,7 +370,7 @@ export default class extends Vue {
     })
       .then(async() => {
         MessageModule.Send({
-          type: 6
+          type: '1-2-5'
         })
         this.refresh()
       })
