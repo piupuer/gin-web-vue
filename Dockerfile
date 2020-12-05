@@ -3,6 +3,12 @@ FROM node:13.14-alpine AS gin-web-vue
 RUN echo "----------------- 前端Gin Web Vue构建(Production) -----------------"
 # 环境变量
 # 定义应用运行目录
+ARG WEBPACK_ALIOSS_OPEN
+ARG WEBPACK_ALIOSS_PLUGIN_ACCESS_KEY_ID
+ARG WEBPACK_ALIOSS_PLUGIN_ACCESS_KEY_SECRET
+ARG WEBPACK_ALIOSS_PLUGIN_BUCKET
+ARG WEBPACK_ALIOSS_PLUGIN_REGION
+ARG WEBPACK_ALIOSS_PLUGIN_OSS_BASE_DIR
 ENV APP_HOME /app/gin-web-vue-prod
 
 # alpine添加基础软件
