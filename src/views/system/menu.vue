@@ -342,7 +342,7 @@ export default class extends Vue {
     // 默认数据
     defaultForm: {
       id: 0,
-      root: true,
+      root: 1,
       parentId: 0,
       name: '',
       title: '',
@@ -351,9 +351,9 @@ export default class extends Vue {
       path: '',
       component: '',
       redirect: '',
-      visible: true,
-      breadcrumb: true,
-      status: true,
+      visible: 1,
+      breadcrumb: 1,
+      status: 1,
       // 表单辅助参数, 不参与提交
       parentIdStr: '0',
       rootPath: '',
@@ -437,8 +437,8 @@ export default class extends Vue {
       if (this.updateDialog.type === 1) {
         // 更新数据需要禁用部分子菜单
         if (this.isChildMenu(this.updateDialog.form.parentId, item.id, this.table.list)) {
-        // 子菜单不允许被选中
-          menu.disabled = true
+          // 子菜单不允许被选中
+          menu.disabled = 1
         }
       }
       menus.push(menu)

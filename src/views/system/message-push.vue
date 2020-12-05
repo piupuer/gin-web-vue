@@ -186,7 +186,7 @@ export default class extends Vue {
         try {
           this.table.pushLoading = true
           MessageModule.Send({
-            type: 2,
+            type: '1-2-1',
             data: this.table.form
           })
           this.$notify({

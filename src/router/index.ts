@@ -69,11 +69,6 @@ export const constantRoutes: RouteConfig[] = [
     meta: { hidden: true }
   },
   {
-    path: '/',
-    component: Layout,
-    redirect: '/profile'
-  },
-  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',

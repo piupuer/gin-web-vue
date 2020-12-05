@@ -40,16 +40,16 @@ class Message extends VuexModule implements IMessageState {
       data = JSON.parse(data)
       switch (data.type) {
         // 心跳
-        case 0:
+        case '1-2-1':
           if (data.detail && data.detail.code === 201) {
             this.Send({
-              type: 0,
+              type: '1-1-1',
               data: data.detail.data
             })
           }
           break
         // 新消息
-        case 3:
+        case '2-3-1':
           if (data.detail && data.detail.code === 201 && data.detail.data) {
             if (this.init && this.unReadCount < data.detail.data.unReadCount) {
               Notification({
@@ -65,12 +65,12 @@ class Message extends VuexModule implements IMessageState {
             this.SET_INIT(true)
             // 回复心跳
             this.Send({
-              type: 0
+              type: '1-1-1'
             })
           }
           break
         // 新用户上线
-        case 4:
+        case '2-4-1':
           if (data.detail && data.detail.code === 201 && data.detail.data) {
             if (data.detail.data.user) {
               const user = data.detail.data.user
@@ -83,7 +83,7 @@ class Message extends VuexModule implements IMessageState {
             }
             // 回复心跳
             this.Send({
-              type: 0
+              type: '1-1-1'
             })
           }
           break
@@ -91,7 +91,7 @@ class Message extends VuexModule implements IMessageState {
     } catch (e) {
       // 回复心跳
       this.Send({
-        type: 0,
+        type: '1-1-1',
         data
       })
     }
