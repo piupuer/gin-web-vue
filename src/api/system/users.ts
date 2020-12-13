@@ -20,6 +20,12 @@ export const logout = () =>
     method: 'post'
   })
 
+export const refreshToken = () =>
+  request({
+    url: '/base/refreshToken',
+    method: 'post'
+  })
+
 export const getUsers = (params: any) =>
   request({
     url: '/user/list',
