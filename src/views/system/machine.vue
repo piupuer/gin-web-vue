@@ -313,6 +313,7 @@ import PrShell from '@/components/Shell/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteMachine, createMachine, getMachines, updateMachine, connectMachine } from '@/api/system/machines'
 import { diffObjUpdate } from '@/utils/diff'
+import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -401,6 +402,7 @@ export default class extends Vue {
   created() {
     this.resetUpdateForm()
     this.getData()
+    IdempotenceModule.RefreshIdempotenceToken()
   }
 
   private async getData() {
@@ -438,6 +440,7 @@ export default class extends Vue {
             await createMachine(this.updateDialog.form)
           } finally {
             this.updateDialog.loading = false
+            IdempotenceModule.RefreshIdempotenceToken()
           }
         } else {
           const update = diffObjUpdate(this.updateDialog.oldData, this.updateDialog.form)

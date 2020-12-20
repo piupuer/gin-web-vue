@@ -48,6 +48,26 @@ class Message extends VuexModule implements IMessageState {
             })
           }
           break
+        // 普通消息
+        case '2-2-1':
+          if (data.detail) {
+            if (data.detail.code === 201) {
+              Notification({
+                title: '提醒',
+                message: data.detail.msg,
+                type: 'success',
+                duration: 2000
+              })
+            } else {
+              Notification({
+                title: '抱歉',
+                message: data.detail.msg,
+                type: 'error',
+                duration: 2000
+              })
+            }
+          }
+          break
         // 新消息
         case '2-3-1':
           if (data.detail && data.detail.code === 201 && data.detail.data) {

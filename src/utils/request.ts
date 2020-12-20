@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
+import { IdempotenceModule } from '@/store/modules/idempotence'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -14,6 +15,9 @@ service.interceptors.request.use(
     // Add Authorization header to every request, you can add other custom headers here
     if (UserModule.token) {
       config.headers.Authorization = 'Bearer ' + UserModule.token
+    }
+    if (IdempotenceModule.idempotenceToken) {
+      config.headers[IdempotenceModule.idempotenceTokenName] = IdempotenceModule.idempotenceToken
     }
     return config
   },

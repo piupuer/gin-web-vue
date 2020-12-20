@@ -1,7 +1,8 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
 // @ts-ignore
 import { JSEncrypt } from 'jsencrypt'
-import { login, logout, getUserInfo, refreshToken } from '@/api/system/users'
+import { getUserInfo } from '@/api/system/users'
+import { login, logout, refreshToken } from '@/api/system/bases'
 import { getToken, setToken, removeToken } from '@/utils/cookies'
 import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
