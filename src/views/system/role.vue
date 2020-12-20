@@ -325,6 +325,7 @@ import { getAllApiGroupByCategoryByRoleId } from '@/api/system/apis'
 import { getAllMenuByRoleId } from '@/api/system/menus'
 import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
 import { UserModule } from '@/store/modules/user'
+import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -433,6 +434,7 @@ export default class extends Vue {
     this.resetUpdateForm()
     this.defaultConfig.miniRoleSort = UserModule.roleSort
     this.getData()
+    IdempotenceModule.RefreshIdempotenceToken()
   }
 
   private async getData() {
@@ -469,6 +471,7 @@ export default class extends Vue {
             await createRole(this.updateDialog.form)
           } finally {
             this.updateDialog.loading = false
+            IdempotenceModule.RefreshIdempotenceToken()
           }
         } else {
           const update = diffObjUpdate(this.updateDialog.oldData, this.updateDialog.form)

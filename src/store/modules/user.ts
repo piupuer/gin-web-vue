@@ -1,7 +1,8 @@
 import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
 // @ts-ignore
 import { JSEncrypt } from 'jsencrypt'
-import { login, logout, getUserInfo } from '@/api/system/users'
+import { getUserInfo } from '@/api/system/users'
+import { login, logout, refreshToken } from '@/api/system/bases'
 import { getToken, setToken, removeToken } from '@/utils/cookies'
 import router, { resetRouter } from '@/router'
 import { PermissionModule } from './permission'
@@ -108,6 +109,14 @@ class User extends VuexModule implements IUserState {
     // 加密密码
     password = encryptor.encrypt(password);
     const { data } = await login({ username, password })
+    setToken(data.token)
+    this.SET_TOKEN(data.token)
+  }
+
+  @Action
+  public async RefreshToken() {
+    // 刷新token
+    const { data } = await refreshToken()
     setToken(data.token)
     this.SET_TOKEN(data.token)
   }
