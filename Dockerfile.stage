@@ -1,7 +1,14 @@
 FROM registry.cn-shenzhen.aliyuncs.com/piupuer/node:13.14-alpine AS gin-web-vue
 
 RUN echo "----------------- 前端Gin Web Vue构建(Staging) -----------------"
-# 环境变量
+# 构建参数
+ARG USE_YARN
+ARG WEBPACK_ALIOSS_OPEN
+ARG WEBPACK_ALIOSS_PLUGIN_ACCESS_KEY_ID
+ARG WEBPACK_ALIOSS_PLUGIN_ACCESS_KEY_SECRET
+ARG WEBPACK_ALIOSS_PLUGIN_BUCKET
+ARG WEBPACK_ALIOSS_PLUGIN_REGION
+ARG WEBPACK_ALIOSS_PLUGIN_OSS_BASE_DIR
 # 定义应用运行目录
 ENV APP_HOME /app/gin-web-vue-stage
 
@@ -26,23 +33,9 @@ RUN chmod +x version.sh && ./version.sh
 
 RUN ls -l $APP_HOME
 
-# 官方源
-#RUN npm config set registry https://registry.npmjs.org/
-## 使用npm构建
-## 设置npm/yarn镜像仓库国内源
-#RUN npm config set registry https://registry.npm.taobao.org
-#RUN npm config get registry
-## 安装依赖
-#RUN npm install
-## 构建
-#RUN npm run build:prod
-
-# 使用yarn构建
-RUN yarn config set registry https://registry.npm.taobao.org/
-# 安装依赖
-RUN yarn
+# 官方源https://registry.npmjs.org/
 # 构建
-RUN yarn build:stage
+RUN if [ "$USE_YARN" = "true" ] ; then yarn config set registry https://registry.npm.taobao.org/ && yarn && yarn build:stage; else npm config set registry https://registry.npm.taobao.org && npm install && npm run build:stage; fi
 
 RUN ls -l $APP_HOME
 
