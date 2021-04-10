@@ -1,7 +1,9 @@
-import { VuexModule, Module, Mutation, getModule, Action } from 'vuex-module-decorators'
+import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
 import { Notification } from 'element-ui'
 import { voice } from '@/utils/voice'
+import { getWsPrefix } from '@/utils/url'
+import { UserModule } from '@/store/modules/user'
 
 export interface IMessageState {
   unReadCount: number
@@ -9,7 +11,7 @@ export interface IMessageState {
   init: boolean
 }
 
-const websocket = new WebSocket('ws://' + window.location.hostname + '/api/v1/message/ws')
+const websocket = new WebSocket(getWsPrefix() + '/message/ws?token=' + UserModule.token)
 
 @Module({ dynamic: true, store, name: 'message' })
 class Message extends VuexModule implements IMessageState {
