@@ -116,7 +116,6 @@ import { Form } from 'element-ui'
 import { getUsers } from '@/api/system/users'
 import { getRoles } from '@/api/system/roles'
 import { MessageModule } from '@/store/modules/message'
-import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -158,8 +157,7 @@ export default class extends Vue {
       toUserIds: [],
       toRoleIds: [],
       title: '',
-      content: '',
-      idempotenceToken: ''
+      content: ''
     },
     // 表单校验
     rules: {
@@ -181,20 +179,21 @@ export default class extends Vue {
     }
   }
 
-  created() {
-    IdempotenceModule.RefreshIdempotenceToken()
-  }
-
   // 发送消息
   private async pushMessage() {
     (this.$refs.messageForm as Form).validate(async(valid) => {
       if (valid) {
         try {
           this.table.pushLoading = true
-          this.table.form.idempotenceToken = IdempotenceModule.idempotenceToken
           MessageModule.Send({
-            type: '1-2-1',
+            type: 2,
             data: this.table.form
+          })
+          this.$notify({
+            title: '恭喜',
+            message: '发送消息成功',
+            type: 'success',
+            duration: 2000
           })
         } catch (e) {
           this.$message({
@@ -203,7 +202,6 @@ export default class extends Vue {
           })
         } finally {
           this.table.pushLoading = false
-          IdempotenceModule.RefreshIdempotenceToken()
         }
       }
     })

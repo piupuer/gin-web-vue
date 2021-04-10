@@ -27,22 +27,22 @@
     <div class="user-bio">
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="user" /><span>{{ $t('profile.accountUsername') }}</span><span class="span-right">{{ user.username }}</span>
+          <svg-icon name="user" /><span>用户名</span><span class="span-right">{{ user.username }}</span>
         </div>
       </div>
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="guide" /><span>{{ $t('profile.accountNickname') }}</span><span class="span-right">{{ user.nickname }}</span>
+          <svg-icon name="guide" /><span>昵称</span><span class="span-right">{{ user.nickname }}</span>
         </div>
       </div>
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <i class="el-icon-mobile-phone" /><span>{{ $t('profile.accountMobile') }}</span><span class="span-right">{{ user.mobile }}</span>
+          <i class="el-icon-mobile-phone" /><span>手机</span><span class="span-right">{{ user.mobile }}</span>
         </div>
       </div>
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>{{ $t('profile.accountIntroduction') }}</span>
+          <svg-icon name="education" /><span>简介</span>
         </div>
       </div>
       <div class="user-bio-section-body">

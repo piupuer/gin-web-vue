@@ -62,9 +62,7 @@ export const getLocale = () => {
 
 const i18n = new VueI18n({
   locale: getLocale(),
-  messages,
-  // disable no translation warning: https://github.com/kazupon/vue-i18n/issues/96
-  silentTranslationWarn: true
+  messages
 })
 
 export default i18n

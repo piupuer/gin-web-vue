@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
-import { IdempotenceModule } from '@/store/modules/idempotence'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -16,19 +15,12 @@ service.interceptors.request.use(
     if (UserModule.token) {
       config.headers.Authorization = 'Bearer ' + UserModule.token
     }
-    if (IdempotenceModule.idempotenceToken) {
-      config.headers[IdempotenceModule.idempotenceTokenName] = IdempotenceModule.idempotenceToken
-    }
     return config
   },
   (error) => {
     Promise.reject(error)
   }
 )
-// 正在刷新的标记
-let refreshing = false
-// 重试队列，每一项将是一个待执行的函数形式
-let requests: any = []
 
 // Response interceptors
 service.interceptors.response.use(
@@ -40,46 +32,19 @@ service.interceptors.response.use(
     if (res.code !== 201) {
       let msg = '网络异常, 请稍后再试'
       if (res.code === 401) {
-        const config = response.config
-        // 记录本次请求内容
-        if (refreshing) {
-          if (config.url == '/base/refreshToken') {
-            msg = '登录超时'
-            return Promise.reject(new Error(msg))
+        msg = '登录超时'
+        MessageBox.confirm(
+          '登录超时, 重新登录或继续停留？',
+          '确定登出',
+          {
+            confirmButtonText: '重新登录',
+            cancelButtonText: '继续停留',
+            type: 'warning'
           }
-          // 将当前请求记录到队列
-          // 正在刷新token，将返回一个未执行resolve的promise
-          return new Promise((resolve) => {
-            // 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行
-            requests.push(() => {
-              resolve(service(config))
-            })
-          })
-        } else {
-          refreshing = true
-          return UserModule.RefreshToken().then(() => {
-            // 已经刷新了token，将所有队列中的请求进行重试
-            requests.forEach((cb: any) => cb())
-            requests = []
-            return service(config)
-          }).catch(() => {
-            // 刷新token失败, 必须重新登录
-            MessageBox.confirm(
-              '登录超时, 重新登录或继续停留在当前页？',
-              '登录状态已失效',
-              {
-                confirmButtonText: '重新登录',
-                cancelButtonText: '继续停留',
-                type: 'warning'
-              }
-            ).then(() => {
-              UserModule.ResetToken()
-              location.reload() // To prevent bugs from vue-router
-            })
-          }).finally(() => {
-            refreshing = false
-          })
-        }
+        ).then(() => {
+          UserModule.ResetToken()
+          location.reload() // To prevent bugs from vue-router
+        })
       } else {
         if (res.msg) {
           msg = res.msg

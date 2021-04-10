@@ -302,7 +302,6 @@ import { Form } from 'element-ui'
 import { batchDeleteUser, createUser, getUsers, updateUser } from '@/api/system/users'
 import { diffObjUpdate } from '@/utils/diff'
 import { getRoles } from '@/api/system/roles'
-import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -405,7 +404,6 @@ export default class extends Vue {
   created() {
     this.resetUpdateForm()
     this.getData()
-    IdempotenceModule.RefreshIdempotenceToken()
   }
 
   private async getData() {
@@ -442,8 +440,6 @@ export default class extends Vue {
             await createUser(this.updateDialog.form)
           } finally {
             this.updateDialog.loading = false
-            // 刷新token
-            IdempotenceModule.RefreshIdempotenceToken()
           }
         } else {
           const update = diffObjUpdate(this.updateDialog.oldData, this.updateDialog.form)

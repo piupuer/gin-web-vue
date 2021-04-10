@@ -1,9 +1,7 @@
-import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import { VuexModule, Module, Mutation, getModule, Action } from 'vuex-module-decorators'
 import store from '@/store'
 import { Notification } from 'element-ui'
 import { voice } from '@/utils/voice'
-import { getWsPrefix } from '@/utils/url'
-import { UserModule } from '@/store/modules/user'
 
 export interface IMessageState {
   unReadCount: number
@@ -11,7 +9,7 @@ export interface IMessageState {
   init: boolean
 }
 
-const websocket = new WebSocket(getWsPrefix() + '/message/ws?token=' + UserModule.token)
+const websocket = new WebSocket('ws://' + window.location.hostname + '/api/v1/message/ws')
 
 @Module({ dynamic: true, store, name: 'message' })
 class Message extends VuexModule implements IMessageState {
@@ -42,36 +40,16 @@ class Message extends VuexModule implements IMessageState {
       data = JSON.parse(data)
       switch (data.type) {
         // 心跳
-        case '1-2-1':
+        case 0:
           if (data.detail && data.detail.code === 201) {
             this.Send({
-              type: '1-1-1',
+              type: 0,
               data: data.detail.data
             })
           }
           break
-        // 普通消息
-        case '2-2-1':
-          if (data.detail) {
-            if (data.detail.code === 201) {
-              Notification({
-                title: '提醒',
-                message: data.detail.msg,
-                type: 'success',
-                duration: 2000
-              })
-            } else {
-              Notification({
-                title: '抱歉',
-                message: data.detail.msg,
-                type: 'error',
-                duration: 2000
-              })
-            }
-          }
-          break
         // 新消息
-        case '2-3-1':
+        case 3:
           if (data.detail && data.detail.code === 201 && data.detail.data) {
             if (this.init && this.unReadCount < data.detail.data.unReadCount) {
               Notification({
@@ -87,12 +65,12 @@ class Message extends VuexModule implements IMessageState {
             this.SET_INIT(true)
             // 回复心跳
             this.Send({
-              type: '1-1-1'
+              type: 0
             })
           }
           break
         // 新用户上线
-        case '2-4-1':
+        case 4:
           if (data.detail && data.detail.code === 201 && data.detail.data) {
             if (data.detail.data.user) {
               const user = data.detail.data.user
@@ -105,7 +83,7 @@ class Message extends VuexModule implements IMessageState {
             }
             // 回复心跳
             this.Send({
-              type: '1-1-1'
+              type: 0
             })
           }
           break
@@ -113,7 +91,7 @@ class Message extends VuexModule implements IMessageState {
     } catch (e) {
       // 回复心跳
       this.Send({
-        type: '1-1-1',
+        type: 0,
         data
       })
     }

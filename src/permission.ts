@@ -51,11 +51,15 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
           })
           // Dynamically add accessible routes
           router.addRoutes(PermissionModule.dynamicRoutes)
-          // fix bug: Redirected when going from "xx" to "xx" via a navigation guard.
-          // https://github.com/Armour/vue-typescript-admin-template/issues/150#issuecomment-736574743
-          router.replace(to.fullPath)
-          // next({ ...to, replace: true })
+          // Hack: ensure addRoutes is complete
+          // Set the replace: true, so the navigation will not leave a history record
+          next({ ...to, replace: true })
         } catch (err) {
+          // Remove token and redirect to login page
+          UserModule.ResetToken()
+          Message.error(err || 'Has Error')
+          next(`/login?redirect=${to.path}`)
+          NProgress.done()
         }
       } else {
         next()
