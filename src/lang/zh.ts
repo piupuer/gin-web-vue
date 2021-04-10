@@ -3,6 +3,7 @@ export default {
     userCardTitle: '关于我',
     userCardHello: '你好',
     accountLabel: '资料',
+    accountUsername: '用户名',
     accountNickname: '昵称',
     accountMobile: '手机',
     accountIntroduction: '个人简介',
@@ -19,9 +20,20 @@ export default {
     menu: '菜单管理',
     role: '角色管理',
     user: '用户管理',
-    test: '测试用例',
+    api: '接口管理',
+    workflow: '工作流管理',
+    'operation-log': '操作日志',
+    'message-push': '消息推送',
+    machine: '机器管理',
     profile: '个人中心',
-    message: '消息中心'
+    message: '消息中心',
+    testRoot: '测试页面',
+    test: '测试用例',
+    leave: '我的请假条',
+    approving: '待审批列表',
+    uploader: '上传组件',
+    uploader1: '上传示例1',
+    uploader2: '上传示例2',
   },
   navbar: {
     logOut: '退出登录',
@@ -31,13 +43,21 @@ export default {
     size: '布局大小',
     profile: '个人中心',
     message: '消息中心',
-    loki: '系统日志(登录test/123456)'
+    loki: '系统日志(登录test/123456)',
+    minio: '对象存储(登录minio/minio123)'
   },
   login: {
     title: '系统登录',
     logIn: '登录',
-    username: '账号',
+    username: '用户名',
     password: '密码',
+    users: [{
+      username: '超级管理员',
+      password: '123456'
+    }, {
+      username: '访客',
+      password: '123456'
+    }],
     any: '随便填',
     thirdparty: '第三方登录',
     thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！'

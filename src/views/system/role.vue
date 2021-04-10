@@ -120,6 +120,10 @@
           sortable
         />
         <el-table-column
+          prop="sort"
+          label="排序"
+        />
+        <el-table-column
           prop="desc"
           label="说明"
         />
@@ -207,6 +211,16 @@
           <el-input
             v-model.trim="updateDialog.form.keyword"
             placeholder="请输入关键字"
+          />
+        </el-form-item>
+        <el-form-item
+          label="排序"
+          prop="sort"
+        >
+          <el-input-number
+            v-model="updateDialog.form.sort"
+            :min="defaultConfig.miniRoleSort"
+            label="请设置排序(值越大权限越小, 且不得比当前账号序号小)"
           />
         </el-form-item>
         <el-form-item
@@ -310,6 +324,8 @@ import { batchDeleteRole, createRole, getRoles, updateRole, updateRoleApis, upda
 import { getAllApiGroupByCategoryByRoleId } from '@/api/system/apis'
 import { getAllMenuByRoleId } from '@/api/system/menus'
 import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
+import { UserModule } from '@/store/modules/user'
+import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -322,6 +338,7 @@ export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
     pageSize: 5,
+    miniRoleSort: 0,
     roleMenuTreeProps: {
       children: 'children',
       label: 'title'
@@ -355,7 +372,8 @@ export default class extends Vue {
       id: 0,
       name: '',
       keyword: '',
-      status: true,
+      sort: 0,
+      status: 1,
       desc: ''
     },
     // 表单
@@ -370,6 +388,9 @@ export default class extends Vue {
       keyword: [
         { required: true, message: '关键字不能为空', trigger: 'blur' },
         { validator: this.validateKeyword, trigger: 'blur' }
+      ],
+      sort: [
+        { required: true, message: '角色排序不能为空', trigger: 'blur' }
       ]
     }
   }
@@ -411,7 +432,9 @@ export default class extends Vue {
 
   created() {
     this.resetUpdateForm()
+    this.defaultConfig.miniRoleSort = UserModule.roleSort
     this.getData()
+    IdempotenceModule.RefreshIdempotenceToken()
   }
 
   private async getData() {
@@ -448,6 +471,7 @@ export default class extends Vue {
             await createRole(this.updateDialog.form)
           } finally {
             this.updateDialog.loading = false
+            IdempotenceModule.RefreshIdempotenceToken()
           }
         } else {
           const update = diffObjUpdate(this.updateDialog.oldData, this.updateDialog.form)
@@ -586,6 +610,7 @@ export default class extends Vue {
     this.updateDialog.form.id = row.id
     this.updateDialog.form.name = row.name
     this.updateDialog.form.keyword = row.keyword
+    this.updateDialog.form.sort = row.sort
     this.updateDialog.form.status = row.status
     this.updateDialog.form.desc = row.desc
     // 记录旧数据

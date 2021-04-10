@@ -56,6 +56,11 @@
     "vuex": "^3.1.3",
     "vuex-module-decorators": "^0.16.1",
     "xlsx": "^0.15.6",
+    "xterm": "^4.9.0",
+    "xterm-addon-attach": "^0.6.0",
+    "xterm-addon-fit": "^0.4.0",
+    "xterm-addon-search": "^0.7.0",
+    "xterm-addon-web-links": "^0.4.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
@@ -114,7 +119,8 @@
     "vue-cli-plugin-element": "^1.0.1",
     "vue-cli-plugin-style-resources-loader": "^0.1.4",
     "vue-template-compiler": "^2.6.11",
-    "webpack": "^4.42.1"
+    "webpack": "^4.42.1",
+    "webpack-alioss-plugin": "^2.4.0"
   },
   "bugs": {
     "url": "https://github.com/piupuer/gin-web-vue/issues"

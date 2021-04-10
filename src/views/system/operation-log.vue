@@ -298,6 +298,7 @@ import jsonView from 'vue-json-views'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
 import { batchDeleteOperationLog, getOperationLogs } from '@/api/system/operationLogs'
+import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告

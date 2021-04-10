@@ -1,9 +1,23 @@
-FROM node:13.14 AS gin-web-vue
+FROM registry.cn-shenzhen.aliyuncs.com/piupuer/node:13.14-alpine AS gin-web-vue
 
 RUN echo "----------------- 前端Gin Web Vue构建(Production) -----------------"
 # 环境变量
 # 定义应用运行目录
+ARG WEBPACK_ALIOSS_OPEN
+ARG WEBPACK_ALIOSS_PLUGIN_ACCESS_KEY_ID
+ARG WEBPACK_ALIOSS_PLUGIN_ACCESS_KEY_SECRET
+ARG WEBPACK_ALIOSS_PLUGIN_BUCKET
+ARG WEBPACK_ALIOSS_PLUGIN_REGION
+ARG WEBPACK_ALIOSS_PLUGIN_OSS_BASE_DIR
 ENV APP_HOME /app/gin-web-vue-prod
+
+# alpine添加基础软件
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN apk update \
+  && apk add bash \
+  && apk add git \
+  && apk add python make g++ \
+  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* $HOME/.cache
 
 RUN mkdir -p $APP_HOME
 
@@ -29,6 +43,9 @@ RUN ls -l $APP_HOME
 ## 构建
 #RUN npm run build:prod
 
+# 构建时使用环境变量
+RUN echo $WEBPACK_ALIOSS_OPEN
+
 # 使用yarn构建
 RUN yarn config set registry https://registry.npm.taobao.org/
 # 安装依赖
@@ -39,7 +56,7 @@ RUN yarn build:prod
 RUN ls -l $APP_HOME
 
 
-FROM nginx:1.17.10-alpine
+FROM registry.cn-shenzhen.aliyuncs.com/piupuer/nginx:1.17.10-alpine
 RUN echo "----------------- Nginx构建 -----------------"
 
 # 定义应用运行目录

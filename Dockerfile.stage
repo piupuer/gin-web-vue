@@ -1,9 +1,17 @@
-FROM node:13.14 AS gin-web-vue
+FROM registry.cn-shenzhen.aliyuncs.com/piupuer/node:13.14-alpine AS gin-web-vue
 
 RUN echo "----------------- 前端Gin Web Vue构建(Staging) -----------------"
 # 环境变量
 # 定义应用运行目录
 ENV APP_HOME /app/gin-web-vue-stage
+
+# alpine添加基础软件
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN apk update \
+  && apk add bash \
+  && apk add git \
+  && apk add python make g++ \
+  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* $HOME/.cache
 
 RUN mkdir -p $APP_HOME
 
@@ -39,7 +47,7 @@ RUN yarn build:stage
 RUN ls -l $APP_HOME
 
 
-FROM nginx:1.17.10-alpine
+FROM registry.cn-shenzhen.aliyuncs.com/piupuer/nginx:1.17.10-alpine
 RUN echo "----------------- Nginx构建 -----------------"
 
 # 定义应用运行目录

@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const WebpackAliossPlugin = require('webpack-alioss-plugin')
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -7,10 +9,28 @@ const path = require('path')
 const devServerPort = 10001 // TODO: get this variable from setting.ts
 const name = 'Gin Web Vue' // TODO: get this variable from setting.ts
 
+// 配置文件上传到阿里云CDN
+// export WEBPACK_ALIOSS_OPEN=true && \
+//   export WEBPACK_ALIOSS_PLUGIN_ACCESS_KEY_ID='' && \
+//   export WEBPACK_ALIOSS_PLUGIN_ACCESS_KEY_SECRET='' && \
+//   export WEBPACK_ALIOSS_PLUGIN_BUCKET='' && \
+//   export WEBPACK_ALIOSS_PLUGIN_REGION='' && \
+//   export WEBPACK_ALIOSS_PLUGIN_OSS_BASE_DIR=go
+let publicPath = './'
+let plugins = []
+
+if (process.env.NODE_ENV === 'production' && process.env.WEBPACK_ALIOSS_OPEN === 'true') {
+  publicPath = '//piupuer.oss-cn-shenzhen.aliyuncs.com/go/gin-web-vue/'
+  plugins = [new WebpackAliossPlugin()]
+}
+
 module.exports = {
   // 使用./替换/可兼容二级域名
-  publicPath: process.env.NODE_ENV === 'production' ? './' : './',
+  publicPath: publicPath,
   lintOnSave: process.env.NODE_ENV === 'development',
+  configureWebpack: {
+    plugins
+  },
   productionSourceMap: false,
   // 某些包用的ES6以上语法, 需要在此处转译作兼容处理(IE11以下白屏 / IOS 11.2移动端白屏)
   transpileDependencies: [

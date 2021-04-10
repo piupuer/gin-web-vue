@@ -8,36 +8,24 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="用户名"
-        prop="username"
+        label="主机地址"
+        prop="host"
       >
         <el-input
-          v-model.trim="table.form.username"
-          placeholder="用户名"
+          v-model.trim="table.form.host"
+          placeholder="主机地址"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="手机号"
-        prop="mobile"
+        label="登录名"
+        prop="loginName"
       >
         <el-input
-          v-model.trim="table.form.mobile"
-          placeholder="手机号"
-          clearable
-          @clear="doSearch"
-          @keyup.enter.native="doSearch"
-        />
-      </el-form-item>
-      <el-form-item
-        label="昵称"
-        prop="nickname"
-      >
-        <el-input
-          v-model.trim="table.form.nickname"
-          placeholder="昵称"
+          v-model.trim="table.form.loginName"
+          placeholder="登录名"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
@@ -50,7 +38,7 @@
         <el-select
           v-model.trim="table.form.status"
           clearable
-          placeholder="用户状态"
+          placeholder="连接状态"
         >
           <el-option
             key="1"
@@ -59,22 +47,10 @@
           />
           <el-option
             key="0"
-            label="禁用"
+            label="无法连接"
             :value="0"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item
-        label="创建人"
-        prop="creator"
-      >
-        <el-input
-          v-model.trim="table.form.creator"
-          placeholder="创建人"
-          clearable
-          @clear="doSearch"
-          @keyup.enter.native="doSearch"
-        />
       </el-form-item>
       <el-form-item>
         <el-button
@@ -122,43 +98,95 @@
           width="55"
         />
         <el-table-column
-          prop="username"
-          label="用户名"
-          sortable
+          prop="host"
+          label="主机地址"
         />
         <el-table-column
-          prop="mobile"
-          label="手机号"
-          sortable
+          prop="sshPort"
+          label="ssh端口"
+          align="center"
         />
         <el-table-column
-          prop="nickname"
-          label="昵称"
+          prop="loginName"
+          label="登录名"
+          align="center"
+        />
+        <el-table-column
+          prop="loginPwd"
+          label="登录密码"
+          align="center"
         />
         <el-table-column
           prop="status"
           label="状态"
+          align="center"
         >
           <template slot-scope="scope">
-            <el-switch
-              v-model.trim="scope.row.status"
-              :active-value="1"
-              :inactive-value="0"
-              @change="handleStatusChange(scope.row)"
-            />
+            <el-tag
+              :type="scope.row.status==0?'danger':'success'"
+            >
+              {{ scope.row.status==0?'无法连接':'正常' }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column
+          prop="version"
+          label="操作系统"
+          align="center"
+        />
+        <el-table-column
+          prop="arch"
+          label="系统架构"
+          align="center"
+        />
+        <el-table-column
+          prop="name"
+          label="机器名称"
+          align="center"
+        />
+        <el-table-column
+          prop="cpu"
+          label="CPU"
+        />
+        <el-table-column
+          prop="memory"
+          label="内存"
+          align="center"
+        />
+        <el-table-column
+          prop="disk"
+          label="硬盘"
+          align="center"
+        />
+        <el-table-column
+          prop="remark"
+          label="备注"
+        />
+        <el-table-column
           prop="creator"
           label="创建人"
+          align="center"
         />
         <el-table-column
           fixed="right"
           label="操作"
           align="center"
-          width="180"
+          width="320"
         >
           <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="doConnect(scope.row)"
+            >
+              {{ scope.row.status == 0 ? '连接' : '刷新' }}
+            </el-button>
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handleTerminal(scope.row)"
+            >
+              终端
+            </el-button>
             <el-button
               size="mini"
               @click="handleUpdate(scope.row)"
@@ -187,7 +215,7 @@
       />
     </el-form>
 
-    <!-- 用户配置对话框 -->
+    <!-- 机器配置对话框 -->
     <el-dialog
       :title="updateDialog.title"
       :visible.sync="updateDialog.visible"
@@ -200,80 +228,48 @@
         label-width="80px"
       >
         <el-form-item
-          label="用户名"
-          prop="username"
+          label="主机地址"
+          prop="host"
         >
           <el-input
-            v-model.trim="updateDialog.form.username"
-            placeholder="请输入用户名(用于登录系统)"
+            v-model.trim="updateDialog.form.host"
+            placeholder="请输入主机地址(可以是IP或域名)"
           />
         </el-form-item>
         <el-form-item
-          v-if="updateDialog.type===0"
-          label="初始密码"
-          prop="initPassword"
+          label="ssh端口"
+          prop="sshPort"
         >
           <el-input
-            v-model.trim="updateDialog.form.initPassword"
-            placeholder="请输入用户初始密码(用于登录系统)"
+            v-model="updateDialog.form.sshPort"
+            placeholder="请输入ssh端口号(默认22)"
           />
         </el-form-item>
         <el-form-item
-          label="手机号"
-          prop="mobile"
+          label="登录名"
+          prop="loginName"
         >
           <el-input
-            v-model.trim="updateDialog.form.mobile"
-            placeholder="请输入手机号"
+            v-model.trim="updateDialog.form.loginName"
+            placeholder="请输入登录用户名"
           />
         </el-form-item>
         <el-form-item
-          label="绑定角色"
-          prop="roleId"
-        >
-          <el-select
-            v-model.trim="updateDialog.form.roleId"
-            clearable
-            filterable
-            placeholder="请为该用户指定角色"
-          >
-            <el-option
-              v-for="item in updateDialog.roleSelectOptions"
-              :key="item.id"
-              :label="item.name + '(' + item.desc + ')'"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-if="updateDialog.type===1"
-          label="重置密码"
-          prop="newPassword"
+          label="登录密码"
+          prop="loginPwd"
         >
           <el-input
-            v-model.trim="updateDialog.form.newPassword"
-            placeholder="请输入新的用户密码"
+            v-model.trim="updateDialog.form.loginPwd"
+            placeholder="请输入登录密码"
           />
         </el-form-item>
         <el-form-item
-          label="昵称"
-          prop="nickname"
+          label="备注"
+          prop="remark"
         >
           <el-input
-            v-model.trim="updateDialog.form.nickname"
-            placeholder="请输入昵称"
-          />
-        </el-form-item>
-        <el-form-item
-          label="状态"
-          prop="status"
-        >
-          <el-switch
-            v-model.trim="updateDialog.form.status"
-            :active-value="1"
-            :inactive-value="0"
-            active-text="正常"
-            inactive-text="禁用"
+            v-model.trim="updateDialog.form.remark"
+            placeholder="请输入机器备注"
           />
         </el-form-item>
       </el-form>
@@ -293,46 +289,44 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <!--  机器终端对话框  -->
+    <el-dialog
+      :title="terminalDialog.title"
+      :visible.sync="terminalDialog.visible"
+      :fullscreen="true"
+    >
+      <pr-shell
+        v-if="terminalDialog.visible"
+        :host="terminalDialog.machine.host"
+        :ssh-port="terminalDialog.machine.sshPort"
+        :login-name="terminalDialog.machine.loginName"
+        :login-pwd="terminalDialog.machine.loginPwd"
+      />
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
+import PrShell from '@/components/Shell/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteUser, createUser, getUsers, updateUser } from '@/api/system/users'
+import { batchDeleteMachine, createMachine, getMachines, updateMachine, connectMachine } from '@/api/system/machines'
 import { diffObjUpdate } from '@/utils/diff'
-import { getRoles } from '@/api/system/roles'
 import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
-  name: 'User',
+  name: 'Machine',
   components: {
-    Pagination
+    Pagination,
+    PrShell
   }
 })
 export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
     pageSize: 5
-  }
-
-  private validateUsername(rule: any, value: string, callback: Function) {
-    if (!/^[a-zA-Z]/.test(value)) {
-      callback(new Error('必须以字母开头, 如a12345'))
-    } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
-      callback(new Error('不允许出现汉字或特殊字符, 如a+,sa、a张三'))
-    } else {
-      callback()
-    }
-  }
-
-  private validateMobile(rule: any, value: string, callback: Function) {
-    if (!/^[1-9]([0-9]{10})+$/.test(value)) {
-      callback(new Error('手机号格式不正确'))
-    } else {
-      callback()
-    }
   }
 
   private updateDialog: any = {
@@ -348,40 +342,43 @@ export default class extends Vue {
     // 默认数据
     defaultForm: {
       id: 0,
-      username: '',
-      initPassword: '',
-      newPassword: '',
-      mobile: '',
-      nickname: '',
-      status: 1,
-      creator: '',
-      roleId: ''
+      host: '',
+      sshPort: 22,
+      loginName: '',
+      loginPwd: '',
+      osInfo: '',
+      kernelInfo: '',
+      status: 0,
+      remark: ''
     },
     // 表单
     form: {},
     oldData: {},
     // 表单校验
     rules: {
-      username: [
-        { required: true, message: '用户名不能为空', trigger: 'blur' },
-        { min: 4, message: '用户名至少4个字符', trigger: 'blur' },
-        { max: 20, message: '用户名至多20个字符', trigger: 'blur' },
-        { validator: this.validateUsername, trigger: 'blur' }
+      host: [
+        { required: true, message: '主机地址不能为空', trigger: 'blur' }
       ],
-      initPassword: [
-        { required: true, message: '用户初始密码不能为空', trigger: 'blur' },
-        { min: 6, message: '用户初始密码至少6个字符', trigger: 'blur' }
+      loginName: [
+        { required: true, message: '登录名不能为空', trigger: 'blur' }
       ],
-      mobile: [
-        { required: true, message: '手机号不能为空', trigger: 'blur' },
-        { validator: this.validateMobile, trigger: 'blur' }
-      ],
-      roleId: [
-        { required: true, message: '请为用户绑定角色', trigger: 'blur' }
-      ],
-      newPassword: [
-        { min: 6, message: '重置用户密码至少6个字符', trigger: 'blur' }
+      loginPwd: [
+        { required: true, message: '登录密码不能为空', trigger: 'blur' }
       ]
+    }
+  }
+
+  private terminalDialog: any = {
+    // 是否打开
+    visible: false,
+    // 标题
+    title: '',
+    // 机器信息
+    machine: {
+      host: '',
+      sshPort: '',
+      loginName: '',
+      loginPwd: ''
     }
   }
 
@@ -394,11 +391,11 @@ export default class extends Vue {
     pageSize: 5,
     total: 0,
     form: {
-      username: '',
-      mobile: '',
-      nickname: '',
-      status: '',
-      creator: ''
+      host: '',
+      sshPort: '',
+      loginName: '',
+      loginPwd: '',
+      remark: ''
     }
   }
 
@@ -419,7 +416,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getUsers(params)
+      const { data } = await getMachines(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize
@@ -436,13 +433,13 @@ export default class extends Vue {
   private async doUpdate() {
     (this.$refs.updateForm as Form).validate(async(valid) => {
       if (valid) {
+        this.updateDialog.form.sshPort = parseInt(this.updateDialog.form.sshPort)
         if (this.updateDialog.type === 0) {
           try {
             this.updateDialog.loading = true
-            await createUser(this.updateDialog.form)
+            await createMachine(this.updateDialog.form)
           } finally {
             this.updateDialog.loading = false
-            // 刷新token
             IdempotenceModule.RefreshIdempotenceToken()
           }
         } else {
@@ -457,7 +454,7 @@ export default class extends Vue {
           }
           try {
             this.updateDialog.loading = true
-            await updateUser(update.id, update)
+            await updateMachine(update.id, update)
           } finally {
             this.updateDialog.loading = false
           }
@@ -470,12 +467,27 @@ export default class extends Vue {
         this.resetUpdateForm()
         this.$notify({
           title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}用户成功`,
+          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}机器成功`,
           type: 'success',
           duration: 2000
         })
       }
     })
+  }
+
+  private async doConnect(row: any) {
+    try {
+      await connectMachine(row.id)
+      // 重新查询
+      this.getData()
+      this.$notify({
+        title: '恭喜',
+        message: `${row.status === 0 ? '连接' : '刷新'}机器状态成功`,
+        type: 'success',
+        duration: 2000
+      })
+    } finally {
+    }
   }
 
   private async resetUpdateForm() {
@@ -500,52 +512,44 @@ export default class extends Vue {
       // 清理字段
       this.resetUpdateForm()
     }
-    try {
-      // 读取所有角色
-      const { data } = await getRoles({
-        noPagination: true
-      })
-      this.updateDialog.roleSelectOptions = data.list
-    } catch (e) {
-      this.$message.error('读取系统角色信息失败')
-      return
-    }
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
-    this.updateDialog.title = '创建新用户'
+    this.updateDialog.title = '创建新机器'
     // 开启弹窗
     this.updateDialog.visible = true
   }
 
   private async handleUpdate(row: any) {
-    try {
-      // 读取当前角色
-      const { data } = await getRoles({
-        noPagination: true
-      })
-      this.updateDialog.roleSelectOptions = data.list
-    } catch (e) {
-      this.$message.error('读取系统角色信息失败')
-      return
-    }
     // 清理字段
     this.resetUpdateForm()
     // 弹窗表单赋值
     this.updateDialog.form.id = row.id
-    this.updateDialog.form.username = row.username
-    this.updateDialog.form.mobile = row.mobile
-    this.updateDialog.form.nickname = row.nickname
-    this.updateDialog.form.status = row.status
-    this.updateDialog.form.roleId = row.roleId
+    this.updateDialog.form.host = row.host
+    this.updateDialog.form.sshPort = row.sshPort
+    this.updateDialog.form.loginName = row.loginName
+    this.updateDialog.form.loginPwd = row.loginPwd
+    this.updateDialog.form.remark = row.remark
     // 记录旧数据
     this.updateDialog.oldData = JSON.parse(JSON.stringify(this.updateDialog.form))
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
-    this.updateDialog.title = '修改用户信息'
+    this.updateDialog.title = '修改机器信息'
     // 开启弹窗
     this.updateDialog.visible = true
+  }
+
+  private async handleTerminal(row: any) {
+    this.terminalDialog.machine = {
+      host: row.host,
+      sshPort: row.sshPort,
+      loginName: row.loginName,
+      loginPwd: row.loginPwd
+    }
+
+    this.terminalDialog.title = '连接终端(主机地址: ' + row.host + ', 机器名称: ' + row.name + ')'
+    this.terminalDialog.visible = true
   }
 
   private handleDelete(row: any) {
@@ -558,46 +562,24 @@ export default class extends Vue {
 
   private async batchDelete(rows: any) {
     const ids: number[] = []
-    const usernames: string[] = []
+    const hosts: string[] = []
     for (let i = 0, len = rows.length; i < len; i++) {
       const row = rows[i]
       ids.push(row.id)
-      usernames.push(row.username)
+      hosts.push(row.host)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除用户[${usernames.join(',')}]吗, 此操作不可逆?`
+      const msg = `确定要删除机器[${hosts.join(',')}]吗, 此操作不可逆?`
       this.$confirm(msg, '请谨慎操作', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(async() => {
-          await batchDeleteUser(ids.join(','))
+          await batchDeleteMachine(ids.join(','))
           this.getData()
         })
     }
-  }
-
-  // 改变用户状态
-  private async handleStatusChange(row: any) {
-    let msg = `确定要恢复用户[${row.username}]吗?`
-    if (row.status == 0) {
-      msg = `确定要禁用用户[${row.username}]吗?该操作可能导致该用户无法正常使用系统`
-    }
-    this.$confirm(msg, '请谨慎操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(async() => {
-        await updateUser(row.id, {
-          status: row.status
-        })
-        this.getData()
-      })
-      .catch(() => {
-        row.status = row.status == 0 ? 1 : 0
-      })
   }
 
   private resetForm(formName: string) {

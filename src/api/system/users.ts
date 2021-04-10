@@ -7,19 +7,6 @@ export const getUserInfo = (data: any) =>
     data
   })
 
-export const login = (data: any) =>
-  request({
-    url: '/base/login',
-    method: 'post',
-    data
-  })
-
-export const logout = () =>
-  request({
-    url: '/base/logout',
-    method: 'post'
-  })
-
 export const getUsers = (params: any) =>
   request({
     url: '/user/list',
