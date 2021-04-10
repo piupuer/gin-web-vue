@@ -33,7 +33,7 @@ export default {
     approving: 'Approving',
     uploader: 'Uploader',
     uploader1: 'Uploader1',
-    uploader2: 'Uploader2',
+    uploader2: 'Uploader2'
   },
   navbar: {
     logOut: 'Log Out',

@@ -14,6 +14,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/interface-name-prefix': ['error', { "prefixWithI": "always" }],
     '@typescript-eslint/no-explicit-any': 'off',
+    "@typescript-eslint/ban-ts-ignore": "off",
     '@typescript-eslint/member-delimiter-style': ['error',
       {
         'multiline': {

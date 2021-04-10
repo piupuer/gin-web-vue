@@ -33,7 +33,7 @@ export default {
     approving: '待审批列表',
     uploader: '上传组件',
     uploader1: '上传示例1',
-    uploader2: '上传示例2',
+    uploader2: '上传示例2'
   },
   navbar: {
     logOut: '退出登录',

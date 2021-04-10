@@ -27,7 +27,6 @@ export const connectMachine = (id: number) =>
     method: 'patch'
   })
 
-
 export const batchDeleteMachine = (ids: string) =>
   request({
     url: '/machine/delete/batch',

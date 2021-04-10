@@ -24,4 +24,3 @@ export const idempotenceToken = () =>
     url: '/base/idempotenceToken',
     method: 'get'
   })
-
