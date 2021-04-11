@@ -8,25 +8,41 @@ import { UserModule } from '@/store/modules/user'
 export interface IMessageState {
   unReadCount: number
   ws: any
-  init: boolean
 }
 
-const websocket = new WebSocket(getWsPrefix() + '/message/ws?token=' + UserModule.token)
+// 心跳间隔
+const heartBeatPeriod = 3
+// 短线重连间隔
+const reConnectPeriod = 15
+// 主动发数据重连间隔
+const sendConnectPeriod = 3
+// 心跳最大重试次数
+const heartBeatMaxRetryCount = 5
+let reConnectTimeout: any = null
+let heartBeatInterval: any = null
 
 @Module({ dynamic: true, store, name: 'message' })
 class Message extends VuexModule implements IMessageState {
   public unReadCount = 0
-  public ws = websocket
-  public init = false
+  public ws: any = null
+  public active = false
+  public lastActive = 0
+  public retryCount = 0
+
+  @Mutation
+  private SET_WS(ws: any) {
+    this.ws = ws
+    this.active = true
+  }
+
+  @Action
+  public Start(ws: any) {
+    this.SET_WS(ws)
+  }
 
   @Mutation
   private SET_UN_READ_COUNT(unReadCount: number) {
     this.unReadCount = unReadCount
-  }
-
-  @Mutation
-  private SET_INIT(init: boolean) {
-    this.init = init
   }
 
   @Action
@@ -34,19 +50,74 @@ class Message extends VuexModule implements IMessageState {
     this.SET_UN_READ_COUNT(unReadCount)
   }
 
+  @Mutation
+  private SET_ACTIVE(active: boolean) {
+    this.active = active
+  }
+
+  @Action
+  public SetActive(active: boolean) {
+    this.SET_ACTIVE(active)
+  }
+
+  @Mutation
+  private SET_LAST_ACTIVE(lastActive: number) {
+    this.lastActive = lastActive
+  }
+
+  @Action
+  public SetLastActive(lastActive: number) {
+    this.SET_LAST_ACTIVE(lastActive)
+  }
+
+  @Mutation
+  private SET_RETRY_COUNT(retryCount: number) {
+    this.retryCount = retryCount
+  }
+
+  @Action
+  private SetRetryCount(retryCount: number) {
+    this.SET_RETRY_COUNT(retryCount)
+  }
+
+  @Action
+  public Close() {
+    if (heartBeatInterval) {
+      clearInterval(heartBeatInterval)
+    }
+    if (this.ws) {
+      this.ws.close()
+      this.SetActive(false)
+    }
+    this.SET_WS(null)
+  }
+
+  @Action
+  public ReConnect(period: number) {
+    this.Close()
+    if (reConnectTimeout) {
+      clearTimeout(reConnectTimeout)
+    }
+    reConnectTimeout = setTimeout(() => {
+      start()
+    }, period * 1000)
+  }
+
   // 数据接收
   @Action
   public Receive(e: any) {
+    this.SetActive(true)
+    this.SetLastActive(new Date().getTime())
+    this.SetRetryCount(0)
     let data = e.data
     try {
       data = JSON.parse(data)
       switch (data.type) {
         // 心跳
-        case '1-2-1':
-          if (data.detail && data.detail.code === 201) {
+        case '2-1-1':
+          if (data.detail && data.detail.code === 201 && typeof data.detail.data === 'number') {
             this.Send({
-              type: '1-1-1',
-              data: data.detail.data
+              type: '1-1-1'
             })
           }
           break
@@ -73,7 +144,7 @@ class Message extends VuexModule implements IMessageState {
         // 新消息
         case '2-3-1':
           if (data.detail && data.detail.code === 201 && data.detail.data) {
-            if (this.init && this.unReadCount < data.detail.data.unReadCount) {
+            if (this.unReadCount < data.detail.data.unReadCount) {
               Notification({
                 title: '新消息提醒',
                 message: '有人给你发了新的消息',
@@ -84,11 +155,6 @@ class Message extends VuexModule implements IMessageState {
               voice.playUrl('/media/message.mp3', {}, {})
             }
             this.SetUnReadCount(data.detail.data.unReadCount)
-            this.SET_INIT(true)
-            // 回复心跳
-            this.Send({
-              type: '1-1-1'
-            })
           }
           break
         // 新用户上线
@@ -103,42 +169,95 @@ class Message extends VuexModule implements IMessageState {
                 duration: 2000
               })
             }
-            // 回复心跳
-            this.Send({
-              type: '1-1-1'
-            })
           }
           break
       }
-    } catch (e) {
-      // 回复心跳
+    } finally {
+      if (data.type !== '2-1-1') {
+        this.Send({
+          type: '1-1-1'
+        })
+      }
+    }
+  }
+
+  // 检查心跳
+  @Action
+  public Heart() {
+    const last = (new Date().getTime() - this.lastActive) / 1000
+    if (this.retryCount > heartBeatMaxRetryCount) {
+      this.ReConnect(reConnectPeriod)
+      return
+    }
+    if (last > heartBeatPeriod) {
       this.Send({
         type: '1-1-1',
-        data
+        data: this.retryCount
       })
+      this.SetRetryCount(this.retryCount + 1)
     }
   }
 
   // 数据发送
   @Action
   public Send(data: any) {
+    if (!this.active || !this.ws) {
+      if (data.type === '1-1-1') {
+        console.log(new Date().getTime(), '连接消息中心失败')
+      } else {
+        Notification({
+          title: '抱歉',
+          message: '连接消息中心失败, ' + sendConnectPeriod + '秒后主动重连',
+          type: 'warning',
+          duration: 2000
+        })
+      }
+      this.ReConnect(sendConnectPeriod)
+      return
+    }
     this.ws.send(JSON.stringify(data))
   }
 }
 
 export const MessageModule = getModule(Message)
 
-// 连接建立之后执行send方法发送数据
-websocket.onopen = (e: any) => {
-  console.log('已建立连接', e)
+function start() {
+  if (reConnectTimeout) {
+    clearTimeout(reConnectTimeout)
+  }
+  const websocket = new WebSocket(getWsPrefix() + '/message/ws?token=' + UserModule.token)
+
+  // 连接建立之后执行send方法发送数据
+  websocket.onopen = (e: any) => {
+    console.log('已建立连接: ' + e.currentTarget.url)
+    MessageModule.Start(websocket)
+  }
+
+  // 连接关闭后执行
+  websocket.onclose = (e: any) => {
+    console.error('连接已断开: ' + e.currentTarget.url)
+    MessageModule.ReConnect(reConnectPeriod)
+  }
+
+  // 连接错误
+  websocket.onerror = (e: any) => {
+    console.error('连接错误: ' + e.currentTarget.url)
+    Notification({
+      title: '抱歉',
+      message: '连接消息中心失败',
+      type: 'warning',
+      duration: 2000
+    })
+  }
+
+  // 监听消息接收
+  websocket.onmessage = (e: any) => {
+    MessageModule.Receive(e)
+  }
+
+  // 心跳检测
+  heartBeatInterval = setInterval(MessageModule.Heart, heartBeatPeriod * 1000)
 }
 
-// 连接关闭后执行
-websocket.onclose = (e: any) => {
-  console.log('连接已断开', e)
-}
-
-// 监听消息接收
-websocket.onmessage = (e: any) => {
-  MessageModule.Receive(e)
-}
+// 开启websocket
+start()
