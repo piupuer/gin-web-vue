@@ -210,21 +210,22 @@ export default class extends Vue {
   }
 
   private async getUserData(query: string) {
-    if (query !== '') {
-      this.table.userLoading = true
-      try {
-        // 读取所有用户
-        const { data } = await getUsers({
-          nickname: query,
-          noPagination: true
-        })
-        this.table.userSelectOptions = data.list
-      } catch (e) {
-        this.$message.error('读取系统用户信息失败')
-        return
-      } finally {
-        this.table.userLoading = false
+    this.table.userLoading = true
+    try {
+      // 读取所有用户
+      const params: any = {
+        noPagination: true
       }
+      if (query !== '') {
+        params.nickname = query
+      }
+      const { data } = await getUsers(params)
+      this.table.userSelectOptions = data.list
+    } catch (e) {
+      this.$message.error('读取系统用户信息失败')
+      return
+    } finally {
+      this.table.userLoading = false
     }
   }
 
