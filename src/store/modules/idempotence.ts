@@ -1,4 +1,4 @@
-import { VuexModule, Module, Action, Mutation, getModule } from 'vuex-module-decorators'
+import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
 import { idempotenceToken } from '@/api/system/bases'
 import { setIdempotenceToken } from '@/utils/cookies'
@@ -21,9 +21,13 @@ class Idempotence extends VuexModule implements IIdempotenceState {
   @Action
   public async RefreshIdempotenceToken() {
     // 刷新token
-    const { data } = await idempotenceToken()
-    setIdempotenceToken(data)
-    this.SET_IDEMPOTENCE_TOKEN(data)
+    try {
+      const { data } = await idempotenceToken()
+      setIdempotenceToken(data)
+      this.SET_IDEMPOTENCE_TOKEN(data)
+    } catch (e) {
+      console.log('刷新token失败', e)
+    }
   }
 }
 
