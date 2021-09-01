@@ -53,10 +53,10 @@ export default {
     password: 'Password',
     users: [{
       username: 'Super Admin',
-      password: '123456'
+      password: 'Password'
     }, {
       username: 'Guest',
-      password: '123456'
+      password: 'Password'
     }],
     any: 'any',
     thirdparty: 'Other',

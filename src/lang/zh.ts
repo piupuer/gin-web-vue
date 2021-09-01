@@ -53,10 +53,10 @@ export default {
     password: '密码',
     users: [{
       username: '超级管理员',
-      password: '123456'
+      password: '密码'
     }, {
       username: '访客',
-      password: '123456'
+      password: '密码'
     }],
     any: '随便填',
     thirdparty: '第三方登录',
