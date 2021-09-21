@@ -1,3 +1,4 @@
+#FROM node:13.14-alpine AS gin-web-vue
 FROM registry.cn-shenzhen.aliyuncs.com/piupuer/node:13.14-alpine AS gin-web-vue
 
 RUN echo "----------------- 前端Gin Web Vue构建(Staging) -----------------"
@@ -40,6 +41,7 @@ RUN if [ "$USE_YARN" = "true" ] ; then yarn config set registry https://registry
 RUN ls -l $APP_HOME
 
 
+#FROM nginx:1.17.10-alpine
 FROM registry.cn-shenzhen.aliyuncs.com/piupuer/nginx:1.17.10-alpine
 RUN echo "----------------- Nginx构建 -----------------"
 
