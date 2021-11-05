@@ -9,11 +9,26 @@ export const diffObjUpdate = (oldObj: any, newObj: any, key = 'id') => {
   let update = false
   for (const deltaKey in delta) {
     const item = delta[deltaKey]
-    // 长度为2表示数据发生更新
-    if (item.length === 2) {
+    if (Array.isArray(item) && item.length === 2) {
+      // 长度为2表示数据发生更新
       // 记录update的内容
       res[deltaKey] = item[1]
       update = true
+    } else if (item.constructor === Object) {
+      res[deltaKey] = []
+      for (const i in item) {
+        const obj = item[i]
+        const level: any = {}
+        if (obj.constructor === Object) {
+          for (const k in obj) {
+            if (Array.isArray(obj[k]) && obj[k].length === 2) {
+              level[k] = obj[k][1]
+              update = true
+            }
+          }
+        }
+        res[deltaKey][i] = level
+      }
     }
   }
   if (update) {
