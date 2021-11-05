@@ -5,8 +5,21 @@
       v-loading="table.loading"
       :inline="true"
       :model="table.form"
+      :rules="table.rules"
       class="demo-form-inline"
     >
+      <el-form-item
+        label="分类"
+        prop="category"
+      >
+        <el-input
+          v-model.number="table.form.category"
+          placeholder="分类"
+          clearable
+          @clear="doSearch"
+          @keyup.enter.native="doSearch"
+        />
+      </el-form-item>
       <el-form-item
         label="名称"
         prop="name"
@@ -18,6 +31,27 @@
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
+      </el-form-item>
+      <el-form-item
+        label="提交人确认"
+        prop="submitUserConfirm"
+      >
+        <el-select
+          v-model.trim="table.form.submitterConfirm"
+          clearable
+          placeholder="提交人确认"
+        >
+          <el-option
+            key="1"
+            label="是"
+            :value="1"
+          />
+          <el-option
+            key="0"
+            label="否"
+            :value="0"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -64,6 +98,17 @@
           type="selection"
           width="55"
         />
+        <el-table-column
+          prop="category"
+          label="分类"
+          sortable
+        >
+          <template slot-scope="scope">
+            <el-tag>
+              {{ scope.row.category }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="name"
           label="名称"
@@ -172,6 +217,15 @@
         :rules="updateDialog.rules"
         label-width="100px"
       >
+        <el-form-item
+          label="唯一分类"
+          prop="category"
+        >
+          <el-input
+            v-model.number="updateDialog.form.category"
+            placeholder="请输入分类(一个分类对应一个流程)"
+          />
+        </el-form-item>
         <el-form-item
           label="名称"
           prop="name"
@@ -480,6 +534,7 @@ export default class extends Vue {
     // 默认数据
     defaultForm: {
       id: 0,
+      category: '',
       name: '',
       submitterName: '',
       submitterEditFields: [],
@@ -496,6 +551,9 @@ export default class extends Vue {
     oldData: {},
     // 表单校验
     rules: {
+      category: [
+        { required: true, type: 'number', message: '分类必须为数字', trigger: 'blur' }
+      ],
       name: [
         { required: true, message: '状态机名称不能为空', trigger: 'blur' }
       ],
@@ -525,7 +583,14 @@ export default class extends Vue {
     pageSize: 5,
     total: 0,
     form: {
-      name: ''
+      name: '',
+      category: '',
+      submitterConfirm: ''
+    },
+    rules: {
+      category: [
+        { validator: this.searchCategoryValidate, trigger: 'blur' }
+      ]
     }
   }
 
@@ -543,11 +608,11 @@ export default class extends Vue {
         pageNum: this.table.pageNum,
         pageSize: this.table.pageSize
       }
+      if (params.category === '') {
+        delete params.category
+      }
       if (params.submitterConfirm === '') {
         delete params.submitterConfirm
-      }
-      if (params.self === '') {
-        delete params.self
       }
       const { data } = await findFsm(params)
       this.table.list = data.list
@@ -561,7 +626,11 @@ export default class extends Vue {
   }
 
   private doSearch() {
-    this.getData()
+    (this.$refs.searchForm as Form).validate(async(valid) => {
+      if (valid) {
+        this.getData()
+      }
+    })
   }
 
   private async doUpdate() {
@@ -1092,6 +1161,13 @@ export default class extends Vue {
     if (Array.isArray(value) && value.length === 0) {
       callback(new Error('用户或角色至少填一项'))
     }
+  }
+
+  private searchCategoryValidate(rule: any, value: any, callback: Function) {
+    if (value !== '' && !Number.isInteger(value)) {
+      callback(new Error('分类必须是数字'))
+    }
+    callback()
   }
 }
 </script>
