@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export const getAllMessages = (params: any) =>
+export const findMessage = (params: any) =>
   request({
     url: '/message/all',
     method: 'get',

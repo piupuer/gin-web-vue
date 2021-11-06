@@ -309,7 +309,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { batchDeleteMenu, createMenu, getMenus, updateMenu } from '@/api/system/menus'
+import { batchDeleteMenu, createMenu, findMenu, updateMenu } from '@/api/system/menus'
 import { Form } from 'element-ui'
 import i18n from '@/lang'
 import { diffObjUpdate } from '@/utils/diff'
@@ -401,7 +401,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getMenus(params)
+      const { data } = await findMenu(params)
       this.table.list = data
     } finally {
       this.table.loading = false
@@ -509,7 +509,7 @@ export default class extends Vue {
     })
   }
 
-  private async resetUpdateForm() {
+  private resetUpdateForm() {
     this.$nextTick(() => {
       // 重置校验信息
       const form = this.$refs.updateForm as Form

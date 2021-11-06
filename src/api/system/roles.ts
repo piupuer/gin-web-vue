@@ -1,10 +1,16 @@
 import request from '@/utils/request'
 
-export const getRoles = (params: any) =>
+export const findRole = (params: any) =>
   request({
     url: '/role/list',
     method: 'get',
     params
+  })
+
+export const findRoleByIds = (ids: string) =>
+  request({
+    url: `/role/list/${ids}`,
+    method: 'get'
   })
 
 export const createRole = (data: any) =>
@@ -17,20 +23,6 @@ export const createRole = (data: any) =>
 export const updateRole = (id: number, data: any) =>
   request({
     url: `/role/update/${id}`,
-    method: 'patch',
-    data
-  })
-
-export const updateRoleMenus = (id: number, data: any) =>
-  request({
-    url: `/role/menus/update/${id}`,
-    method: 'patch',
-    data
-  })
-
-export const updateRoleApis = (id: number, data: any) =>
-  request({
-    url: `/role/apis/update/${id}`,
     method: 'patch',
     data
   })

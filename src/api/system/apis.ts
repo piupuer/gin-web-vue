@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export const getApis = (params: any) =>
+export const findApi = (params: any) =>
   request({
     url: '/api/list',
     method: 'get',
@@ -30,8 +30,15 @@ export const batchDeleteApi = (ids: string) =>
     }
   })
 
-export const getAllApiGroupByCategoryByRoleId = (id: number) =>
+export const findApiGroupByCategoryByRoleId = (id: number) =>
   request({
     url: `/api/all/category/${id}`,
     method: 'get'
+  })
+
+export const updateApiByRoleId = (id: number, data: any) =>
+  request({
+    url: `/api/role/update/${id}`,
+    method: 'patch',
+    data
   })

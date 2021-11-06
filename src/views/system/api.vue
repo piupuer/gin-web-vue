@@ -282,9 +282,9 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteApi, createApi, getApis, updateApi } from '@/api/system/apis'
+import { batchDeleteApi, createApi, findApi, updateApi } from '@/api/system/apis'
 import { diffObjUpdate } from '@/utils/diff'
-import { getRoles } from '@/api/system/roles'
+import { findRole } from '@/api/system/roles'
 import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
@@ -402,7 +402,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getApis(params)
+      const { data } = await findApi(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize
@@ -461,7 +461,7 @@ export default class extends Vue {
     })
   }
 
-  private async resetUpdateForm() {
+  private resetUpdateForm() {
     this.$nextTick(() => {
       // 重置校验信息
       const form = this.$refs.updateForm as Form
@@ -496,7 +496,7 @@ export default class extends Vue {
     if (this.updateDialog.form.showRoleSelect) {
       try {
         // 读取当前角色
-        const { data } = await getRoles({
+        const { data } = await findRole({
           noPagination: true
         })
         this.updateDialog.roleSelectOptions = data.list

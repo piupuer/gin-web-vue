@@ -7,11 +7,17 @@ export const getUserInfo = (data: any) =>
     data
   })
 
-export const getUsers = (params: any) =>
+export const findUser = (params: any) =>
   request({
     url: '/user/list',
     method: 'get',
     params
+  })
+
+export const findUserByIds = (ids: string) =>
+  request({
+    url: `/user/list/${ids}`,
+    method: 'get'
   })
 
 export const createUser = (data: any) =>

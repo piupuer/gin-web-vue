@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export const getMachines = (params: any) =>
+export const findMachine = (params: any) =>
   request({
     url: '/machine/list',
     method: 'get',

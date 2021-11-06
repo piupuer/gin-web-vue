@@ -10,7 +10,6 @@ if (process.env) {
   }
 }
 
-
 console.log('baseWs', baseWs)
 if (baseWs.indexOf(wsPrefixProtocol) === 0) {
   wsPrefix = baseWs

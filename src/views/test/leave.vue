@@ -85,6 +85,14 @@
           label="说明"
         />
         <el-table-column
+          prop="startTime"
+          label="开始时间"
+        />
+        <el-table-column
+          prop="endTime"
+          label="结束时间"
+        />
+        <el-table-column
           prop="status"
           label="审批状态"
           align="center"
@@ -101,7 +109,7 @@
           fixed="right"
           label="操作"
           align="center"
-          width="260"
+          width="500"
         >
           <template slot-scope="scope">
             <el-button
@@ -109,15 +117,41 @@
               :loading="table.approvalLoading"
               @click="handleApproval(scope.row)"
             >
-              审批记录
+              审批日志
             </el-button>
             <el-button
+              v-if="scope.row.status === 2"
+              size="mini"
+              type="success"
+              @click="handleResubmit(scope.row)"
+            >
+              重新提交
+            </el-button>
+            <el-button
+              v-if="scope.row.status === 5"
+              size="mini"
+              type="success"
+              @click="handleConfirm(scope.row)"
+            >
+              确认
+            </el-button>
+            <el-button
+              v-if="scope.row.status !== 1"
               size="mini"
               @click="handleUpdate(scope.row)"
             >
               编辑
             </el-button>
             <el-button
+              v-if="scope.row.status !== 1 &&scope.row.status !== 3 && scope.row.status !== 5"
+              size="mini"
+              type="warning"
+              @click="handleCancel(scope.row)"
+            >
+              取消
+            </el-button>
+            <el-button
+              v-if="scope.row.status !== 1"
               size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
@@ -161,6 +195,28 @@
             placeholder="请输入请假说明, 描述清楚更容易审批通过哟~"
           />
         </el-form-item>
+        <el-form-item
+          label="开始时间"
+          prop="startTime"
+        >
+          <el-date-picker
+            v-model="updateDialog.form.startTime"
+            type="datetime"
+            :picker-options="updateDialog.startTimePickerOptions"
+            placeholder="Select start time"
+          />
+        </el-form-item>
+        <el-form-item
+          label="结束时间"
+          prop="endTime"
+        >
+          <el-date-picker
+            v-model="updateDialog.form.endTime"
+            type="datetime"
+            :picker-options="updateDialog.endTimePickerOptions"
+            placeholder="Select end time"
+          />
+        </el-form-item>
       </el-form>
       <div
         slot="footer"
@@ -178,7 +234,7 @@
         </el-button>
       </div>
     </el-dialog>
-    <!-- 审批记录对话框 -->
+    <!-- 审批日志对话框 -->
     <el-dialog
       :title="approvalDialog.title"
       :visible.sync="approvalDialog.visible"
@@ -217,7 +273,14 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteLeave, createLeave, getApprovalLeaves, getLeaves, updateLeave } from '@/api/test/leaves'
+import {
+  batchDeleteLeave,
+  cancelLeave,
+  createLeave,
+  findLeaveApprovingTrack,
+  findLeave,
+  updateLeave, confirmLeave, resubmitLeave
+} from '@/api/test/leaves'
 import { diffObjUpdate } from '@/utils/diff'
 import { IdempotenceModule } from '@/store/modules/idempotence'
 
@@ -234,27 +297,27 @@ export default class extends Vue {
     pageSize: 5,
     status: [{
       name: 0,
-      label: '提交',
-      type: ''
+      label: '已提交',
+      type: 'info'
     }, {
       name: 1,
       label: '通过',
       type: 'success'
     }, {
       name: 2,
-      label: '拒绝',
+      label: '拒绝, 需重新提交',
       type: 'danger'
     }, {
       name: 3,
-      label: '取消',
+      label: '手动取消',
       type: 'warning'
     }, {
       name: 4,
-      label: '重启',
-      type: 'info'
+      label: '审批中',
+      type: ''
     }, {
       name: 5,
-      label: '结束',
+      label: '已通过, 需确认',
       type: ''
     }]
   }
@@ -271,7 +334,9 @@ export default class extends Vue {
     defaultForm: {
       id: 0,
       status: '',
-      desc: ''
+      desc: '',
+      startTime: '',
+      endTime: ''
     },
     // 表单
     form: {},
@@ -281,6 +346,16 @@ export default class extends Vue {
       desc: [
         { required: true, message: '说明不能为空', trigger: 'blur' }
       ]
+    },
+    startTimePickerOptions: {
+      disabledDate(time: any) {
+        return time.getTime() < Date.now()
+      }
+    },
+    endTimePickerOptions: {
+      disabledDate(time: any) {
+        return time.getTime() < Date.now()
+      }
     }
   }
 
@@ -288,7 +363,7 @@ export default class extends Vue {
     // 是否打开
     visible: false,
     // 标题
-    title: '审批记录',
+    title: '审批日志',
     // 历史步骤
     stepsActive: 0,
     steps: []
@@ -305,7 +380,9 @@ export default class extends Vue {
     total: 0,
     form: {
       status: '',
-      desc: ''
+      desc: '',
+      startTime: '',
+      endTime: ''
     }
   }
 
@@ -326,7 +403,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getLeaves(params)
+      const { data } = await findLeave(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize
@@ -344,16 +421,26 @@ export default class extends Vue {
   private async doUpdate() {
     (this.$refs.updateForm as Form).validate(async(valid) => {
       if (valid) {
+        if (this.updateDialog.form.startTime !== '' && this.updateDialog.form.endTime !== '' && this.updateDialog.form.startTime.getTime() > this.updateDialog.form.endTime.getTime()) {
+          this.$message({
+            type: 'warning',
+            message: '开始时间不能大于结束时间, 请重新输入~'
+          })
+          return
+        }
+        const newData = JSON.parse(JSON.stringify(this.updateDialog.form))
+        newData.startTime = this.date2Str(this.updateDialog.form.startTime)
+        newData.endTime = this.date2Str(this.updateDialog.form.endTime)
         if (this.updateDialog.type === 0) {
           try {
             this.updateDialog.loading = true
-            await createLeave(this.updateDialog.form)
+            await createLeave(newData)
           } finally {
             this.updateDialog.loading = false
             IdempotenceModule.RefreshIdempotenceToken()
           }
         } else {
-          const update = diffObjUpdate(this.updateDialog.oldData, this.updateDialog.form)
+          const update = diffObjUpdate(this.updateDialog.oldData, newData)
           // 编号存在则更新, 不存在给出提示
           if (!update.id) {
             this.$message({
@@ -385,7 +472,7 @@ export default class extends Vue {
     })
   }
 
-  private async resetUpdateForm() {
+  private resetUpdateForm() {
     this.$nextTick(() => {
       // 重置校验信息
       const form = this.$refs.updateForm as Form
@@ -417,15 +504,16 @@ export default class extends Vue {
 
   private async handleApproval(row: any) {
     this.table.approvalLoading = true
+    this.approvalDialog.title = ''
     try {
-      const { data } = await getApprovalLeaves(row.id)
-      this.approvalDialog.stepsActive = data.list.length - 1
+      const { data } = await findLeaveApprovingTrack(row.id)
+      this.approvalDialog.stepsActive = data.length - 1
       const logs: any [] = []
-      for (let i = 0, len = data.list.length; i < len; i++) {
-        const item = data.list[i].log
+      for (let i = 0, len = data.length; i < len; i++) {
+        const item = data[i]
         if (i === 0) {
           logs.push({
-            title: item.approvalOpinion,
+            title: item.name,
             description: item.createdAt,
             status: 'success'
           })
@@ -434,33 +522,45 @@ export default class extends Vue {
           let description = item.updatedAt
           if (item.status === 2) {
             status = 'error'
-            if (item.approvalOpinion !== '') {
-              description = `拒绝原因: ${item.approvalOpinion}, 时间: ${item.updatedAt}`
+            if (item.opinion !== '') {
+              description = item.updatedAt
             }
           } else if (item.status === 3) {
             status = 'error'
           } else if (item.status === 4) {
-            status = 'process'
-          } else if (item.status === 5) {
             status = 'finish'
           }
           logs.push({
-            title: `${item.approvalUserNickname}[${item.approvalUsername}]${item.statusStr}`,
+            title: item.name,
             description,
             status
           })
         } else {
-          logs.push({
-            title: '待审批',
-            description: '请耐心等待~',
-            status: 'wait'
-          })
+          if (item.resubmit) {
+            logs.push({
+              title: '待重新提交',
+              description: '请编辑后重新提交~',
+              status: 'wait'
+            })
+          } else if (item.confirm) {
+            logs.push({
+              title: '待确认',
+              description: '请点击确认~',
+              status: 'wait'
+            })
+          } else {
+            logs.push({
+              title: '待审批',
+              description: '请耐心等待~',
+              status: 'wait'
+            })
+          }
         }
       }
       this.approvalDialog.steps = logs
       this.approvalDialog.visible = true
     } catch (e) {
-      this.$message.error('读取审批记录失败')
+      this.$message.error('读取审批日志失败')
     } finally {
       this.table.approvalLoading = false
     }
@@ -480,6 +580,37 @@ export default class extends Vue {
     this.updateDialog.title = '修改请假信息'
     // 开启弹窗
     this.updateDialog.visible = true
+  }
+
+  private async handleConfirm(row: any) {
+    const msg = `确定要确认请假[${row.desc}]吗?`
+    this.$confirm(msg, '请谨慎操作', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async() => {
+        await confirmLeave(row.id)
+        this.getData()
+      })
+  }
+
+  private async handleResubmit(row: any) {
+    await resubmitLeave(row.id)
+    this.getData()
+  }
+
+  private async handleCancel(row: any) {
+    const msg = `确定要取消请假[${row.desc}]吗?`
+    this.$confirm(msg, '请谨慎操作', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async() => {
+        await cancelLeave(row.id)
+        this.getData()
+      })
   }
 
   private handleDelete(row: any) {
@@ -557,6 +688,19 @@ export default class extends Vue {
       if (status === item.name) {
         return item.label
       }
+    }
+    return ''
+  }
+
+  private date2Str(date: any) {
+    if (date !== '') {
+      const Y = date.getFullYear() + '-'
+      const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+      const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
+      const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
+      const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
+      const s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
+      return Y + M + D + h + m + s
     }
     return ''
   }

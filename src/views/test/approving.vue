@@ -8,18 +8,18 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="类型"
-        prop="targetCategory"
+        label="分类"
+        prop="category"
       >
         <el-select
-          v-model.trim="table.form.targetCategory"
-          placeholder="请选择当前审批类型"
+          v-model.trim="table.form.category"
+          placeholder="请选择当前审批分类"
         >
           <el-option
-            v-for="item in defaultConfig.targetCategory"
-            :key="item.name"
+            v-for="item in defaultConfig.category"
+            :key="item.id"
             :label="item.label"
-            :value="item.name"
+            :value="item.id"
           />
         </el-select>
       </el-form-item>
@@ -52,21 +52,37 @@
           label="提交时间"
         />
         <el-table-column
-          prop="flowTargetCategoryStr"
+          prop="category"
           align="center"
-          label="类型"
+          label="分类"
         >
           <template slot-scope="scope">
             <el-tag
-              :type="getTargetCategoryTagType(scope.row.flowTargetCategoryStr)"
+              :type="getCategoryTagType(scope.row.category)"
             >
-              {{ scope.row.flowTargetCategoryStr }}
+              {{ getCategoryTagStr(scope.row.category) }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column
-          prop="submitDetail"
-          label="明细"
+          prop="submitterUser"
+          label="提交人"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.submitterUser.username + '(' +scope.row.submitterUser.mobile +')' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="submitterRole"
+          label="提交人角色"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.submitterRole.keyword }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="prevDetail"
+          label="状态"
         />
         <el-table-column
           fixed="right"
@@ -158,7 +174,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { getWorkflowApprovings, updateWorkflowLogApproval } from '@/api/system/workflows'
+import { approveFsm, findFsmApproving } from '@/api/system/fsm'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -189,15 +205,11 @@ export default class extends Vue {
       type: 'warning'
     }, {
       name: 4,
-      label: '重启',
-      type: 'info'
-    }, {
-      name: 5,
       label: '结束',
       type: ''
     }],
-    targetCategory: [{
-      name: 1,
+    category: [{
+      id: 1,
       label: '请假流程',
       type: ''
     }]
@@ -213,14 +225,14 @@ export default class extends Vue {
     pageSize: 5,
     total: 0,
     form: {
-      targetCategory: ''
+      category: ''
     }
   }
 
   private approvalDialog: any = {
     loading: false,
     visible: false,
-    // 类型(0:通过, 1:拒绝)
+    // 分类(0:通过, 1:拒绝)
     type: 0,
     // 标题
     title: '',
@@ -258,7 +270,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getWorkflowApprovings(params)
+      const { data } = await findFsmApproving(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize
@@ -277,10 +289,9 @@ export default class extends Vue {
     // 清理字段
     this.resetApprovalForm()
     // 弹窗表单赋值
-    this.approvalDialog.form.flowId = row.flowId
-    this.approvalDialog.form.flowTargetCategory = row.flowTargetCategory
-    this.approvalDialog.form.targetId = row.targetId
-    // 修改类型
+    this.approvalDialog.form.uuid = row.uuid
+    this.approvalDialog.form.category = row.category
+    // 修改分类
     this.approvalDialog.type = type
     // 修改标题
     if (type === 0) {
@@ -297,14 +308,13 @@ export default class extends Vue {
       if (valid) {
         try {
           this.approvalDialog.loading = true
-          const approvalStatus = this.approvalDialog.type === 0 ? 1 : 2
+          const approved = this.approvalDialog.type === 0 ? 1 : 2
           const approvalOpinion = this.approvalDialog.type === 0 ? this.approvalDialog.form.approvalOpinion : this.approvalDialog.form.approvalReason
-          await updateWorkflowLogApproval({
-            flowId: this.approvalDialog.form.flowId,
-            targetCategory: this.approvalDialog.form.flowTargetCategory,
-            targetId: this.approvalDialog.form.targetId,
+          await approveFsm({
+            uuid: this.approvalDialog.form.uuid,
+            category: this.approvalDialog.form.category,
             approvalOpinion,
-            approvalStatus
+            approved
           })
         } finally {
           this.approvalDialog.loading = false
@@ -366,12 +376,23 @@ export default class extends Vue {
     this.doSearch()
   }
 
-  // 获取审批类型对应的tag颜色
-  private getTargetCategoryTagType(targetCategoryStr: string) {
-    for (let i = 0, len = this.defaultConfig.targetCategory.length; i < len; i++) {
-      const item = this.defaultConfig.targetCategory[i]
-      if (targetCategoryStr === item.label) {
+  // 获取审批分类对应的tag颜色
+  private getCategoryTagType(category: number) {
+    for (let i = 0, len = this.defaultConfig.category.length; i < len; i++) {
+      const item = this.defaultConfig.category[i]
+      if (category === item.id) {
         return item.type
+      }
+    }
+    return ''
+  }
+
+  // 获取category对应状态机名称, 这里为了简便没有通过后台查询, 理论上也是可以的
+  private getCategoryTagStr(category: number) {
+    for (let i = 0, len = this.defaultConfig.category.length; i < len; i++) {
+      const item = this.defaultConfig.category[i]
+      if (category === item.id) {
+        return item.label
       }
     }
     return ''

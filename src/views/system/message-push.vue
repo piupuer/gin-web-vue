@@ -73,7 +73,7 @@
             filterable
             remote
             clearable
-            :remote-method="getRoleData"
+            :remote-method="findRole"
             :loading="table.roleLoading"
           >
             <el-option
@@ -113,8 +113,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { Form } from 'element-ui'
-import { getUsers } from '@/api/system/users'
-import { getRoles } from '@/api/system/roles'
+import { findUser } from '@/api/system/users'
+import { findRole } from '@/api/system/roles'
 import { MessageModule } from '@/store/modules/message'
 import { IdempotenceModule } from '@/store/modules/idempotence'
 
@@ -219,7 +219,7 @@ export default class extends Vue {
       if (query !== '') {
         params.nickname = query
       }
-      const { data } = await getUsers(params)
+      const { data } = await findUser(params)
       this.table.userSelectOptions = data.list
     } catch (e) {
       this.$message.error('读取系统用户信息失败')
@@ -229,12 +229,12 @@ export default class extends Vue {
     }
   }
 
-  private async getRoleData(query: string) {
+  private async findRole(query: string) {
     if (query !== '') {
       this.table.roleLoading = true
       try {
         // 读取所有角色
-        const { data } = await getRoles({
+        const { data } = await findRole({
           name: query,
           noPagination: true
         })

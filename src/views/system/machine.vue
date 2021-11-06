@@ -123,9 +123,9 @@
         >
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.status==0?'danger':'success'"
+              :type="scope.row.status===0?'danger':'success'"
             >
-              {{ scope.row.status==0?'无法连接':'正常' }}
+              {{ scope.row.status===0?'无法连接':'正常' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -178,7 +178,7 @@
               size="mini"
               @click="doConnect(scope.row)"
             >
-              {{ scope.row.status == 0 ? '连接' : '刷新' }}
+              {{ scope.row.status === 0 ? '连接' : '刷新' }}
             </el-button>
             <el-button
               size="mini"
@@ -311,7 +311,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import PrShell from '@/components/Shell/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteMachine, createMachine, getMachines, updateMachine, connectMachine } from '@/api/system/machines'
+import { batchDeleteMachine, createMachine, findMachine, updateMachine, connectMachine } from '@/api/system/machines'
 import { diffObjUpdate } from '@/utils/diff'
 import { IdempotenceModule } from '@/store/modules/idempotence'
 
@@ -416,7 +416,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getMachines(params)
+      const { data } = await findMachine(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize
@@ -490,7 +490,7 @@ export default class extends Vue {
     }
   }
 
-  private async resetUpdateForm() {
+  private resetUpdateForm() {
     this.$nextTick(() => {
       // 重置校验信息
       const form = this.$refs.updateForm as Form

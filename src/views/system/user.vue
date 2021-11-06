@@ -299,9 +299,9 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteUser, createUser, getUsers, updateUser } from '@/api/system/users'
+import { batchDeleteUser, createUser, findUser, updateUser } from '@/api/system/users'
 import { diffObjUpdate } from '@/utils/diff'
-import { getRoles } from '@/api/system/roles'
+import { findRole } from '@/api/system/roles'
 import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
@@ -419,7 +419,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getUsers(params)
+      const { data } = await findUser(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize
@@ -478,7 +478,7 @@ export default class extends Vue {
     })
   }
 
-  private async resetUpdateForm() {
+  private resetUpdateForm() {
     this.$nextTick(() => {
       // 重置校验信息
       const form = this.$refs.updateForm as Form
@@ -502,7 +502,7 @@ export default class extends Vue {
     }
     try {
       // 读取所有角色
-      const { data } = await getRoles({
+      const { data } = await findRole({
         noPagination: true
       })
       this.updateDialog.roleSelectOptions = data.list
@@ -521,7 +521,7 @@ export default class extends Vue {
   private async handleUpdate(row: any) {
     try {
       // 读取当前角色
-      const { data } = await getRoles({
+      const { data } = await findRole({
         noPagination: true
       })
       this.updateDialog.roleSelectOptions = data.list
@@ -581,7 +581,7 @@ export default class extends Vue {
   // 改变用户状态
   private async handleStatusChange(row: any) {
     let msg = `确定要恢复用户[${row.username}]吗?`
-    if (row.status == 0) {
+    if (row.status === 0) {
       msg = `确定要禁用用户[${row.username}]吗?该操作可能导致该用户无法正常使用系统`
     }
     this.$confirm(msg, '请谨慎操作', {
@@ -596,7 +596,7 @@ export default class extends Vue {
         this.getData()
       })
       .catch(() => {
-        row.status = row.status == 0 ? 1 : 0
+        row.status = row.status === 0 ? 1 : 0
       })
   }
 

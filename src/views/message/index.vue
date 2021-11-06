@@ -212,7 +212,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { getAllMessages } from '@/api/message/message'
+import { findMessage } from '@/api/message/message'
 import { MessageModule } from '@/store/modules/message'
 
 @Component({
@@ -282,7 +282,7 @@ export default class extends Vue {
       if (params.type === '') {
         delete params.type
       }
-      const { data } = await getAllMessages(params)
+      const { data } = await findMessage(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize

@@ -297,8 +297,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import jsonView from 'vue-json-views'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { batchDeleteOperationLog, getOperationLogs } from '@/api/system/operationLogs'
-import { IdempotenceModule } from '@/store/modules/idempotence'
+import { batchDeleteOperationLog, findOperationLog } from '@/api/system/operationLogs'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -383,7 +382,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getOperationLogs(params)
+      const { data } = await findOperationLog(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize

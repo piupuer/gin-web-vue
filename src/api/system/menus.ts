@@ -7,7 +7,7 @@ export const getMenuTree = (params: any) =>
     params
   })
 
-export const getMenus = (params: any) =>
+export const findMenu = (params: any) =>
   request({
     url: '/menu/list',
     method: 'get',
@@ -37,8 +37,15 @@ export const batchDeleteMenu = (ids: string) =>
     }
   })
 
-export const getAllMenuByRoleId = (id: number) =>
+export const findMenuByRoleId = (id: number) =>
   request({
     url: '/menu/all/' + id,
     method: 'get'
+  })
+
+export const updateMenuByRoleId = (id: number, data: any) =>
+  request({
+    url: `/menu/role/update/${id}`,
+    method: 'patch',
+    data
   })

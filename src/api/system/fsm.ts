@@ -7,6 +7,20 @@ export const findFsm = (params: any) =>
     params
   })
 
+export const findFsmApproving = (params: any) =>
+  request({
+    url: '/fsm/approving/list',
+    method: 'get',
+    params
+  })
+
+export const approveFsm = (data: any) =>
+  request({
+    url: '/fsm/approve',
+    method: 'patch',
+    data
+  })
+
 export const createFsm = (data: any) =>
   request({
     url: '/fsm/create',

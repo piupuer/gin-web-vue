@@ -320,9 +320,9 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form, Tree } from 'element-ui'
-import { batchDeleteRole, createRole, getRoles, updateRole, updateRoleApis, updateRoleMenus } from '@/api/system/roles'
-import { getAllApiGroupByCategoryByRoleId } from '@/api/system/apis'
-import { getAllMenuByRoleId } from '@/api/system/menus'
+import { batchDeleteRole, createRole, findRole, updateRole, updateRoleApis, updateRoleMenus } from '@/api/system/roles'
+import { findApiGroupByCategoryByRoleId } from '@/api/system/apis'
+import { findMenuByRoleId } from '@/api/system/menus'
 import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
 import { UserModule } from '@/store/modules/user'
 import { IdempotenceModule } from '@/store/modules/idempotence'
@@ -448,7 +448,7 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await getRoles(params)
+      const { data } = await findRole(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize
@@ -506,7 +506,7 @@ export default class extends Vue {
     })
   }
 
-  private async resetUpdateForm() {
+  private resetUpdateForm() {
     this.$nextTick(() => {
       // 重置校验信息
       const form = this.$refs.updateForm as Form
@@ -625,8 +625,8 @@ export default class extends Vue {
 
   private async handleRole(row: any) {
     // 刷新权限菜单
-    const { data: data1 } = await getAllMenuByRoleId(row.id)
-    const { data: data2 } = await getAllApiGroupByCategoryByRoleId(row.id)
+    const { data: data1 } = await findMenuByRoleId(row.id)
+    const { data: data2 } = await findApiGroupByCategoryByRoleId(row.id)
     this.roleDialog.tab.menus = data1.list
     this.roleDialog.tab.checkedMenus = data1.accessIds
     this.roleDialog.tab.oldCheckedMenus = data1.accessIds
@@ -673,7 +673,7 @@ export default class extends Vue {
   // 改变角色状态
   private async handleStatusChange(row: any) {
     let msg = `确定要恢复角色[${row.name}]吗?`
-    if (row.status == 0) {
+    if (row.status === 0) {
       msg = `确定要禁用角色[${row.name}]吗?该操作可能导致属于该角色的所有用户无法正常使用系统`
     }
     this.$confirm(msg, '请谨慎操作', {
@@ -688,7 +688,7 @@ export default class extends Vue {
         this.getData()
       })
       .catch(() => {
-        row.status = row.status == 0 ? 1 : 0
+        row.status = row.status === 0 ? 1 : 0
       })
   }
 

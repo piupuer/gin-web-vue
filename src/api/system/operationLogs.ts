@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export const getOperationLogs = (params: any) =>
+export const findOperationLog = (params: any) =>
   request({
     url: '/operation/log/list',
     method: 'get',
