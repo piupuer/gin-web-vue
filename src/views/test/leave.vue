@@ -572,8 +572,17 @@ export default class extends Vue {
     // 弹窗表单赋值
     this.updateDialog.form.id = row.id
     this.updateDialog.form.desc = row.desc
+    this.updateDialog.form.startTime = row.startTime
+    this.updateDialog.form.endTime = row.endTime
     // 记录旧数据
     this.updateDialog.oldData = JSON.parse(JSON.stringify(this.updateDialog.form))
+    // 转为date
+    if (this.updateDialog.form.startTime !== '') {
+      this.updateDialog.form.startTime = new Date(Date.parse(this.updateDialog.form.startTime))
+    }
+    if (this.updateDialog.form.endTime !== '') {
+      this.updateDialog.form.endTime = new Date(Date.parse(this.updateDialog.form.endTime))
+    }
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
