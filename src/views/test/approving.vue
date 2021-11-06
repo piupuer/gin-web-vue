@@ -69,7 +69,7 @@
           label="提交人"
         >
           <template slot-scope="scope">
-            {{ scope.row.submitterUser.username + '(' +scope.row.submitterUser.mobile +')' }}
+            {{ scope.row.submitterUser.username + '(' +scope.row.submitterUser.mobile + ')' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -84,6 +84,19 @@
           prop="prevDetail"
           label="状态"
         />
+        <el-table-column
+          prop="logDetail"
+          label="明细"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              @click="handleLogDetail(scope.$index)"
+            >
+              查看明细
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
@@ -168,13 +181,52 @@
         </el-button>
       </div>
     </el-dialog>
+    <!-- 日志明细对话框 -->
+    <el-dialog
+      :title="logDetailDialog.title"
+      :visible.sync="logDetailDialog.visible"
+      width="500px"
+    >
+      <el-form
+        ref="logDetailForm"
+        :model="logDetailDialog.form"
+        label-width="120px"
+      >
+        <el-form-item
+          v-for="item in logDetailDialog.fields"
+          :key="item.key"
+          :label="item.name"
+        >
+          <el-input
+            v-model.trim="item.val"
+            :placeholder="item.placeholder"
+          />
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="primary"
+          :loading="logDetailDialog.loading"
+          @click="doChangeLogDetail"
+        >
+          修 改
+        </el-button>
+        <el-button @click="cancelChangeLogDetail">
+          取 消
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { approveFsm, findFsmApproving } from '@/api/system/fsm'
+import { approveFsm, findFsmApproving, getFsmLogDetail, updateFsmLogDetail } from '@/api/system/fsm'
+import { diffArrUpdate } from '@/utils/diff'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -217,6 +269,7 @@ export default class extends Vue {
 
   private table: any = {
     loading: false,
+    key: 0,
     approvalLoading: false,
     batchDeleteBtnDisabled: true,
     selection: [],
@@ -225,7 +278,10 @@ export default class extends Vue {
     pageSize: 5,
     total: 0,
     form: {
-      category: ''
+      category: '',
+      submitterUser: {},
+      submitterRole: {},
+      logDetail: []
     }
   }
 
@@ -238,21 +294,29 @@ export default class extends Vue {
     title: '',
     // 默认数据
     defaultForm: {
-      flowId: 0,
-      flowTargetCategory: 0,
-      targetId: 0,
+      uuid: '',
+      category: '',
       approvalOpinion: '',
       approvalReason: ''
     },
     // 表单
     form: {},
-    oldData: {},
     // 表单校验
     rules: {
       approvalReason: [
         { required: true, message: '原因不能为空', trigger: 'blur' }
       ]
     }
+  }
+
+  private logDetailDialog: any = {
+    visible: false,
+    title: '提交人明细',
+    form: {},
+    category: '',
+    uuid: '',
+    fields: [],
+    oldData: {}
   }
 
   created() {
@@ -361,6 +425,65 @@ export default class extends Vue {
     this.getData()
   }
 
+  private async handleLogDetail(index: number) {
+    this.logDetailDialog.fields = []
+    this.table.list[index].logLoading = true
+    try {
+      const { data } = await getFsmLogDetail({
+        category: this.table.list[index].category,
+        uuid: this.table.list[index].uuid
+      })
+      this.logDetailDialog.category = this.table.list[index].category
+      this.logDetailDialog.uuid = this.table.list[index].uuid
+      this.table.list[index].logDetail = data
+      this.logDetailDialog.visible = true
+      for (const item of data) {
+        this.logDetailDialog.fields.push({
+          name: item.name,
+          key: item.key,
+          val: item.val,
+          placeholder: '请输入需要修改的' + item.name
+        })
+      }
+    } finally {
+      this.table.list[index].logLoading = false
+    }
+    this.logDetailDialog.oldData = JSON.parse(JSON.stringify(this.logDetailDialog.fields))
+  }
+
+  private async doChangeLogDetail() {
+    try {
+      this.logDetailDialog.loading = true
+      const diff = diffArrUpdate(this.logDetailDialog.oldData, this.logDetailDialog.fields, 'key')
+      if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: '数据没有发生变化, 请重新输入~'
+        })
+        return
+      }
+      await updateFsmLogDetail({
+        category: this.logDetailDialog.category,
+        uuid: this.logDetailDialog.uuid,
+        fields: diff.update
+      })
+    } finally {
+      this.logDetailDialog.loading = false
+    }
+    this.logDetailDialog.visible = false
+    this.getData()
+    this.$notify({
+      title: '恭喜',
+      message: '修改成功',
+      type: 'success',
+      duration: 2000
+    })
+  }
+
+  private async cancelChangeLogDetail() {
+    this.logDetailDialog.visible = false
+  }
+
   private async handleSelectionChange(rows: any) {
     this.table.batchDeleteBtnDisabled = rows.length === 0
     this.table.selection = rows
@@ -400,13 +523,14 @@ export default class extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-  .app-container {
-    .el-row {
-      margin-bottom: 15px;
-    }
-    .el-steps {
-      width: 50%;
-      margin: 0 auto;
-    }
+.app-container {
+  .el-row {
+    margin-bottom: 15px;
   }
+
+  .el-steps {
+    width: 50%;
+    margin: 0 auto;
+  }
+}
 </style>

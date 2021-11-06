@@ -14,6 +14,20 @@ export const findFsmApproving = (params: any) =>
     params
   })
 
+export const getFsmLogDetail = (params: any) =>
+  request({
+    url: '/fsm/submitter/detail',
+    method: 'get',
+    params
+  })
+
+export const updateFsmLogDetail = (data: any) =>
+  request({
+    url: '/fsm/submitter/detail',
+    method: 'patch',
+    data
+  })
+
 export const approveFsm = (data: any) =>
   request({
     url: '/fsm/approve',
