@@ -105,6 +105,13 @@
         >
           <template slot-scope="scope">
             <el-button
+              type="primary"
+              :loading="table.logTrackLoading"
+              @click="handleLogTrack(scope.row)"
+            >
+              审批日志
+            </el-button>
+            <el-button
               v-if="scope.row.resubmit === 1"
               type="success"
               @click="handleApproval(scope.row, 2)"
@@ -120,7 +127,7 @@
             </el-button>
             <el-button
               v-if="scope.row.resubmit === 0 && scope.row.confirm === 0"
-              type="primary"
+              type="success"
               @click="handleApproval(scope.row, 0)"
             >
               通过
@@ -235,13 +242,46 @@
         </el-button>
       </div>
     </el-dialog>
+    <!-- 审批日志对话框 -->
+    <el-dialog
+      :title="logTrackDialog.title"
+      :visible.sync="logTrackDialog.visible"
+      width="500px"
+    >
+      <el-steps
+        :active="logTrackDialog.stepsActive"
+        :align-center="true"
+        :space="80"
+        direction="vertical"
+        finish-status="success"
+      >
+        <el-step
+          v-for="(item, index) in logTrackDialog.steps"
+          :key="index"
+          :title="item.title"
+          :status="item.status"
+          :description="item.description"
+        />
+      </el-steps>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="primary"
+          @click="logTrackDialog.visible=false"
+        >
+          确 定
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import { approveFsm, findFsmApproving, getFsmLogDetail, updateFsmLogDetail } from '@/api/system/fsm'
+import { approveFsm, findFsmApproving, findFsmLogTrack, getFsmLogDetail, updateFsmLogDetail } from '@/api/system/fsm'
 import { diffArrUpdate } from '@/utils/diff'
 
 @Component({
@@ -286,6 +326,7 @@ export default class extends Vue {
   private table: any = {
     loading: false,
     key: 0,
+    logTrackLoading: false,
     approvalLoading: false,
     batchDeleteBtnDisabled: true,
     selection: [],
@@ -338,6 +379,16 @@ export default class extends Vue {
     oldData: {}
   }
 
+  private logTrackDialog: any = {
+    // 是否打开
+    visible: false,
+    // 标题
+    title: '审批日志',
+    // 历史步骤
+    stepsActive: 0,
+    steps: []
+  }
+
   created() {
     this.getData()
   }
@@ -366,6 +417,84 @@ export default class extends Vue {
 
   private async doSearch() {
     this.getData()
+  }
+
+  private async handleLogTrack(row: any) {
+    this.table.logTrackLoading = true
+    try {
+      console.log({
+        category: row.category,
+        uuid: row.uuid
+      })
+      const { data } = await findFsmLogTrack({
+        category: row.category,
+        uuid: row.uuid
+      })
+      this.logTrackDialog.stepsActive = data.length - 1
+      const logs: any [] = []
+      for (let i = 0, len = data.length; i < len; i++) {
+        const item = data[i]
+        if (i === 0) {
+          logs.push({
+            title: item.name,
+            description: item.createdAt,
+            status: 'success'
+          })
+        } else if (i < len - 1 || item.status > 0) {
+          let status = 'success'
+          let description = item.updatedAt
+          let opinion = item.opinion
+          if (item.opinion === '' && item.status !== 3 && item.end === 0 && item.confirm === 0) {
+            opinion = '通过'
+          }
+          let title = item.name
+          if (opinion !== '') {
+            title = item.name + '[审批意见: ' + opinion + ']'
+          }
+          if (item.status === 2) {
+            status = 'error'
+            if (item.opinion !== '') {
+              description = item.updatedAt
+            }
+          } else if (item.status === 3) {
+            status = 'error'
+          } else if (item.status === 4) {
+            status = 'finish'
+          }
+          logs.push({
+            title,
+            description,
+            status
+          })
+        } else {
+          if (item.resubmit === 1) {
+            logs.push({
+              title: '待重新提交',
+              description: '请编辑后重新提交~',
+              status: 'wait'
+            })
+          } else if (item.confirm === 1) {
+            logs.push({
+              title: '待确认',
+              description: '请点击确认~',
+              status: 'wait'
+            })
+          } else {
+            logs.push({
+              title: '待审批',
+              description: '请耐心等待~',
+              status: 'wait'
+            })
+          }
+        }
+      }
+      this.logTrackDialog.steps = logs
+      this.logTrackDialog.visible = true
+    } catch (e) {
+      this.$message.error('读取审批日志失败')
+    } finally {
+      this.table.logTrackLoading = false
+    }
   }
 
   private async handleApproval(row: any, type: number) {

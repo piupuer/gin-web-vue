@@ -114,7 +114,7 @@
           <template slot-scope="scope">
             <el-button
               type="primary"
-              :loading="table.approvalLoading"
+              :loading="table.logTrackLoading"
               @click="handleLogTrack(scope.row)"
             >
               审批日志
@@ -236,19 +236,19 @@
     </el-dialog>
     <!-- 审批日志对话框 -->
     <el-dialog
-      :title="approvalDialog.title"
-      :visible.sync="approvalDialog.visible"
+      :title="logTrackDialog.title"
+      :visible.sync="logTrackDialog.visible"
       width="500px"
     >
       <el-steps
-        :active="approvalDialog.stepsActive"
+        :active="logTrackDialog.stepsActive"
         :align-center="true"
         :space="80"
         direction="vertical"
         finish-status="success"
       >
         <el-step
-          v-for="(item, index) in approvalDialog.steps"
+          v-for="(item, index) in logTrackDialog.steps"
           :key="index"
           :title="item.title"
           :status="item.status"
@@ -261,7 +261,7 @@
       >
         <el-button
           type="primary"
-          @click="approvalDialog.visible=false"
+          @click="logTrackDialog.visible=false"
         >
           确 定
         </el-button>
@@ -355,7 +355,7 @@ export default class extends Vue {
     }
   }
 
-  private approvalDialog: any = {
+  private logTrackDialog: any = {
     // 是否打开
     visible: false,
     // 标题
@@ -367,7 +367,7 @@ export default class extends Vue {
 
   private table: any = {
     loading: false,
-    approvalLoading: false,
+    logTrackLoading: false,
     batchDeleteBtnDisabled: true,
     selection: [],
     list: [],
@@ -499,7 +499,7 @@ export default class extends Vue {
   }
 
   private async handleLogTrack(row: any) {
-    this.table.approvalLoading = true
+    this.table.logTrackLoading = true
     try {
       console.log({
         category: this.defaultConfig.category,
@@ -509,7 +509,7 @@ export default class extends Vue {
         category: this.defaultConfig.category,
         uuid: row.fsmUuid
       })
-      this.approvalDialog.stepsActive = data.length - 1
+      this.logTrackDialog.stepsActive = data.length - 1
       const logs: any [] = []
       for (let i = 0, len = data.length; i < len; i++) {
         const item = data[i]
@@ -567,12 +567,12 @@ export default class extends Vue {
           }
         }
       }
-      this.approvalDialog.steps = logs
-      this.approvalDialog.visible = true
+      this.logTrackDialog.steps = logs
+      this.logTrackDialog.visible = true
     } catch (e) {
       this.$message.error('读取审批日志失败')
     } finally {
-      this.table.approvalLoading = false
+      this.table.logTrackLoading = false
     }
   }
 
