@@ -12,9 +12,9 @@
           :index="resolvePath(theOnlyOneChild.path)"
           :class="{'submenu-title-noDropdown': isFirstLevel}"
         >
-          <svg-icon
+          <i
             v-if="theOnlyOneChild.meta.icon"
-            :name="theOnlyOneChild.meta.icon"
+            :class="'iconfont icon-' + theOnlyOneChild.meta.icon"
           />
           <span
             v-if="theOnlyOneChild.meta.title"
@@ -29,9 +29,9 @@
       popper-append-to-body
     >
       <template slot="title">
-        <svg-icon
+        <i
           v-if="item.meta && item.meta.icon"
-          :name="item.meta.icon"
+          :class="'iconfont icon-' + item.meta.icon"
         />
         <span
           v-if="item.meta && item.meta.title"
@@ -171,12 +171,13 @@ export default class extends Vue {
 </style>
 
 <style lang="scss" scoped>
-.svg-icon {
-  margin-right: 16px;
+.iconfont {
+  margin-right: 5px;
+  color: #bfcbd9;
 }
 
 .simple-mode {
-  .svg-icon {
+  .iconfont {
     margin-left: 20px;
   }
 }

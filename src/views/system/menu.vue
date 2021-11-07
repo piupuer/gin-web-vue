@@ -34,7 +34,6 @@
           label="标题"
           width="180"
         />
-        <svg-icon icon-class="bug" />
         <el-table-column
           prop="icon"
           label="图标"
@@ -42,7 +41,9 @@
           width="100"
         >
           <template slot-scope="scope">
-            <svg-icon :name="scope.row.icon" />
+            <i
+              :class="'iconfont icon-' + scope.row.icon"
+            />
           </template>
         </el-table-column>
         <el-table-column
