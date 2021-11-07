@@ -762,6 +762,7 @@ export default class extends Vue {
     const oldRow = JSON.parse(JSON.stringify(row))
     // 弹窗表单赋值
     this.updateDialog.form.id = row.id
+    this.updateDialog.form.category = row.category
     this.updateDialog.form.name = row.name
     this.updateDialog.form.submitterName = row.submitterName
     this.updateDialog.form.submitterEditFields = []
@@ -844,7 +845,7 @@ export default class extends Vue {
 
     this.updateDialog.form.levels = levels
     // 记录旧数据
-    this.updateDialog.oldData = JSON.parse(JSON.stringify(await this.encodeData(oldRow)))
+    this.updateDialog.oldData = JSON.parse(JSON.stringify(this.encodeData(oldRow)))
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题

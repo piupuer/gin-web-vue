@@ -320,9 +320,9 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form, Tree } from 'element-ui'
-import { batchDeleteRole, createRole, findRole, updateRole, updateRoleApis, updateRoleMenus } from '@/api/system/roles'
-import { findApiGroupByCategoryByRoleId } from '@/api/system/apis'
-import { findMenuByRoleId } from '@/api/system/menus'
+import { batchDeleteRole, createRole, findRole, updateRole } from '@/api/system/roles'
+import { findApiGroupByCategoryByRoleId, updateApiByRoleId } from '@/api/system/apis'
+import { findMenuByRoleId, updateMenuByRoleId } from '@/api/system/menus'
 import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
 import { UserModule } from '@/store/modules/user'
 import { IdempotenceModule } from '@/store/modules/idempotence'
@@ -537,7 +537,7 @@ export default class extends Vue {
     }
     try {
       this.roleDialog.loading = true
-      await updateRoleMenus(this.roleDialog.roleId, diff)
+      await updateMenuByRoleId(this.roleDialog.roleId, diff)
     } finally {
       this.roleDialog.loading = false
     }
@@ -567,7 +567,7 @@ export default class extends Vue {
     }
     try {
       this.roleDialog.loading = true
-      await updateRoleApis(this.roleDialog.roleId, diff)
+      await updateApiByRoleId(this.roleDialog.roleId, diff)
     } finally {
       this.roleDialog.loading = false
     }

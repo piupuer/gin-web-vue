@@ -115,7 +115,7 @@
             <el-button
               type="primary"
               :loading="table.approvalLoading"
-              @click="handleApproval(scope.row)"
+              @click="handleLogTrack(scope.row)"
             >
               审批日志
             </el-button>
@@ -273,16 +273,10 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
 import { Form } from 'element-ui'
-import {
-  batchDeleteLeave,
-  cancelLeave,
-  createLeave,
-  findLeaveApprovingTrack,
-  findLeave,
-  updateLeave, confirmLeave, resubmitLeave
-} from '@/api/test/leaves'
+import { batchDeleteLeave, createLeave, findLeave, updateLeave } from '@/api/test/leaves'
 import { diffObjUpdate } from '@/utils/diff'
 import { IdempotenceModule } from '@/store/modules/idempotence'
+import { approveFsm, cancelFsm, findFsmLogTrack } from '@/api/system/fsm'
 
 @Component({
   // 组件名称首字母需大写, 否则会报警告
@@ -295,6 +289,8 @@ export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
     pageSize: 5,
+    // 默认状态机分类, 需要和后端保持一致, 也可以动态从数据字典查询
+    category: 1,
     status: [{
       name: 0,
       label: '已提交',
@@ -502,11 +498,17 @@ export default class extends Vue {
     this.updateDialog.visible = true
   }
 
-  private async handleApproval(row: any) {
+  private async handleLogTrack(row: any) {
     this.table.approvalLoading = true
-    this.approvalDialog.title = ''
     try {
-      const { data } = await findLeaveApprovingTrack(row.id)
+      console.log({
+        category: this.defaultConfig.category,
+        uuid: row.fsmUuid
+      })
+      const { data } = await findFsmLogTrack({
+        category: this.defaultConfig.category,
+        uuid: row.fsmUuid
+      })
       this.approvalDialog.stepsActive = data.length - 1
       const logs: any [] = []
       for (let i = 0, len = data.length; i < len; i++) {
@@ -520,6 +522,14 @@ export default class extends Vue {
         } else if (i < len - 1 || item.status > 0) {
           let status = 'success'
           let description = item.updatedAt
+          let opinion = item.opinion
+          if (item.opinion === '' && item.status !== 3 && item.end === 0 && item.confirm === 0) {
+            opinion = '通过'
+          }
+          let title = item.name
+          if (opinion !== '') {
+            title = item.name + '[审批意见: ' + opinion + ']'
+          }
           if (item.status === 2) {
             status = 'error'
             if (item.opinion !== '') {
@@ -531,18 +541,18 @@ export default class extends Vue {
             status = 'finish'
           }
           logs.push({
-            title: item.name,
+            title,
             description,
             status
           })
         } else {
-          if (item.resubmit) {
+          if (item.resubmit === 1) {
             logs.push({
               title: '待重新提交',
               description: '请编辑后重新提交~',
               status: 'wait'
             })
-          } else if (item.confirm) {
+          } else if (item.confirm === 1) {
             logs.push({
               title: '待确认',
               description: '请点击确认~',
@@ -599,13 +609,23 @@ export default class extends Vue {
       type: 'warning'
     })
       .then(async() => {
-        await confirmLeave(row.id)
+        await approveFsm({
+          category: this.defaultConfig.category,
+          uuid: row.fsmUuid,
+          // 确认相当于一次审批通过
+          approved: 1
+        })
         this.getData()
       })
   }
 
   private async handleResubmit(row: any) {
-    await resubmitLeave(row.id)
+    await approveFsm({
+      category: this.defaultConfig.category,
+      uuid: row.fsmUuid,
+      // 重新提交相当于一次审批通过
+      approved: 1
+    })
     this.getData()
   }
 
@@ -617,7 +637,10 @@ export default class extends Vue {
       type: 'warning'
     })
       .then(async() => {
-        await cancelLeave(row.id)
+        await cancelFsm({
+          category: this.defaultConfig.category,
+          uuids: [row.fsmUuid]
+        })
         this.getData()
       })
   }
@@ -721,7 +744,7 @@ export default class extends Vue {
       margin-bottom: 15px;
     }
     .el-steps {
-      width: 50%;
+      width: 70%;
       margin: 0 auto;
     }
   }

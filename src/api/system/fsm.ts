@@ -14,6 +14,13 @@ export const findFsmApproving = (params: any) =>
     params
   })
 
+export const findFsmLogTrack = (params: any) =>
+  request({
+    url: '/fsm/log/track',
+    method: 'get',
+    params
+  })
+
 export const getFsmLogDetail = (params: any) =>
   request({
     url: '/fsm/submitter/detail',
@@ -31,6 +38,13 @@ export const updateFsmLogDetail = (data: any) =>
 export const approveFsm = (data: any) =>
   request({
     url: '/fsm/approve',
+    method: 'patch',
+    data
+  })
+
+export const cancelFsm = (data: any) =>
+  request({
+    url: '/fsm/cancel',
     method: 'patch',
     data
   })

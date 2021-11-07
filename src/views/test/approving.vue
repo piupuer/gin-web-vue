@@ -105,12 +105,28 @@
         >
           <template slot-scope="scope">
             <el-button
+              v-if="scope.row.resubmit === 1"
+              type="success"
+              @click="handleApproval(scope.row, 2)"
+            >
+              重新提交
+            </el-button>
+            <el-button
+              v-if="scope.row.confirm === 1"
+              type="success"
+              @click="handleApproval(scope.row, 3)"
+            >
+              确认
+            </el-button>
+            <el-button
+              v-if="scope.row.resubmit === 0 && scope.row.confirm === 0"
               type="primary"
               @click="handleApproval(scope.row, 0)"
             >
               通过
             </el-button>
             <el-button
+              v-if="scope.row.resubmit === 0 && scope.row.confirm === 0 && scope.row.refuse === 1"
               type="danger"
               @click="handleApproval(scope.row, 1)"
             >
@@ -281,6 +297,9 @@ export default class extends Vue {
       category: '',
       submitterUser: {},
       submitterRole: {},
+      resubmit: 0,
+      confirm: 0,
+      refuse: 0,
       logDetail: []
     }
   }
@@ -355,6 +374,16 @@ export default class extends Vue {
     // 弹窗表单赋值
     this.approvalDialog.form.uuid = row.uuid
     this.approvalDialog.form.category = row.category
+    if (type === 2 || type === 3) {
+      // 重新提交/确认
+      await approveFsm({
+        uuid: row.uuid,
+        category: row.category,
+        approved: 1
+      })
+      this.getData()
+      return
+    }
     // 修改分类
     this.approvalDialog.type = type
     // 修改标题
