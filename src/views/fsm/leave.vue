@@ -124,7 +124,7 @@
               type="success"
               @click="handleResubmit(scope.row)"
             >
-              {{ $t('resubmit') }}
+              {{ $t('approvingPage.resubmit') }}
             </el-button>
             <el-button
               v-if="scope.row.status === 5"

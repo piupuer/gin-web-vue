@@ -525,7 +525,7 @@ export default class extends Vue {
         this.getData()
         this.$notify({
           title: this.$t('congratulations').toString(),
-          message: this.$t('approvingPage.doApproval').toString(),
+          message: this.$t('approvingPage.doApproval').toString() + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
