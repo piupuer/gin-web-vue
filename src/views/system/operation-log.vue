@@ -112,7 +112,7 @@
         />
         <el-table-column
           prop="apiDesc"
-          :label="$t('apiDesc')"
+          :label="$t('operationLogPage.apiDesc')"
           width="180"
         />
         <el-table-column
@@ -225,8 +225,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="data"
-          :label="$t('operationLogPage.data')"
+          prop="params"
+          :label="$t('operationLogPage.params')"
           align="center"
         >
           <template slot-scope="scope">
@@ -237,6 +237,23 @@
               <svg-icon
                 name="eye-on"
                 @click="showJson(2, scope.row)"
+              />
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="resp"
+          :label="$t('operationLogPage.resp')"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span
+              class="svg-container"
+              :title="$t('operationLogPage.showDetail')"
+            >
+              <svg-icon
+                name="eye-on"
+                @click="showJson(3, scope.row)"
               />
             </span>
           </template>
@@ -421,16 +438,19 @@ export default class extends Vue {
   }
 
   private async showJson(type: number, row: any) {
-    if (type === 1) {
-      this.jsonDialog.title = this.$t('operationLogPage.body').toString()
-      this.jsonDialog.data = JSON.parse(row.body)
-    } else {
-      this.jsonDialog.title = this.$t('operationLogPage.data').toString()
-      if (row.data !== 'no data') {
-        this.jsonDialog.data = JSON.parse(row.data)
+    try {
+      if (type === 1) {
+        this.jsonDialog.title = this.$t('operationLogPage.body').toString()
+        this.jsonDialog.data = JSON.parse(row.body)
+      } else if (type === 2) {
+        this.jsonDialog.title = this.$t('operationLogPage.params').toString()
+        this.jsonDialog.data = JSON.parse(row.params)
       } else {
-        this.jsonDialog.data = {}
+        this.jsonDialog.title = this.$t('operationLogPage.resp').toString()
+        this.jsonDialog.data = JSON.parse(row.resp)
       }
+    } catch (e) {
+      this.jsonDialog.data = {}
     }
     this.jsonDialog.visible = true
   }

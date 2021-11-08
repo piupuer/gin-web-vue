@@ -177,7 +177,8 @@ export default {
     latency: 'Request time',
     userAgent: 'Browser UserAgent',
     body: 'Request body',
-    data: 'Response data',
+    params: 'Request params',
+    resp: 'Response data',
     showDetail: 'show detail'
   },
   messagePushPage: {

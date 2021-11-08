@@ -177,7 +177,8 @@ export default {
     latency: '请求耗时',
     userAgent: '浏览器信息',
     body: '请求体',
-    data: '响应数据',
+    params: '请求参数',
+    resp: '响应数据',
     showDetail: '查看详情'
   },
   messagePushPage: {
