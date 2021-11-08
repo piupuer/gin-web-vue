@@ -9,46 +9,46 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="分类"
+        :label="$t('category')"
         prop="category"
       >
         <el-input
           v-model.number="table.form.category"
-          placeholder="分类"
+          :placeholder="$t('pleaseEnter') + $t('category')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="名称"
+        :label="$t('name')"
         prop="name"
       >
         <el-input
           v-model.trim="table.form.name"
-          placeholder="名称"
+          :placeholder="$t('pleaseEnter') + $t('name')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="提交人确认"
-        prop="submitUserConfirm"
+        :label="$t('fsmPage.submitterConfirm')"
+        prop="submitterConfirm"
       >
         <el-select
           v-model.trim="table.form.submitterConfirm"
           clearable
-          placeholder="提交人确认"
+          :placeholder="$t('pleaseEnter') + $t('fsmPage.submitterConfirm')"
         >
           <el-option
             key="1"
-            label="是"
+            :label="$t('yes')"
             :value="1"
           />
           <el-option
             key="0"
-            label="否"
+            :label="$t('no')"
             :value="0"
           />
         </el-select>
@@ -59,10 +59,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-row :gutter="10">
@@ -72,7 +72,7 @@
             icon="el-icon-plus"
             @click="handleCreate"
           >
-            新增
+            {{ $t('create') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -82,7 +82,7 @@
             :disabled="table.batchDeleteBtnDisabled"
             @click="handleBatchDelete"
           >
-            批量删除
+            {{ $t('batchDel') }}
           </el-button>
         </el-col>
       </el-row>
@@ -100,7 +100,7 @@
         />
         <el-table-column
           prop="category"
-          label="分类"
+          :label="$t('category')"
           sortable
         >
           <template slot-scope="scope">
@@ -111,22 +111,22 @@
         </el-table-column>
         <el-table-column
           prop="name"
-          label="名称"
+          :label="$t('name')"
           sortable
         />
         <el-table-column
           prop="submitterName"
-          label="提交人"
+          :label="$t('fsmPage.submitterName')"
         />
         <el-table-column
           prop="submitterEditFields"
-          label="提交可编辑字段"
+          :label="$t('fsmPage.submitterEditFields')"
         >
           <template slot-scope="scope">
             <el-tag
               v-if="scope.row.submitterEditFields === ''"
             >
-              {{ '无限制' }}
+              {{ $t('any') }}
             </el-tag>
             <el-tag
               v-else
@@ -137,31 +137,31 @@
         </el-table-column>
         <el-table-column
           prop="submitterConfirm"
-          label="需要提交人确认"
+          :label="$t('fsmPage.submitterConfirm')"
         >
           <template slot-scope="scope">
             <el-tag
               v-if="scope.row.submitterConfirm === 1"
             >
-              {{ '是' }}
+              {{ $t('yes') }}
             </el-tag>
             <el-tag
               v-else
               type="danger"
             >
-              {{ '否' }}
+              {{ $t('no') }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column
           prop="submitterConfirmEditFields"
-          label="确认可编辑字段"
+          :label="$t('fsmPage.submitterConfirmEditFields')"
         >
           <template slot-scope="scope">
             <el-tag
               v-if="scope.row.submitterConfirmEditFields === ''"
             >
-              {{ '无限制' }}
+              {{ $t('any') }}
             </el-tag>
             <el-tag
               v-else
@@ -172,23 +172,23 @@
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="240"
         >
           <template slot-scope="scope">
             <el-button
-              size="mini"
+
               @click="handleUpdate(scope.row)"
             >
-              编辑
+              {{ $t('edit') }}
             </el-button>
             <el-button
-              size="mini"
+
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -218,34 +218,34 @@
         label-width="100px"
       >
         <el-form-item
-          label="唯一分类"
+          :label="$t('category')"
           prop="category"
         >
           <el-input
             v-model.number="updateDialog.form.category"
-            placeholder="请输入分类(一个分类对应一个流程)"
+            :placeholder="$t('pleaseEnter') + $t('category')"
           />
         </el-form-item>
         <el-form-item
-          label="名称"
+          :label="$t('name')"
           prop="name"
         >
           <el-input
             v-model.trim="updateDialog.form.name"
-            placeholder="请输入状态机名称"
+            :placeholder="$t('pleaseEnter') + $t('name')"
           />
         </el-form-item>
         <el-form-item
-          label="提交人名称"
+          :label="$t('fsmPage.submitterName')"
           prop="submitterName"
         >
           <el-input
             v-model.trim="updateDialog.form.submitterName"
-            placeholder="请输入提交人名称(审批日志显示用)"
+            :placeholder="$t('pleaseEnter') + $t('fsmPage.submitterName')"
           />
         </el-form-item>
         <el-form-item
-          label="提交编辑字段"
+          :label="$t('fsmPage.submitterEditFields')"
           prop="submitterEditFields"
         >
           <el-tag
@@ -273,20 +273,20 @@
           </el-button>
         </el-form-item>
         <el-form-item
-          label="提交人确认"
+          :label="$t('fsmPage.submitterConfirm')"
           prop="submitterConfirm"
         >
           <el-switch
             v-model.trim="updateDialog.form.submitterConfirm"
             :active-value="1"
             :inactive-value="0"
-            active-text="开启"
-            inactive-text="关闭"
+            :active-text="$t('available')"
+            :inactive-text="$t('disabled')"
           />
         </el-form-item>
         <el-form-item
           v-if="updateDialog.form.submitterConfirm === 1"
-          label="确认编辑字段"
+          :label="$t('fsmPage.submitterConfirmEditFields')"
           prop="submitterConfirmEditFields"
         >
           <el-tag
@@ -325,7 +325,7 @@
           :model="level"
         >
           <div class="level-form-title">
-            <span>第{{ index + 1 }}级审批：</span>
+            <span>{{ $t('level') + (index + 1) }}：</span>
             <i
               class="el-icon-delete level-form-delete"
               @click="levelDelete(index)"
@@ -333,17 +333,17 @@
           </div>
 
           <el-form-item
-            label="名称"
+            :label="$t('name')"
             prop="name"
           >
             <el-input
               v-model.trim="level.name"
-              placeholder="请输入当前审批层级名称"
+              :placeholder="$t('pleaseEnter') + $t('name')"
               clearable
             />
           </el-form-item>
           <el-form-item
-            label="角色"
+            :label="$t('fsmPage.roles')"
             prop="roles"
           >
             <el-tag
@@ -372,7 +372,7 @@
             </el-button>
           </el-form-item>
           <el-form-item
-            label="用户"
+            :label="$t('fsmPage.users')"
             prop="users"
           >
             <el-tag
@@ -401,20 +401,20 @@
             </el-button>
           </el-form-item>
           <el-form-item
-            label="编辑权限"
+            :label="$t('fsmPage.edit')"
             prop="edit"
           >
             <el-switch
               v-model.trim="level.edit"
               :active-value="1"
               :inactive-value="0"
-              active-text="开启"
-              inactive-text="关闭"
+              :active-text="$t('available')"
+              :inactive-text="$t('disabled')"
             />
           </el-form-item>
           <el-form-item
             v-if="level.edit === 1"
-            label="编辑字段"
+            :label="$t('fsmPage.editFields')"
             prop="editFields"
           >
             <el-tag
@@ -442,21 +442,21 @@
             </el-button>
           </el-form-item>
           <el-form-item
-            label="拒绝权限"
+            :label="$t('fsmPage.refuse')"
             prop="refuse"
           >
             <el-switch
               v-model.trim="level.refuse"
               :active-value="1"
               :inactive-value="0"
-              active-text="开启"
-              inactive-text="关闭"
+              :active-text="$t('available')"
+              :inactive-text="$t('disabled')"
             />
           </el-form-item>
         </el-form>
         <div
           class="level-form-plus-box"
-          title="新增审批层级"
+          :title="$t('create')"
         >
           <i
             class="el-icon-circle-plus-outline level-form-plus"
@@ -473,10 +473,10 @@
           :loading="updateDialog.loading"
           @click="doUpdate"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelUpdate">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -552,18 +552,18 @@ export default class extends Vue {
     // 表单校验
     rules: {
       category: [
-        { required: true, type: 'number', message: '分类必须为数字', trigger: 'blur' }
+        { required: true, type: 'number', message: this.$t('fsmPage.validate[0]').toString(), trigger: 'blur' }
       ],
       name: [
-        { required: true, message: '状态机名称不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('fsm').toString() + this.$t('name').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       submitterName: [
-        { required: true, message: '提交人名称不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('submitter').toString() + this.$t('name').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     },
     levelRules: {
       name: [
-        { required: true, message: '层级名称不能为空(尽量简单通俗易懂)', trigger: 'blur' }
+        { required: true, message: this.$t('level').toString() + this.$t('name').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       roles: [
         { validator: this.levelRoleOrUserValidate, trigger: 'blur' }
@@ -589,7 +589,7 @@ export default class extends Vue {
     },
     rules: {
       category: [
-        { validator: this.searchCategoryValidate, trigger: 'blur' }
+        { required: true, type: 'number', message: this.$t('fsmPage.validate[0]').toString(), trigger: 'blur' }
       ]
     }
   }
@@ -659,7 +659,7 @@ export default class extends Vue {
           if (!update.id) {
             this.$message({
               type: 'warning',
-              message: '数据没有发生变化, 请重新输入~'
+              message: this.$t('noDiff').toString()
             })
             return
           }
@@ -678,9 +678,10 @@ export default class extends Vue {
         this.getData()
         // 清理字段
         this.resetUpdateForm()
+        const message = this.updateDialog.type === 0 ? this.$t('create').toString() : this.$t('update').toString()
         this.$notify({
-          title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}流程成功`,
+          title: this.$t('congratulations').toString(),
+          message: message + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
@@ -750,7 +751,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
-    this.updateDialog.title = '创建新状态机'
+    this.updateDialog.title = this.$t('create').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -849,7 +850,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
-    this.updateDialog.title = '修改状态机'
+    this.updateDialog.title = this.$t('update').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -864,7 +865,7 @@ export default class extends Vue {
         cb(data.list)
       } catch (e) {
         console.warn(e)
-        this.$message.error('读取系统角色信息失败')
+        this.$message.error(this.$t('readDataFail').toString())
         return
       } finally {
         this.updateDialog.roleLoading = false
@@ -878,7 +879,7 @@ export default class extends Vue {
         if (item.id === this.updateDialog.form.levels[index].roles[i].id) {
           this.$message({
             type: 'warning',
-            message: `角色${item.keyword}已存在, 请重新输入~`
+            message: item.keyword + this.$t('alreadyExists').toString()
           })
           this.updateDialog.form.levels[index].rolesVisible = false
           this.updateDialog.form.levels[index].rolesInput = ''
@@ -902,7 +903,7 @@ export default class extends Vue {
         cb(data.list)
       } catch (e) {
         console.warn(e)
-        this.$message.error('读取系统用户信息失败')
+        this.$message.error(this.$t('readDataFail').toString())
         return
       } finally {
         this.table.userLoading = false
@@ -938,7 +939,7 @@ export default class extends Vue {
         if (item.id === this.updateDialog.form.levels[index].users[i].id) {
           this.$message({
             type: 'warning',
-            message: `用户${item.username}已存在, 请重新输入~`
+            message: item.username + this.$t('alreadyExists').toString()
           })
           this.updateDialog.form.levels[index].usersVisible = false
           this.updateDialog.form.levels[index].usersInput = ''
@@ -982,10 +983,10 @@ export default class extends Vue {
       names.push(row.name)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除状态机[${names.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('fsm').toString()}[${names.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {
@@ -1028,7 +1029,7 @@ export default class extends Vue {
         if (v === this.updateDialog.form.submitterEditFields[i]) {
           this.$message({
             type: 'warning',
-            message: `标签${v}已存在, 请重新输入~`
+            message: v + this.$t('alreadyExists').toString()
           })
           this.updateDialog.form.submitterEditFieldsVisible = false
           this.updateDialog.form.submitterEditFieldsInput = ''
@@ -1063,7 +1064,7 @@ export default class extends Vue {
         if (v === this.updateDialog.form.submitterConfirmEditFields[i]) {
           this.$message({
             type: 'warning',
-            message: `标签${v}已存在, 请重新输入~`
+            message: v + this.$t('alreadyExists').toString()
           })
           this.updateDialog.form.submitterConfirmEditFieldsVisible = false
           this.updateDialog.form.submitterConfirmEditFieldsInput = ''
@@ -1129,7 +1130,7 @@ export default class extends Vue {
         if (v === this.updateDialog.form.levels[index].editFields[i]) {
           this.$message({
             type: 'warning',
-            message: `标签${v}已存在, 请重新输入~`
+            message: v + this.$t('alreadyExists').toString()
           })
           this.updateDialog.form.levels[index].editFieldsVisible = false
           this.updateDialog.form.levels[index].editFieldsInput = ''
@@ -1160,15 +1161,8 @@ export default class extends Vue {
 
   private levelRoleOrUserValidate(rule: any, value: any, callback: Function) {
     if (Array.isArray(value) && value.length === 0) {
-      callback(new Error('用户或角色至少填一项'))
+      callback(new Error(this.$t('fsmPage.validate[1]').toString()))
     }
-  }
-
-  private searchCategoryValidate(rule: any, value: any, callback: Function) {
-    if (value !== '' && !Number.isInteger(value)) {
-      callback(new Error('分类必须是数字'))
-    }
-    callback()
   }
 }
 </script>

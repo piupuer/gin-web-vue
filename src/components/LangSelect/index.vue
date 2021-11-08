@@ -43,7 +43,7 @@ export default class extends Vue {
     this.$i18n.locale = lang
     AppModule.SetLanguage(lang)
     this.$message({
-      message: 'Switch Language Success',
+      message: this.$t('langSelect').toString(),
       type: 'success'
     })
   }

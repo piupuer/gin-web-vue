@@ -8,12 +8,12 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="分类"
+        :label="$t('category')"
         prop="category"
       >
         <el-select
           v-model.trim="table.form.category"
-          placeholder="请选择当前审批分类"
+          :label="$t('categoryPlaceholder')"
         >
           <el-option
             v-for="item in defaultConfig.category"
@@ -29,10 +29,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-table
@@ -49,12 +49,12 @@
         />
         <el-table-column
           prop="createdAt"
-          label="提交时间"
+          :label="$t('createdAt')"
         />
         <el-table-column
           prop="category"
           align="center"
-          label="分类"
+          :label="$t('category')"
         >
           <template slot-scope="scope">
             <el-tag
@@ -66,7 +66,7 @@
         </el-table-column>
         <el-table-column
           prop="submitterUser"
-          label="提交人"
+          :label="$t('approvingPage.submitterUser')"
         >
           <template slot-scope="scope">
             {{ scope.row.submitterUser.username + '(' +scope.row.submitterUser.mobile + ')' }}
@@ -74,7 +74,7 @@
         </el-table-column>
         <el-table-column
           prop="submitterRole"
-          label="提交人角色"
+          :label="$t('approvingPage.submitterRole')"
         >
           <template slot-scope="scope">
             {{ scope.row.submitterRole.keyword }}
@@ -82,24 +82,24 @@
         </el-table-column>
         <el-table-column
           prop="prevDetail"
-          label="状态"
+          :label="$t('approvingPage.prevDetail')"
         />
         <el-table-column
           prop="logDetail"
-          label="明细"
+          :label="$t('approvingPage.logDetail')"
         >
           <template slot-scope="scope">
             <el-button
               type="text"
               @click="handleLogDetail(scope.$index)"
             >
-              查看明细
+              {{ $t('approvingPage.viewLogDetail') }}
             </el-button>
           </template>
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="260"
         >
@@ -109,35 +109,35 @@
               :loading="table.logTrackLoading"
               @click="handleLogTrack(scope.row)"
             >
-              审批日志
+              {{ $t('approveLogTrack') }}
             </el-button>
             <el-button
               v-if="scope.row.resubmit === 1"
               type="success"
               @click="handleApproval(scope.row, 2)"
             >
-              重新提交
+              {{ $t('approvingPage.resubmit') }}
             </el-button>
             <el-button
               v-if="scope.row.confirm === 1"
               type="success"
               @click="handleApproval(scope.row, 3)"
             >
-              确认
+              {{ $t('approvingPage.confirm') }}
             </el-button>
             <el-button
               v-if="scope.row.resubmit === 0 && scope.row.confirm === 0"
               type="success"
               @click="handleApproval(scope.row, 0)"
             >
-              通过
+              {{ $t('approvingPage.approve') }}
             </el-button>
             <el-button
               v-if="scope.row.resubmit === 0 && scope.row.confirm === 0 && scope.row.refuse === 1"
               type="danger"
               @click="handleApproval(scope.row, 1)"
             >
-              拒绝
+              {{ $t('approvingPage.refuse') }}
             </el-button>
           </template>
         </el-table-column>
@@ -167,24 +167,24 @@
       >
         <el-form-item
           v-if="approvalDialog.type===0"
-          label="意见"
+          :label="$t('approvingPage.opinion')"
           prop="approvalOpinion"
         >
           <el-input
             v-model.trim="approvalDialog.form.approvalOpinion"
             type="textarea"
-            placeholder="请输入审批意见"
+            :placeholder="$t('pleaseEnter') + $t('approvingPage.opinion')"
           />
         </el-form-item>
         <el-form-item
           v-else
-          label="原因"
+          :label="$t('approvingPage.reason')"
           prop="approvalReason"
         >
           <el-input
             v-model.trim="approvalDialog.form.approvalReason"
             type="textarea"
-            placeholder="请输入拒绝原因"
+            :placeholder="$t('pleaseEnter') + $t('approvingPage.reason')"
           />
         </el-form-item>
       </el-form>
@@ -197,10 +197,10 @@
           :loading="approvalDialog.loading"
           @click="doApproval"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelApproval">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -235,10 +235,10 @@
           :loading="logDetailDialog.loading"
           @click="doChangeLogDetail"
         >
-          修 改
+          {{ $t('edit') }}
         </el-button>
         <el-button @click="cancelChangeLogDetail">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -271,7 +271,7 @@
           type="primary"
           @click="logTrackDialog.visible=false"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
       </div>
     </el-dialog>
@@ -295,30 +295,9 @@ export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
     pageSize: 5,
-    status: [{
-      name: 0,
-      label: '提交',
-      type: ''
-    }, {
-      name: 1,
-      label: '通过',
-      type: 'success'
-    }, {
-      name: 2,
-      label: '拒绝',
-      type: 'danger'
-    }, {
-      name: 3,
-      label: '取消',
-      type: 'warning'
-    }, {
-      name: 4,
-      label: '结束',
-      type: ''
-    }],
     category: [{
       id: 1,
-      label: '请假流程',
+      label: this.$t('leavePage.flowName').toString(),
       type: ''
     }]
   }
@@ -364,14 +343,14 @@ export default class extends Vue {
     // 表单校验
     rules: {
       approvalReason: [
-        { required: true, message: '原因不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('reason').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     }
   }
 
   private logDetailDialog: any = {
     visible: false,
-    title: '提交人明细',
+    title: this.$t('approvingPage.logDetail').toString(),
     form: {},
     category: '',
     uuid: '',
@@ -383,7 +362,7 @@ export default class extends Vue {
     // 是否打开
     visible: false,
     // 标题
-    title: '审批日志',
+    title: this.$t('approveLogTrack').toString(),
     // 历史步骤
     stepsActive: 0,
     steps: []
@@ -445,11 +424,11 @@ export default class extends Vue {
           let description = item.updatedAt
           let opinion = item.opinion
           if (item.opinion === '' && item.status !== 3 && item.end === 0 && item.confirm === 0) {
-            opinion = '通过'
+            opinion = this.$t('approvingPage.defaultOpinion').toString()
           }
           let title = item.name
           if (opinion !== '') {
-            title = item.name + '[审批意见: ' + opinion + ']'
+            title = item.name + '[' + this.$t('approvingPage.opinion').toString() + ': ' + opinion + ']'
           }
           if (item.status === 2) {
             status = 'error'
@@ -469,20 +448,20 @@ export default class extends Vue {
         } else {
           if (item.resubmit === 1) {
             logs.push({
-              title: '待重新提交',
-              description: '请编辑后重新提交~',
+              title: this.$t('leavePage.refusedNeedResubmit').toString(),
+              description: this.$t('leavePage.refusedNeedResubmitDesc').toString(),
               status: 'wait'
             })
           } else if (item.confirm === 1) {
             logs.push({
-              title: '待确认',
-              description: '请点击确认~',
+              title: this.$t('leavePage.approvedNeedConfirm').toString(),
+              description: this.$t('leavePage.approvedNeedConfirmDesc').toString(),
               status: 'wait'
             })
           } else {
             logs.push({
-              title: '待审批',
-              description: '请耐心等待~',
+              title: this.$t('leavePage.approving').toString(),
+              description: this.$t('leavePage.approvingDesc').toString(),
               status: 'wait'
             })
           }
@@ -491,7 +470,7 @@ export default class extends Vue {
       this.logTrackDialog.steps = logs
       this.logTrackDialog.visible = true
     } catch (e) {
-      this.$message.error('读取审批日志失败')
+      this.$message.error(this.$t('readDataFail').toString())
     } finally {
       this.table.logTrackLoading = false
     }
@@ -517,9 +496,9 @@ export default class extends Vue {
     this.approvalDialog.type = type
     // 修改标题
     if (type === 0) {
-      this.approvalDialog.title = '通过审批'
+      this.approvalDialog.title = this.$t('approvingPage.toApprove').toString()
     } else {
-      this.approvalDialog.title = '拒绝审批'
+      this.approvalDialog.title = this.$t('approvingPage.toRefuse').toString()
     }
     // 开启弹窗
     this.approvalDialog.visible = true
@@ -546,8 +525,8 @@ export default class extends Vue {
         // 重新查询
         this.getData()
         this.$notify({
-          title: '恭喜',
-          message: '审批成功',
+          title: this.$t('congratulations').toString(),
+          message: this.$t('doApproval').toString(),
           type: 'success',
           duration: 2000
         })
@@ -600,7 +579,7 @@ export default class extends Vue {
           name: item.name,
           key: item.key,
           val: item.val,
-          placeholder: '请输入需要修改的' + item.name
+          placeholder: this.$t('placeholder').toString() + item.name
         })
       }
     } finally {
@@ -616,7 +595,7 @@ export default class extends Vue {
       if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
         this.$message({
           type: 'warning',
-          message: '数据没有发生变化, 请重新输入~'
+          message: this.$t('noDiff').toString()
         })
         return
       }
@@ -631,8 +610,8 @@ export default class extends Vue {
     this.logDetailDialog.visible = false
     this.getData()
     this.$notify({
-      title: '恭喜',
-      message: '修改成功',
+      title: this.$t('congratulations').toString(),
+      message: this.$t('update').toString() + this.$t('success').toString(),
       type: 'success',
       duration: 2000
     })

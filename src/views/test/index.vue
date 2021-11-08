@@ -1,5 +1,5 @@
 <template>
   <div class="app-container">
-    测试用例
+    {{ $t('testCase') }}
   </div>
 </template>

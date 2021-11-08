@@ -8,36 +8,36 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="标题"
+        :label="$t('title')"
         prop="title"
       >
         <el-input
           v-model.trim="table.form.title"
-          placeholder="标题"
+          :placeholder="$t('titlePlaceholder')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="内容"
-        prop="title"
+        :label="$t('content')"
+        prop="content"
       >
         <el-input
           v-model.trim="table.form.content"
-          placeholder="内容"
+          :placeholder="$t('contentPlaceholder')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="类型"
+        :label="$t('type')"
         prop="type"
       >
         <el-select
           v-model.trim="table.form.type"
-          placeholder="请选择消息类型"
+          :placeholder="$t('typePlaceholder')"
           clearable
           @clear="doSearch"
           @change="doSearch"
@@ -51,12 +51,12 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        label="状态"
+        :label="$t('status')"
         prop="status"
       >
         <el-select
           v-model.trim="table.form.status"
-          placeholder="请选择消息状态"
+          :placeholder="$t('statusPlaceholder')"
           clearable
           @clear="doSearch"
           @change="doSearch"
@@ -75,10 +75,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-row :gutter="10">
@@ -89,7 +89,7 @@
             :disabled="table.batchReadBtnDisabled"
             @click="handleBatchRead"
           >
-            批量已读
+            {{ $t('batchRead') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -99,7 +99,7 @@
             :disabled="table.batchDeleteBtnDisabled"
             @click="handleBatchDelete"
           >
-            批量删除
+            {{ $t('batchDel') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -107,7 +107,7 @@
             type="primary"
             @click="handleAllRead"
           >
-            全部已读
+            {{ $t('allRead') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -115,7 +115,7 @@
             type="danger"
             @click="handleAllDelete"
           >
-            全部清空
+            {{ $t('allDelete') }}
           </el-button>
         </el-col>
       </el-row>
@@ -133,16 +133,16 @@
         />
         <el-table-column
           prop="title"
-          label="标题"
+          :label="$t('title')"
           sortable
         />
         <el-table-column
           prop="content"
-          label="内容"
+          :label="$t('content')"
         />
         <el-table-column
           prop="type"
-          label="类型"
+          :label="$t('type')"
           align="center"
         >
           <template slot-scope="scope">
@@ -153,15 +153,15 @@
         </el-table-column>
         <el-table-column
           prop="fromUsername"
-          label="创建人"
+          :label="$t('fromUsername')"
         />
         <el-table-column
           prop="createdAt"
-          label="创建时间"
+          :label="$t('createdAt')"
         />
         <el-table-column
           prop="status"
-          label="状态"
+          :label="$t('status')"
           align="center"
         >
           <template slot-scope="scope">
@@ -174,7 +174,7 @@
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="220"
         >
@@ -184,13 +184,13 @@
               type="primary"
               @click="handleRead(scope.row)"
             >
-              已读
+              {{ $t('read') }}
             </el-button>
             <el-button
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -228,21 +228,21 @@ export default class extends Vue {
     pageSize: 5,
     types: [{
       name: 0,
-      label: '私信消息'
+      label: this.$t('one2one').toString()
     }, {
       name: 1,
-      label: '通知消息'
+      label: this.$t('one2more').toString()
     }, {
       name: 2,
-      label: '系统消息'
+      label: this.$t('one2all').toString()
     }],
     status: [{
       name: 0,
-      label: '未读',
+      label: this.$t('unRead').toString(),
       type: 'danger'
     }, {
       name: 1,
-      label: '已读',
+      label: this.$t('read').toString(),
       type: 'success'
     }]
   }
@@ -343,10 +343,10 @@ export default class extends Vue {
       titles.push(row.title)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除消息[${titles.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('message').toString()}[${titles.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {
@@ -362,10 +362,10 @@ export default class extends Vue {
   }
 
   private async handleAllDelete() {
-    const msg = '确定要清空消息吗, 此操作不可逆?'
-    this.$confirm(msg, '请谨慎操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    const msg = `${this.$t('sureToDo').toString()}${this.$t('message').toString()}, ${this.$t('irreversible').toString()}?`
+    this.$confirm(msg, this.$t('caution').toString(), {
+      confirmButtonText: this.$t('confirm').toString(),
+      cancelButtonText: this.$t('cancel').toString(),
       type: 'warning'
     })
       .then(async() => {

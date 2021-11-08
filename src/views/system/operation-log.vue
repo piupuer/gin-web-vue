@@ -8,24 +8,24 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="访问路径"
+        :label="$t('apiPage.path')"
         prop="path"
       >
         <el-input
           v-model.trim="table.form.path"
-          placeholder="访问路径"
+          :placeholder="$t('pleaseEnter') + $t('apiPage.path')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="请求方式"
+        :label="$t('apiPage.method')"
         prop="method"
       >
         <el-select
           v-model.trim="table.form.method"
-          placeholder="请选择请求方式"
+          :placeholder="$t('pleaseEnter') + $t('apiPage.method')"
           clearable
           @clear="doSearch"
           @change="doSearch"
@@ -39,36 +39,36 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        label="用户名"
+        :label="$t('username')"
         prop="username"
       >
         <el-input
           v-model.trim="table.form.username"
-          placeholder="用户名"
+          :placeholder="$t('pleaseEnter') + $t('username')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="IP"
+        :label="$t('ip')"
         prop="ip"
       >
         <el-input
           v-model.trim="table.form.ip"
-          placeholder="IP地址"
+          :placeholder="$t('pleaseEnter') + $t('ip')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="状态码"
+        :label="$t('status')"
         prop="status"
       >
         <el-input
           v-model.trim="table.form.status"
-          placeholder="响应状态码"
+          :placeholder="$t('pleaseEnter') + $t('status')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
@@ -80,10 +80,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-row :gutter="10">
@@ -94,7 +94,7 @@
             :disabled="table.batchDeleteBtnDisabled"
             @click="handleBatchDelete"
           >
-            批量删除
+            {{ $t('batchDel') }}
           </el-button>
         </el-col>
       </el-row>
@@ -112,17 +112,17 @@
         />
         <el-table-column
           prop="apiDesc"
-          label="接口说明"
+          :label="$t('apiDesc')"
           width="180"
         />
         <el-table-column
           prop="path"
-          label="访问路径"
+          :label="$t('apiPage.path')"
           width="120"
         />
         <el-table-column
           prop="method"
-          label="请求方式"
+          :label="$t('apiPage.method')"
           align="center"
         >
           <template slot-scope="scope">
@@ -135,7 +135,7 @@
         </el-table-column>
         <el-table-column
           prop="status"
-          label="状态码"
+          :label="$t('status')"
           align="center"
         >
           <template slot-scope="scope">
@@ -167,27 +167,27 @@
         </el-table-column>
         <el-table-column
           prop="username"
-          label="登录用户"
+          :label="$t('username')"
           align="center"
         />
         <el-table-column
           prop="roleName"
-          label="角色"
+          :label="$t('roleName')"
           align="center"
         />
         <el-table-column
           prop="ip"
-          label="IP"
+          :label="$t('ip')"
           align="center"
         />
         <el-table-column
           prop="ipLocation"
-          label="IP所在地"
+          :label="$t('operationLogPage.ipLocation')"
           align="center"
         />
         <el-table-column
           prop="latency"
-          label="请求耗时(毫秒)"
+          :label="$t('operationLogPage.latency') + '(ms)'"
           align="center"
         >
           <template slot-scope="scope">
@@ -196,26 +196,26 @@
         </el-table-column>
         <el-table-column
           prop="createdAt"
-          label="访问时间"
+          :label="$t('createdAt')"
           align="center"
           width="180"
         />
         <el-table-column
           prop="userAgent"
-          label="浏览器标识"
+          :label="$t('operationLogPage.userAgent')"
           align="center"
           width="180"
           show-overflow-tooltip
         />
         <el-table-column
           prop="body"
-          label="请求参数"
+          :label="$t('operationLogPage.body')"
           align="center"
         >
           <template slot-scope="scope">
             <span
               class="svg-container"
-              title="查看详情"
+              :title="$t('operationLogPage.showDetail')"
             >
               <svg-icon
                 name="eye-on"
@@ -226,13 +226,13 @@
         </el-table-column>
         <el-table-column
           prop="data"
-          label="响应数据"
+          :label="$t('operationLogPage.data')"
           align="center"
         >
           <template slot-scope="scope">
             <span
               class="svg-container"
-              title="查看详情"
+              :title="$t('operationLogPage.showDetail')"
             >
               <svg-icon
                 name="eye-on"
@@ -243,17 +243,16 @@
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="180"
         >
           <template slot-scope="scope">
             <el-button
-              size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -285,7 +284,7 @@
           type="primary"
           @click="jsonDialog.visible=false"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
       </div>
     </el-dialog>
@@ -312,32 +311,26 @@ export default class extends Vue {
     pageNum: 1,
     pageSize: 5,
     methods: [{
+      name: 'GET',
+      label: `GET[${this.$t('apiPage.get').toString()}]`,
+      type: ''
+    }, {
       name: 'POST',
-      label: 'POST[创建资源]',
+      label: `POST[${this.$t('apiPage.post').toString()}]`,
       type: 'success'
     }, {
       name: 'PUT',
-      label: 'PUT[创建/更新资源]',
+      label: `PUT[${this.$t('apiPage.put').toString()}]`,
       type: 'info'
     }, {
       name: 'PATCH',
-      label: 'PATCH[创建/更新资源(区别于PUT, 增量更新)]',
+      label: `PATCH[${this.$t('apiPage.patch').toString()}]`,
       type: 'warning'
     }, {
       name: 'DELETE',
-      label: 'DELETE[删除资源]',
+      label: `DELETE[${this.$t('apiPage.delete').toString()}]`,
       type: 'danger'
     }]
-  }
-
-  private validateCategory(rule: any, value: string, callback: Function) {
-    if (!/^[a-zA-Z]/.test(value)) {
-      callback(new Error('必须以字母开头, 如a12345'))
-    } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
-      callback(new Error('不允许出现汉字或特殊字符, 如a+,sa、a张三'))
-    } else {
-      callback()
-    }
   }
 
   private jsonDialog: any = {
@@ -414,10 +407,10 @@ export default class extends Vue {
       paths.push(row.path)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除操作日志[${paths.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('operationLog').toString()}[${paths.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {
@@ -429,11 +422,15 @@ export default class extends Vue {
 
   private async showJson(type: number, row: any) {
     if (type === 1) {
-      this.jsonDialog.title = '请求参数详细内容'
+      this.jsonDialog.title = this.$t('operationLogPage.body').toString()
       this.jsonDialog.data = JSON.parse(row.body)
     } else {
-      this.jsonDialog.title = '响应数据详细内容'
-      this.jsonDialog.data = JSON.parse(row.data)
+      this.jsonDialog.title = this.$t('operationLogPage.data').toString()
+      if (row.data !== 'no data') {
+        this.jsonDialog.data = JSON.parse(row.data)
+      } else {
+        this.jsonDialog.data = {}
+      }
     }
     this.jsonDialog.visible = true
   }

@@ -8,73 +8,61 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="用户名"
+        :label="$t('username')"
         prop="username"
       >
         <el-input
           v-model.trim="table.form.username"
-          placeholder="用户名"
+          :placeholder="$t('pleaseEnter') + $t('username')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="手机号"
+        :label="$t('mobile')"
         prop="mobile"
       >
         <el-input
           v-model.trim="table.form.mobile"
-          placeholder="手机号"
+          :placeholder="$t('pleaseEnter') + $t('mobile')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="昵称"
+        :label="$t('nickname')"
         prop="nickname"
       >
         <el-input
           v-model.trim="table.form.nickname"
-          placeholder="昵称"
+          :placeholder="$t('pleaseEnter') + $t('nickname')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="状态"
+        :label="$t('status')"
         prop="status"
       >
         <el-select
           v-model.trim="table.form.status"
           clearable
-          placeholder="用户状态"
+          :placeholder="$t('pleaseEnter') + $t('status')"
         >
           <el-option
             key="1"
-            label="正常"
+            :label="$t('available')"
             :value="1"
           />
           <el-option
             key="0"
-            label="禁用"
+            :label="$t('disabled')"
             :value="0"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item
-        label="创建人"
-        prop="creator"
-      >
-        <el-input
-          v-model.trim="table.form.creator"
-          placeholder="创建人"
-          clearable
-          @clear="doSearch"
-          @keyup.enter.native="doSearch"
-        />
       </el-form-item>
       <el-form-item>
         <el-button
@@ -82,10 +70,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-row :gutter="10">
@@ -95,7 +83,7 @@
             icon="el-icon-plus"
             @click="handleCreate"
           >
-            新增
+            {{ $t('create') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -105,7 +93,7 @@
             :disabled="table.batchDeleteBtnDisabled"
             @click="handleBatchDelete"
           >
-            批量删除
+            {{ $t('batchDel') }}
           </el-button>
         </el-col>
       </el-row>
@@ -123,21 +111,21 @@
         />
         <el-table-column
           prop="username"
-          label="用户名"
+          :label="$t('username')"
           sortable
         />
         <el-table-column
           prop="mobile"
-          label="手机号"
+          :label="$t('mobile')"
           sortable
         />
         <el-table-column
           prop="nickname"
-          label="昵称"
+          :label="$t('nickname')"
         />
         <el-table-column
           prop="status"
-          label="状态"
+          :label="$t('status')"
         >
           <template slot-scope="scope">
             <el-switch
@@ -149,28 +137,24 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="creator"
-          label="创建人"
-        />
-        <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="180"
         >
           <template slot-scope="scope">
             <el-button
-              size="mini"
+
               @click="handleUpdate(scope.row)"
             >
-              编辑
+              {{ $t('edit') }}
             </el-button>
             <el-button
-              size="mini"
+
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -200,42 +184,42 @@
         label-width="80px"
       >
         <el-form-item
-          label="用户名"
+          :label="$t('username')"
           prop="username"
         >
           <el-input
             v-model.trim="updateDialog.form.username"
-            placeholder="请输入用户名(用于登录系统)"
+            :placeholder="$t('pleaseEnter') + $t('username')"
           />
         </el-form-item>
         <el-form-item
           v-if="updateDialog.type===0"
-          label="初始密码"
+          :label="$t('initPassword')"
           prop="initPassword"
         >
           <el-input
             v-model.trim="updateDialog.form.initPassword"
-            placeholder="请输入用户初始密码(用于登录系统)"
+            :placeholder="$t('pleaseEnter') + $t('initPassword')"
           />
         </el-form-item>
         <el-form-item
-          label="手机号"
+          :label="$t('mobile')"
           prop="mobile"
         >
           <el-input
             v-model.trim="updateDialog.form.mobile"
-            placeholder="请输入手机号"
+            :placeholder="$t('pleaseEnter') + $t('mobile')"
           />
         </el-form-item>
         <el-form-item
-          label="绑定角色"
+          :label="$t('role')"
           prop="roleId"
         >
           <el-select
             v-model.trim="updateDialog.form.roleId"
             clearable
             filterable
-            placeholder="请为该用户指定角色"
+            :placeholder="$t('pleaseEnter') + $t('role')"
           >
             <el-option
               v-for="item in updateDialog.roleSelectOptions"
@@ -247,33 +231,33 @@
         </el-form-item>
         <el-form-item
           v-if="updateDialog.type===1"
-          label="重置密码"
+          :label="$t('newPassword')"
           prop="newPassword"
         >
           <el-input
             v-model.trim="updateDialog.form.newPassword"
-            placeholder="请输入新的用户密码"
+            :placeholder="$t('pleaseEnter') + $t('newPassword')"
           />
         </el-form-item>
         <el-form-item
-          label="昵称"
+          :label="$t('nickname')"
           prop="nickname"
         >
           <el-input
             v-model.trim="updateDialog.form.nickname"
-            placeholder="请输入昵称"
+            :placeholder="$t('pleaseEnter') + $t('nickname')"
           />
         </el-form-item>
         <el-form-item
-          label="状态"
+          :label="$t('status')"
           prop="status"
         >
           <el-switch
             v-model.trim="updateDialog.form.status"
             :active-value="1"
             :inactive-value="0"
-            active-text="正常"
-            inactive-text="禁用"
+            :active-text="$t('available')"
+            :inactive-text="$t('disabled')"
           />
         </el-form-item>
       </el-form>
@@ -286,10 +270,10 @@
           :loading="updateDialog.loading"
           @click="doUpdate"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelUpdate">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -319,9 +303,9 @@ export default class extends Vue {
 
   private validateUsername(rule: any, value: string, callback: Function) {
     if (!/^[a-zA-Z]/.test(value)) {
-      callback(new Error('必须以字母开头, 如a12345'))
+      callback(new Error(this.$t('userPage.validate[0]').toString()))
     } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
-      callback(new Error('不允许出现汉字或特殊字符, 如a+,sa、a张三'))
+      callback(new Error(this.$t('userPage.validate[1]').toString()))
     } else {
       callback()
     }
@@ -329,7 +313,7 @@ export default class extends Vue {
 
   private validateMobile(rule: any, value: string, callback: Function) {
     if (!/^[1-9]([0-9]{10})+$/.test(value)) {
-      callback(new Error('手机号格式不正确'))
+      callback(new Error(this.$t('userPage.validate[2]').toString()))
     } else {
       callback()
     }
@@ -363,24 +347,24 @@ export default class extends Vue {
     // 表单校验
     rules: {
       username: [
-        { required: true, message: '用户名不能为空', trigger: 'blur' },
-        { min: 4, message: '用户名至少4个字符', trigger: 'blur' },
-        { max: 20, message: '用户名至多20个字符', trigger: 'blur' },
+        { required: true, message: this.$t('username').toString() + this.$t('required').toString(), trigger: 'blur' },
+        { min: 4, message: this.$t('userPage.validate[3]').toString(), trigger: 'blur' },
+        { max: 20, message: this.$t('userPage.validate[4]').toString(), trigger: 'blur' },
         { validator: this.validateUsername, trigger: 'blur' }
       ],
       initPassword: [
-        { required: true, message: '用户初始密码不能为空', trigger: 'blur' },
-        { min: 6, message: '用户初始密码至少6个字符', trigger: 'blur' }
+        { required: true, message: this.$t('initPassword').toString() + this.$t('required').toString(), trigger: 'blur' },
+        { min: 6, message: this.$t('userPage.validate[5]').toString(), trigger: 'blur' }
       ],
       mobile: [
-        { required: true, message: '手机号不能为空', trigger: 'blur' },
+        { required: true, message: this.$t('mobile').toString() + this.$t('required').toString(), trigger: 'blur' },
         { validator: this.validateMobile, trigger: 'blur' }
       ],
       roleId: [
-        { required: true, message: '请为用户绑定角色', trigger: 'blur' }
+        { required: true, message: this.$t('roleId').toString(), trigger: 'blur' }
       ],
       newPassword: [
-        { min: 6, message: '重置用户密码至少6个字符', trigger: 'blur' }
+        { min: 6, message: this.$t('userPage.validate[6]').toString(), trigger: 'blur' }
       ]
     }
   }
@@ -451,7 +435,7 @@ export default class extends Vue {
           if (!update.id) {
             this.$message({
               type: 'warning',
-              message: '数据没有发生变化, 请重新输入~'
+              message: this.$t('noDiff').toString()
             })
             return
           }
@@ -468,9 +452,10 @@ export default class extends Vue {
         this.getData()
         // 清理字段
         this.resetUpdateForm()
+        const message = this.updateDialog.type === 0 ? this.$t('create').toString() : this.$t('update').toString()
         this.$notify({
-          title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}用户成功`,
+          title: this.$t('congratulations').toString(),
+          message: message + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
@@ -507,13 +492,13 @@ export default class extends Vue {
       })
       this.updateDialog.roleSelectOptions = data.list
     } catch (e) {
-      this.$message.error('读取系统角色信息失败')
+      this.$message.error(this.$t('readDataFail').toString())
       return
     }
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
-    this.updateDialog.title = '创建新用户'
+    this.updateDialog.title = this.$t('create').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -526,7 +511,7 @@ export default class extends Vue {
       })
       this.updateDialog.roleSelectOptions = data.list
     } catch (e) {
-      this.$message.error('读取系统角色信息失败')
+      this.$message.error(this.$t('readDataFail').toString())
       return
     }
     // 清理字段
@@ -543,7 +528,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
-    this.updateDialog.title = '修改用户信息'
+    this.updateDialog.title = this.$t('update').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -565,10 +550,10 @@ export default class extends Vue {
       usernames.push(row.username)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除用户[${usernames.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('user').toString()}[${usernames.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {
@@ -580,13 +565,13 @@ export default class extends Vue {
 
   // 改变用户状态
   private async handleStatusChange(row: any) {
-    let msg = `确定要恢复用户[${row.username}]吗?`
+    let msg = `${this.$t('sureToDo').toString()}${this.$t('recovery').toString()}[${row.username}]?`
     if (row.status === 0) {
-      msg = `确定要禁用用户[${row.username}]吗?该操作可能导致该用户无法正常使用系统`
+      msg = `${this.$t('sureToDo').toString()}${this.$t('disabled').toString()}[${row.username}]?`
     }
-    this.$confirm(msg, '请谨慎操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    this.$confirm(msg, this.$t('caution').toString(), {
+      confirmButtonText: this.$t('confirm').toString(),
+      cancelButtonText: this.$t('cancel').toString(),
       type: 'warning'
     })
       .then(async() => {

@@ -8,24 +8,24 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="说明"
+        :label="$t('desc')"
         prop="desc"
       >
         <el-input
           v-model.trim="table.form.desc"
-          placeholder="说明"
+          :placeholder="$t('pleaseEnter') + $t('desc')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="状态"
+        :label="$t('status')"
         prop="status"
       >
         <el-select
           v-model.trim="table.form.status"
-          placeholder="请选择当前审批状态"
+          :placeholder="$t('pleaseEnter') + $t('status')"
         >
           <el-option
             v-for="item in defaultConfig.status"
@@ -41,10 +41,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-row :gutter="10">
@@ -54,7 +54,7 @@
             icon="el-icon-plus"
             @click="handleCreate"
           >
-            新增
+            {{ $t('create') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -64,7 +64,7 @@
             :disabled="table.batchDeleteBtnDisabled"
             @click="handleBatchDelete"
           >
-            批量删除
+            {{ $t('batchDel') }}
           </el-button>
         </el-col>
       </el-row>
@@ -82,19 +82,19 @@
         />
         <el-table-column
           prop="desc"
-          label="说明"
+          :label="$t('desc')"
         />
         <el-table-column
           prop="startTime"
-          label="开始时间"
+          :label="$t('startTime')"
         />
         <el-table-column
           prop="endTime"
-          label="结束时间"
+          :label="$t('endTime')"
         />
         <el-table-column
           prop="status"
-          label="审批状态"
+          :label="$t('status')"
           align="center"
         >
           <template slot-scope="scope">
@@ -107,7 +107,7 @@
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="500"
         >
@@ -117,46 +117,41 @@
               :loading="table.logTrackLoading"
               @click="handleLogTrack(scope.row)"
             >
-              审批日志
+              {{ $t('approveLogTrack') }}
             </el-button>
             <el-button
               v-if="scope.row.status === 2"
-              size="mini"
               type="success"
               @click="handleResubmit(scope.row)"
             >
-              重新提交
+              {{ $t('resubmit') }}
             </el-button>
             <el-button
               v-if="scope.row.status === 5"
-              size="mini"
               type="success"
               @click="handleConfirm(scope.row)"
             >
-              确认
+              {{ $t('confirm') }}
             </el-button>
             <el-button
               v-if="scope.row.status !== 1"
-              size="mini"
               @click="handleUpdate(scope.row)"
             >
-              编辑
+              {{ $t('edit') }}
             </el-button>
             <el-button
               v-if="scope.row.status !== 1 &&scope.row.status !== 3 && scope.row.status !== 5"
-              size="mini"
               type="warning"
               @click="handleCancel(scope.row)"
             >
-              取消
+              {{ $t('cancel') }}
             </el-button>
             <el-button
               v-if="scope.row.status !== 1"
-              size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -186,35 +181,35 @@
         label-width="80px"
       >
         <el-form-item
-          label="说明"
+          :label="$t('desc')"
           prop="desc"
         >
           <el-input
             v-model.trim="updateDialog.form.desc"
             type="textarea"
-            placeholder="请输入请假说明, 描述清楚更容易审批通过哟~"
+            :placeholder="$t('pleaseEnter') + $t('desc')"
           />
         </el-form-item>
         <el-form-item
-          label="开始时间"
+          :label="$t('startTime')"
           prop="startTime"
         >
           <el-date-picker
             v-model="updateDialog.form.startTime"
             type="datetime"
             :picker-options="updateDialog.startTimePickerOptions"
-            placeholder="Select start time"
+            :placeholder="$t('pleaseEnter') + $t('startTime')"
           />
         </el-form-item>
         <el-form-item
-          label="结束时间"
+          :label="$t('endTime')"
           prop="endTime"
         >
           <el-date-picker
             v-model="updateDialog.form.endTime"
             type="datetime"
             :picker-options="updateDialog.endTimePickerOptions"
-            placeholder="Select end time"
+            :placeholder="$t('pleaseEnter') + $t('endTime')"
           />
         </el-form-item>
       </el-form>
@@ -227,10 +222,10 @@
           :loading="updateDialog.loading"
           @click="doUpdate"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelUpdate">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -263,7 +258,7 @@
           type="primary"
           @click="logTrackDialog.visible=false"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
       </div>
     </el-dialog>
@@ -293,27 +288,27 @@ export default class extends Vue {
     category: 1,
     status: [{
       name: 0,
-      label: '已提交',
+      label: this.$t('leavePage.submitted').toString(),
       type: 'info'
     }, {
       name: 1,
-      label: '通过',
+      label: this.$t('leavePage.approved').toString(),
       type: 'success'
     }, {
       name: 2,
-      label: '拒绝, 需重新提交',
+      label: this.$t('leavePage.refusedNeedResubmit').toString(),
       type: 'danger'
     }, {
       name: 3,
-      label: '手动取消',
+      label: this.$t('leavePage.cancelled').toString(),
       type: 'warning'
     }, {
       name: 4,
-      label: '审批中',
+      label: this.$t('leavePage.approving').toString(),
       type: ''
     }, {
       name: 5,
-      label: '已通过, 需确认',
+      label: this.$t('leavePage.approvedNeedConfirm').toString(),
       type: ''
     }]
   }
@@ -340,7 +335,7 @@ export default class extends Vue {
     // 表单校验
     rules: {
       desc: [
-        { required: true, message: '说明不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('desc').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     },
     startTimePickerOptions: {
@@ -359,7 +354,7 @@ export default class extends Vue {
     // 是否打开
     visible: false,
     // 标题
-    title: '审批日志',
+    title: this.$t('approveLogTrack').toString(),
     // 历史步骤
     stepsActive: 0,
     steps: []
@@ -441,7 +436,7 @@ export default class extends Vue {
           if (!update.id) {
             this.$message({
               type: 'warning',
-              message: '数据没有发生变化, 请重新输入~'
+              message: this.$t('noDiff').toString()
             })
             return
           }
@@ -458,9 +453,10 @@ export default class extends Vue {
         this.getData()
         // 清理字段
         this.resetUpdateForm()
+        const message = this.updateDialog.type === 0 ? this.$t('create').toString() : this.$t('update').toString()
         this.$notify({
-          title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}请假成功`,
+          title: this.$t('congratulations').toString(),
+          message: message + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
@@ -493,7 +489,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
-    this.updateDialog.title = '创建新请假'
+    this.updateDialog.title = this.$t('create').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -524,11 +520,11 @@ export default class extends Vue {
           let description = item.updatedAt
           let opinion = item.opinion
           if (item.opinion === '' && item.status !== 3 && item.end === 0 && item.confirm === 0) {
-            opinion = '通过'
+            opinion = this.$t('approvingPage.defaultOpinion').toString()
           }
           let title = item.name
           if (opinion !== '') {
-            title = item.name + '[审批意见: ' + opinion + ']'
+            title = item.name + '[' + this.$t('approvingPage.opinion').toString() + ': ' + opinion + ']'
           }
           if (item.status === 2) {
             status = 'error'
@@ -548,20 +544,20 @@ export default class extends Vue {
         } else {
           if (item.resubmit === 1) {
             logs.push({
-              title: '待重新提交',
-              description: '请编辑后重新提交~',
+              title: this.$t('leavePage.refusedNeedResubmit').toString(),
+              description: this.$t('leavePage.refusedNeedResubmitDesc').toString(),
               status: 'wait'
             })
           } else if (item.confirm === 1) {
             logs.push({
-              title: '待确认',
-              description: '请点击确认~',
+              title: this.$t('leavePage.approvedNeedConfirm').toString(),
+              description: this.$t('leavePage.approvedNeedConfirmDesc').toString(),
               status: 'wait'
             })
           } else {
             logs.push({
-              title: '待审批',
-              description: '请耐心等待~',
+              title: this.$t('leavePage.approving').toString(),
+              description: this.$t('leavePage.approvingDesc').toString(),
               status: 'wait'
             })
           }
@@ -570,7 +566,7 @@ export default class extends Vue {
       this.logTrackDialog.steps = logs
       this.logTrackDialog.visible = true
     } catch (e) {
-      this.$message.error('读取审批日志失败')
+      this.$message.error(this.$t('readDataFail').toString())
     } finally {
       this.table.logTrackLoading = false
     }
@@ -596,16 +592,16 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
-    this.updateDialog.title = '修改请假信息'
+    this.updateDialog.title = this.$t('update').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
 
   private async handleConfirm(row: any) {
-    const msg = `确定要确认请假[${row.desc}]吗?`
-    this.$confirm(msg, '请谨慎操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    const msg = `${this.$t('sureToDo').toString()}${this.$t('confirm').toString()}[${row.desc}]?`
+    this.$confirm(msg, this.$t('caution').toString(), {
+      confirmButtonText: this.$t('confirm').toString(),
+      cancelButtonText: this.$t('cancel').toString(),
       type: 'warning'
     })
       .then(async() => {
@@ -630,10 +626,10 @@ export default class extends Vue {
   }
 
   private async handleCancel(row: any) {
-    const msg = `确定要取消请假[${row.desc}]吗?`
-    this.$confirm(msg, '请谨慎操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    const msg = `${this.$t('sureToDo').toString()}${this.$t('cancel').toString()}[${row.desc}]?`
+    this.$confirm(msg, this.$t('caution').toString(), {
+      confirmButtonText: this.$t('confirm').toString(),
+      cancelButtonText: this.$t('cancel').toString(),
       type: 'warning'
     })
       .then(async() => {
@@ -662,10 +658,10 @@ export default class extends Vue {
       descs.push(row.desc)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除请假[${descs.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('leave').toString()}[${descs.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {

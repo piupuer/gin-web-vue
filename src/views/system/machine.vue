@@ -8,46 +8,46 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="主机地址"
+        :label="$t('host')"
         prop="host"
       >
         <el-input
           v-model.trim="table.form.host"
-          placeholder="主机地址"
+          :placeholder="$t('pleaseEnter') + $t('host')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="登录名"
+        :label="$t('username')"
         prop="loginName"
       >
         <el-input
           v-model.trim="table.form.loginName"
-          placeholder="登录名"
+          :placeholder="$t('pleaseEnter') + $t('username')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="状态"
+        :label="$t('status')"
         prop="status"
       >
         <el-select
           v-model.trim="table.form.status"
           clearable
-          placeholder="连接状态"
+          :placeholder="$t('pleaseEnter') + $t('status')"
         >
           <el-option
             key="1"
-            label="正常"
+            :label="$t('available')"
             :value="1"
           />
           <el-option
             key="0"
-            label="无法连接"
+            :label="$t('machinePage.cannotConnect')"
             :value="0"
           />
         </el-select>
@@ -58,10 +58,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-row :gutter="10">
@@ -71,7 +71,7 @@
             icon="el-icon-plus"
             @click="handleCreate"
           >
-            新增
+            {{ $t('create') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -81,7 +81,7 @@
             :disabled="table.batchDeleteBtnDisabled"
             @click="handleBatchDelete"
           >
-            批量删除
+            {{ $t('batchDel') }}
           </el-button>
         </el-col>
       </el-row>
@@ -99,49 +99,49 @@
         />
         <el-table-column
           prop="host"
-          label="主机地址"
+          :label="$t('host')"
         />
         <el-table-column
           prop="sshPort"
-          label="ssh端口"
+          :label="$t('port')"
           align="center"
         />
         <el-table-column
           prop="loginName"
-          label="登录名"
+          :label="$t('username')"
           align="center"
         />
         <el-table-column
           prop="loginPwd"
-          label="登录密码"
+          :label="$t('password')"
           align="center"
         />
         <el-table-column
           prop="status"
-          label="状态"
+          :label="$t('status')"
           align="center"
         >
           <template slot-scope="scope">
             <el-tag
               :type="scope.row.status===0?'danger':'success'"
             >
-              {{ scope.row.status===0?'无法连接':'正常' }}
+              {{ scope.row.status===0? $t('machinePage.cannotConnect').toString() : $t('healthy').toString() }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column
           prop="version"
-          label="操作系统"
+          :label="$t('machinePage.version')"
           align="center"
         />
         <el-table-column
           prop="arch"
-          label="系统架构"
+          :label="$t('machinePage.arch')"
           align="center"
         />
         <el-table-column
           prop="name"
-          label="机器名称"
+          :label="$t('machinePage.name')"
           align="center"
         />
         <el-table-column
@@ -150,55 +150,50 @@
         />
         <el-table-column
           prop="memory"
-          label="内存"
+          :label="$t('machinePage.memory')"
           align="center"
         />
         <el-table-column
           prop="disk"
-          label="硬盘"
+          :label="$t('machinePage.disk')"
           align="center"
         />
         <el-table-column
           prop="remark"
-          label="备注"
-        />
-        <el-table-column
-          prop="creator"
-          label="创建人"
-          align="center"
+          :label="$t('remark')"
         />
         <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="320"
         >
           <template slot-scope="scope">
             <el-button
-              size="mini"
+
               @click="doConnect(scope.row)"
             >
-              {{ scope.row.status === 0 ? '连接' : '刷新' }}
+              {{ scope.row.status === 0 ? $t('connect').toString() : $t('refresh').toString() }}
             </el-button>
             <el-button
-              size="mini"
+
               type="primary"
               @click="handleTerminal(scope.row)"
             >
-              终端
+              {{ $t('terminal').toString() }}
             </el-button>
             <el-button
-              size="mini"
+
               @click="handleUpdate(scope.row)"
             >
-              编辑
+              {{ $t('edit') }}
             </el-button>
             <el-button
-              size="mini"
+
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -228,48 +223,48 @@
         label-width="80px"
       >
         <el-form-item
-          label="主机地址"
+          :label="$t('host')"
           prop="host"
         >
           <el-input
             v-model.trim="updateDialog.form.host"
-            placeholder="请输入主机地址(可以是IP或域名)"
+            :placeholder="$t('pleaseEnter') + $t('host')"
           />
         </el-form-item>
         <el-form-item
-          label="ssh端口"
+          :label="$t('port')"
           prop="sshPort"
         >
           <el-input
             v-model="updateDialog.form.sshPort"
-            placeholder="请输入ssh端口号(默认22)"
+            :placeholder="$t('pleaseEnter') + $t('port')"
           />
         </el-form-item>
         <el-form-item
-          label="登录名"
+          :label="$t('username')"
           prop="loginName"
         >
           <el-input
             v-model.trim="updateDialog.form.loginName"
-            placeholder="请输入登录用户名"
+            :placeholder="$t('pleaseEnter') + $t('username')"
           />
         </el-form-item>
         <el-form-item
-          label="登录密码"
+          :label="$t('password')"
           prop="loginPwd"
         >
           <el-input
             v-model.trim="updateDialog.form.loginPwd"
-            placeholder="请输入登录密码"
+            :placeholder="$t('pleaseEnter') + $t('password')"
           />
         </el-form-item>
         <el-form-item
-          label="备注"
+          :label="$t('remark')"
           prop="remark"
         >
           <el-input
             v-model.trim="updateDialog.form.remark"
-            placeholder="请输入机器备注"
+            :placeholder="$t('pleaseEnter') + $t('remark')"
           />
         </el-form-item>
       </el-form>
@@ -282,10 +277,10 @@
           :loading="updateDialog.loading"
           @click="doUpdate"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelUpdate">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -357,13 +352,13 @@ export default class extends Vue {
     // 表单校验
     rules: {
       host: [
-        { required: true, message: '主机地址不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('host').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       loginName: [
-        { required: true, message: '登录名不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('login').toString() + this.$t('name').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       loginPwd: [
-        { required: true, message: '登录密码不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('login').toString() + this.$t('password').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     }
   }
@@ -448,7 +443,7 @@ export default class extends Vue {
           if (!update.id) {
             this.$message({
               type: 'warning',
-              message: '数据没有发生变化, 请重新输入~'
+              message: this.$t('noDiff').toString()
             })
             return
           }
@@ -465,9 +460,10 @@ export default class extends Vue {
         this.getData()
         // 清理字段
         this.resetUpdateForm()
+        const message = this.updateDialog.type === 0 ? this.$t('create').toString() : this.$t('update').toString()
         this.$notify({
-          title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}机器成功`,
+          title: this.$t('congratulations').toString(),
+          message: message + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
@@ -481,8 +477,8 @@ export default class extends Vue {
       // 重新查询
       this.getData()
       this.$notify({
-        title: '恭喜',
-        message: `${row.status === 0 ? '连接' : '刷新'}机器状态成功`,
+        title: this.$t('congratulations').toString(),
+        message: `${row.status === 0 ? this.$t('connect').toString() : this.$t('refresh').toString()}${this.$t('success').toString()}`,
         type: 'success',
         duration: 2000
       })
@@ -515,7 +511,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
-    this.updateDialog.title = '创建新机器'
+    this.updateDialog.title = this.$t('create').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -535,7 +531,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
-    this.updateDialog.title = '修改机器信息'
+    this.updateDialog.title = this.$t('update').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -548,7 +544,7 @@ export default class extends Vue {
       loginPwd: row.loginPwd
     }
 
-    this.terminalDialog.title = '连接终端(主机地址: ' + row.host + ', 机器名称: ' + row.name + ')'
+    this.terminalDialog.title = `${this.$t('terminal').toString()}(${this.$t('host').toString()}: ${row.host}, ${this.$t('machinePage.name').toString()}: ${row.name})`
     this.terminalDialog.visible = true
   }
 
@@ -569,10 +565,10 @@ export default class extends Vue {
       hosts.push(row.host)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除机器[${hosts.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('machine').toString()}[${hosts.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {

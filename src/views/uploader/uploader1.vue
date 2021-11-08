@@ -7,13 +7,13 @@
     >
       <uploader-unsupport />
       <uploader-drop>
-        <p>Drop files here to upload or</p>
-        <uploader-btn>select files</uploader-btn>
+        <p>{{ $t('uploaderPage.drag') }}</p>
+        <uploader-btn>{{ $t('uploaderPage.file') }}</uploader-btn>
         <uploader-btn :attrs="attrs">
-          select images
+          {{ $t('uploaderPage.image') }}
         </uploader-btn>
         <uploader-btn :directory="true">
-          select folder
+          {{ $t('uploaderPage.folder') }}
         </uploader-btn>
       </uploader-drop>
       <uploader-list />

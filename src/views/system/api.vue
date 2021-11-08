@@ -8,24 +8,24 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="访问路径"
+        :label="$t('apiPage.path')"
         prop="path"
       >
         <el-input
           v-model.trim="table.form.path"
-          placeholder="访问路径"
+          :placeholder="$t('pleaseEnter') + $t('apiPage.path')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="请求方式"
+        :label="$t('apiPage.method')"
         prop="method"
       >
         <el-select
           v-model.trim="table.form.method"
-          placeholder="请选择请求方式"
+          :placeholder="$t('pleaseEnter') + $t('apiPage.method')"
           clearable
           @clear="doSearch"
           @change="doSearch"
@@ -39,24 +39,12 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        label="所属类别"
+        :label="$t('category')"
         prop="category"
       >
         <el-input
           v-model.trim="table.form.category"
-          placeholder="所属类别"
-          clearable
-          @clear="doSearch"
-          @keyup.enter.native="doSearch"
-        />
-      </el-form-item>
-      <el-form-item
-        label="创建人"
-        prop="creator"
-      >
-        <el-input
-          v-model.trim="table.form.creator"
-          placeholder="创建人"
+          :placeholder="$t('pleaseEnter') + $t('category')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
@@ -68,10 +56,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-row :gutter="10">
@@ -81,7 +69,7 @@
             icon="el-icon-plus"
             @click="handleCreate"
           >
-            新增
+            {{ $t('create') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -91,7 +79,7 @@
             :disabled="table.batchDeleteBtnDisabled"
             @click="handleBatchDelete"
           >
-            批量删除
+            {{ $t('batchDel') }}
           </el-button>
         </el-col>
       </el-row>
@@ -109,17 +97,17 @@
         />
         <el-table-column
           prop="path"
-          label="访问路径"
+          :label="$t('apiPage.path')"
           sortable
         />
         <el-table-column
           prop="category"
-          label="所属类别"
+          :label="$t('category')"
           sortable
         />
         <el-table-column
           prop="method"
-          label="请求方式"
+          :label="$t('apiPage.method')"
           align="center"
         >
           <template slot-scope="scope">
@@ -132,31 +120,27 @@
         </el-table-column>
         <el-table-column
           prop="desc"
-          label="说明"
-        />
-        <el-table-column
-          prop="creator"
-          label="创建人"
+          :label="$t('desc')"
         />
         <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="180"
         >
           <template slot-scope="scope">
             <el-button
-              size="mini"
+
               @click="handleUpdate(scope.row)"
             >
-              编辑
+              {{ $t('edit') }}
             </el-button>
             <el-button
-              size="mini"
+
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -186,30 +170,30 @@
         label-width="80px"
       >
         <el-form-item
-          label="访问路径"
+          :label="$t('apiPage.path')"
           prop="path"
         >
           <el-input
             v-model.trim="updateDialog.form.path"
-            placeholder="请输入接口访问路径"
+            :placeholder="$t('pleaseEnter') + $t('apiPage.path')"
           />
         </el-form-item>
         <el-form-item
-          label="所属类别"
+          :label="$t('category')"
           prop="category"
         >
           <el-input
             v-model.trim="updateDialog.form.category"
-            placeholder="请输入接口所属类别"
+            :placeholder="$t('pleaseEnter') + $t('category')"
           />
         </el-form-item>
         <el-form-item
-          label="请求方式"
+          :label="$t('apiPage.method')"
           prop="method"
         >
           <el-select
             v-model.trim="updateDialog.form.method"
-            placeholder="请选择请求方式"
+            :placeholder="$t('pleaseEnter') + $t('apiPage.method')"
           >
             <el-option
               v-for="item in defaultConfig.methods"
@@ -221,17 +205,17 @@
         </el-form-item>
         <el-form-item
           v-if="updateDialog.type===0"
-          label="访问授权"
+          :label="$t('apiPage.showRoleSelect')"
           prop="showRoleSelect"
         >
           <el-switch
             v-model.trim="updateDialog.form.showRoleSelect"
           />
-          <el-tag>可避免到角色管理中添加</el-tag>
+          <el-tag>{{ $t('apiPage.showRoleTips') }}</el-tag>
         </el-form-item>
         <el-form-item
           v-if="updateDialog.form.showRoleSelect"
-          label="绑定角色"
+          :label="$t('role')"
           prop="roleIds"
         >
           <el-select
@@ -239,7 +223,7 @@
             clearable
             filterable
             multiple
-            placeholder="请选择角色"
+            :placeholder="$t('pleaseEnter') + $t('role')"
           >
             <el-option
               v-for="item in updateDialog.roleSelectOptions"
@@ -250,13 +234,13 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          label="说明"
+          :label="$t('desc')"
           prop="desc"
         >
           <el-input
             v-model.trim="updateDialog.form.desc"
             type="textarea"
-            placeholder="请输入内容"
+            :placeholder="$t('pleaseEnter') + $t('desc')"
           />
         </el-form-item>
       </el-form>
@@ -269,10 +253,10 @@
           :loading="updateDialog.loading"
           @click="doUpdate"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelUpdate">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -300,32 +284,32 @@ export default class extends Vue {
     pageSize: 5,
     methods: [{
       name: 'GET',
-      label: 'GET[获取资源]',
+      label: `GET[${this.$t('apiPage.get').toString()}]`,
       type: ''
     }, {
       name: 'POST',
-      label: 'POST[创建资源]',
+      label: `POST[${this.$t('apiPage.post').toString()}]`,
       type: 'success'
     }, {
       name: 'PUT',
-      label: 'PUT[创建/更新资源]',
+      label: `PUT[${this.$t('apiPage.put').toString()}]`,
       type: 'info'
     }, {
       name: 'PATCH',
-      label: 'PATCH[创建/更新资源(区别于PUT, 增量更新)]',
+      label: `PATCH[${this.$t('apiPage.patch').toString()}]`,
       type: 'warning'
     }, {
       name: 'DELETE',
-      label: 'DELETE[删除资源]',
+      label: `DELETE[${this.$t('apiPage.delete').toString()}]`,
       type: 'danger'
     }]
   }
 
   private validateCategory(rule: any, value: string, callback: Function) {
     if (!/^[a-zA-Z]/.test(value)) {
-      callback(new Error('必须以字母开头, 如a12345'))
+      callback(new Error(this.$t('userPage.validate[0]').toString()))
     } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
-      callback(new Error('不允许出现汉字或特殊字符, 如a+,sa、a张三'))
+      callback(new Error(this.$t('userPage.validate[1]').toString()))
     } else {
       callback()
     }
@@ -357,13 +341,13 @@ export default class extends Vue {
     // 表单校验
     rules: {
       path: [
-        { required: true, message: '访问路径不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('apiPage.path').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       method: [
-        { required: true, message: '请求方式不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('method').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       category: [
-        { required: true, message: '所属类别不能为空', trigger: 'blur' },
+        { required: true, message: this.$t('category').toString() + this.$t('required').toString(), trigger: 'blur' },
         { validator: this.validateCategory, trigger: 'blur' }
       ]
     }
@@ -434,7 +418,7 @@ export default class extends Vue {
           if (!update.id) {
             this.$message({
               type: 'warning',
-              message: '数据没有发生变化, 请重新输入~'
+              message: this.$t('noDiff').toString()
             })
             return
           }
@@ -451,9 +435,10 @@ export default class extends Vue {
         this.getData()
         // 清理字段
         this.resetUpdateForm()
+        const message = this.updateDialog.type === 0 ? this.$t('create').toString() : this.$t('update').toString()
         this.$notify({
-          title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}接口成功`,
+          title: this.$t('congratulations').toString(),
+          message: message + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
@@ -486,7 +471,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
-    this.updateDialog.title = '创建新接口'
+    this.updateDialog.title = this.$t('create').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -501,7 +486,7 @@ export default class extends Vue {
         })
         this.updateDialog.roleSelectOptions = data.list
       } catch (e) {
-        this.$message.error('读取系统角色信息失败')
+        this.$message.error(this.$t('readDataFail').toString())
       }
     }
   }
@@ -521,7 +506,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
-    this.updateDialog.title = '修改接口信息'
+    this.updateDialog.title = this.$t('update').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -543,10 +528,10 @@ export default class extends Vue {
       paths.push(row.path)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除接口[${paths.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('api').toString()}[${paths.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {

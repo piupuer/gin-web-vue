@@ -64,11 +64,6 @@ export const constantRoutes: RouteConfig[] = [
     meta: { hidden: true }
   },
   {
-    path: '/401',
-    component: () => import(/* webpackChunkName: "401" */ '@/views/error-page/401.vue'),
-    meta: { hidden: true }
-  },
-  {
     path: '/',
     component: Layout,
     redirect: '/profile'

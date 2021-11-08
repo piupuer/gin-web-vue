@@ -19,7 +19,7 @@
           <span
             v-if="theOnlyOneChild.meta.title"
             slot="title"
-          >{{ $t('route.' + theOnlyOneChild.meta.name) === 'route.' + theOnlyOneChild.meta.name ? theOnlyOneChild.meta.title : $t('route.' + theOnlyOneChild.meta.name) }}</span>
+          >{{ $t('menuRoute.' + theOnlyOneChild.meta.name) === 'route.' + theOnlyOneChild.meta.name ? theOnlyOneChild.meta.title : $t('menuRoute.' + theOnlyOneChild.meta.name) }}</span>
         </el-menu-item>
       </sidebar-item-link>
     </template>
@@ -36,7 +36,7 @@
         <span
           v-if="item.meta && item.meta.title"
           slot="title"
-        >{{ $t('route.' + item.meta.name) === 'route.' + item.meta.name ? item.meta.title : $t('route.' + item.meta.name) }}</span>
+        >{{ $t('menuRoute.' + item.meta.name) === 'menuRoute.' + item.meta.name ? item.meta.title : $t('menuRoute.' + item.meta.name) }}</span>
       </template>
       <template v-if="item.children">
         <sidebar-item

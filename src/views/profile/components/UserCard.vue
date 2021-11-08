@@ -4,7 +4,7 @@
       slot="header"
       class="clearfix"
     >
-      <span>{{ $t('profile.userCardTitle') }}</span>
+      <span>{{ $t('profilePage.aboutMe') }}</span>
     </div>
 
     <div class="user-profile">
@@ -17,7 +17,7 @@
         >
       </div>
       <div class="box-center">
-        {{ $t('profile.userCardHello') }},
+        {{ $t('hello') }},
         <span class="user-name text-center">
           {{ user.nickname }}
         </span>
@@ -27,22 +27,22 @@
     <div class="user-bio">
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="user" /><span>{{ $t('profile.accountUsername') }}</span><span class="span-right">{{ user.username }}</span>
+          <svg-icon name="user" /><span>{{ $t('username') }}</span><span class="span-right">{{ user.username }}</span>
         </div>
       </div>
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="guide" /><span>{{ $t('profile.accountNickname') }}</span><span class="span-right">{{ user.nickname }}</span>
+          <svg-icon name="guide" /><span>{{ $t('nickname') }}</span><span class="span-right">{{ user.nickname }}</span>
         </div>
       </div>
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <i class="el-icon-mobile-phone" /><span>{{ $t('profile.accountMobile') }}</span><span class="span-right">{{ user.mobile }}</span>
+          <i class="el-icon-mobile-phone" /><span>{{ $t('mobile') }}</span><span class="span-right">{{ user.mobile }}</span>
         </div>
       </div>
       <div class="user-education user-bio-section">
         <div class="user-bio-section-header">
-          <svg-icon name="education" /><span>{{ $t('profile.accountIntroduction') }}</span>
+          <svg-icon name="education" /><span>{{ $t('introduction') }}</span>
         </div>
       </div>
       <div class="user-bio-section-body">

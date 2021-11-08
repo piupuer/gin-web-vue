@@ -13,7 +13,7 @@
             icon="el-icon-plus"
             @click="handleCreate"
           >
-            新增
+            {{ $t('create') }}
           </el-button>
         </el-col>
       </el-row>
@@ -26,17 +26,17 @@
       >
         <el-table-column
           prop="name"
-          label="英文名称"
+          :label="$t('name')"
           width="180"
         />
         <el-table-column
           prop="title"
-          label="标题"
+          :label="$t('title')"
           width="180"
         />
         <el-table-column
           prop="icon"
-          label="图标"
+          :label="$t('icon')"
           align="center"
           width="100"
         >
@@ -48,27 +48,27 @@
         </el-table-column>
         <el-table-column
           prop="sort"
-          label="同级排序"
+          :label="$t('sort')"
           align="center"
         />
         <el-table-column
           prop="path"
-          label="URL路径"
+          :label="$t('menuPage.path')"
           width="180"
         />
         <el-table-column
           prop="component"
-          label="组件路径"
+          :label="$t('menuPage.component')"
           width="180"
         />
         <el-table-column
           prop="redirect"
-          label="重定向地址"
+          :label="$t('menuPage.redirect')"
           width="120"
         />
         <el-table-column
           prop="visible"
-          label="侧边栏导航"
+          :label="$t('menuPage.visible')"
           width="120"
           align="center"
         >
@@ -83,7 +83,7 @@
         </el-table-column>
         <el-table-column
           prop="breadcrumb"
-          label="面包屑导航"
+          :label="$t('menuPage.breadcrumb')"
           width="120"
           align="center"
         >
@@ -98,7 +98,7 @@
         </el-table-column>
         <el-table-column
           prop="status"
-          label="状态"
+          :label="$t('status')"
           width="120"
           align="center"
         >
@@ -112,29 +112,24 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="creator"
-          label="创建人"
-          align="center"
-        />
-        <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="180"
         >
           <template slot-scope="scope">
             <el-button
-              size="mini"
+
               @click="handleUpdate(scope.row)"
             >
-              编辑
+              {{ $t('edit') }}
             </el-button>
             <el-button
-              size="mini"
+
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -154,7 +149,7 @@
         label-width="80px"
       >
         <el-form-item
-          label="上级目录"
+          :label="$t('menuPage.parentId')"
           prop="parentId"
         >
           <el-cascader
@@ -168,65 +163,65 @@
           />
         </el-form-item>
         <el-form-item
-          label="英文名称"
+          :label="$t('name')"
           prop="name"
         >
           <el-input
             v-model.trim="updateDialog.form.name"
-            placeholder="请输入英文名称"
+            :placeholder="$t('pleaseEnter') + $t('name')"
           />
         </el-form-item>
         <el-form-item
-          label="标题"
+          :label="$t('title')"
           prop="title"
         >
           <el-input
             v-model.trim="updateDialog.form.title"
-            placeholder="请输入标题"
+            :placeholder="$t('pleaseEnter') + $t('title')"
           />
         </el-form-item>
         <el-form-item
-          label="图标"
+          :label="$t('icon')"
           prop="icon"
         >
           <el-input
             v-model.trim="updateDialog.form.icon"
-            placeholder="请输入图标"
+            :placeholder="$t('pleaseEnter') + $t('icon')"
           />
         </el-form-item>
         <el-form-item
-          label="排序"
+          :label="$t('sort')"
           prop="sort"
         >
           <el-input-number
             v-model.trim="updateDialog.form.sort"
             :min="0"
             :max="99"
-            label="同级菜单排序序号"
+            :placeholder="$t('pleaseEnter') + $t('sort')"
           />
         </el-form-item>
         <el-form-item
-          label="根路径"
+          :label="$t('menuPage.rootPath')"
           prop="rootPath"
         >
           <el-input
             v-model.trim="updateDialog.form.rootPath"
             :disabled="!updateDialog.form.root"
-            placeholder="请输入URL根路径"
+            :placeholder="$t('pleaseEnter') + $t('menuPage.rootPath')"
           />
         </el-form-item>
         <el-form-item
           v-if="!updateDialog.form.root"
-          label="子路径"
+          :label="$t('menuPage.path')"
           prop="path"
         >
           <el-input
             v-model.trim="updateDialog.form.path"
-            placeholder="请输入URL子路径"
+            :placeholder="$t('pleaseEnter') + $t('menuPage.path')"
           />
         </el-form-item>
         <el-form-item
-          label="完整路径"
+          :label="$t('menuPage.fullPath')"
           prop="fullPath"
         >
           <el-input
@@ -236,57 +231,57 @@
         </el-form-item>
         <el-form-item
           v-if="!updateDialog.form.root"
-          label="组件路径"
+          :label="$t('menuPage.component')"
           prop="component"
         >
           <el-input
             v-model.trim="updateDialog.form.component"
-            placeholder="请输入组件路径(默认在views目录)"
+            :placeholder="$t('pleaseEnter') + $t('menuPage.component')"
           />
         </el-form-item>
         <el-form-item
-          label="重定向"
+          :label="$t('menuPage.redirect')"
           prop="redirect"
         >
           <el-input
             v-model.trim="updateDialog.form.redirect"
-            placeholder="请输入重定向地址"
+            :placeholder="$t('pleaseEnter') + $t('menuPage.redirect')"
           />
         </el-form-item>
         <el-form-item
-          label="侧边栏导航"
+          :label="$t('menuPage.visible')"
           prop="visible"
         >
           <el-switch
             v-model.trim="updateDialog.form.visible"
             :active-value="1"
             :inactive-value="0"
-            active-text="可见"
-            inactive-text="隐藏"
+            :active-text="$t('show')"
+            :inactive-text="$t('hidden')"
           />
         </el-form-item>
         <el-form-item
-          label="面包屑导航"
+          :label="$t('menuPage.breadcrumb')"
           prop="breadcrumb"
         >
           <el-switch
             v-model.trim="updateDialog.form.breadcrumb"
             :active-value="1"
             :inactive-value="0"
-            active-text="可见"
-            inactive-text="隐藏"
+            :active-text="$t('show')"
+            :inactive-text="$t('hidden')"
           />
         </el-form-item>
         <el-form-item
-          label="状态"
+          :label="$t('status')"
           prop="status"
         >
           <el-switch
             v-model.trim="updateDialog.form.status"
             :active-value="1"
             :inactive-value="0"
-            active-text="正常"
-            inactive-text="禁用"
+            :active-text="$t('available')"
+            :inactive-text="$t('disabled')"
           />
         </el-form-item>
       </el-form>
@@ -299,10 +294,10 @@
           :loading="updateDialog.loading"
           @click="doUpdate"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelUpdate">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -368,14 +363,14 @@ export default class extends Vue {
     // 表单校验
     rules: {
       name: [
-        { required: true, message: '菜单英文名称不能为空', trigger: 'blur' },
+        { required: true, message: this.$t('menu').toString() + this.$t('name').toString() + this.$t('required').toString(), trigger: 'blur' },
         { validator: this.validateName, trigger: 'blur' }
       ],
       childPath: [
-        { required: true, message: '子路径不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('path').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       component: [
-        { required: true, message: '组件路径不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('component').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     }
   }
@@ -413,7 +408,7 @@ export default class extends Vue {
   private async refreshMenuTreeOptions() {
     this.updateDialog.menuTreeOptions = []
     // 包裹根菜单
-    const menu = { id: '0', title: '顶级目录', children: this.getMenuOptions(this.table.list) }
+    const menu = { id: '0', title: this.$t('menuPage.topPath').toString(), children: this.getMenuOptions(this.table.list) }
     this.updateDialog.menuTreeOptions.push(menu)
   }
 
@@ -422,9 +417,9 @@ export default class extends Vue {
     for (let i = 0, len = data.length; i < len; i++) {
       const item = data[i]
       let title = item.title
-      if (i18n.t('route.' + item.name) !== 'route.' + item.name) {
+      if (i18n.t('menuRoute.' + item.name) !== 'menuRoute.' + item.name) {
         // 可以国际化
-        title = i18n.t('route.' + item.name)
+        title = i18n.t('menuRoute.' + item.name)
       }
       let menu: any = {
         // 必须是string, 否则会导致不能设置默认值
@@ -483,7 +478,7 @@ export default class extends Vue {
           if (!update.id) {
             this.$message({
               type: 'warning',
-              message: '数据没有发生变化, 请重新输入~'
+              message: this.$t('noDiff').toString()
             })
             return
           }
@@ -500,9 +495,10 @@ export default class extends Vue {
         this.getData()
         // 清理字段
         this.resetUpdateForm()
+        const message = this.updateDialog.type === 0 ? this.$t('create').toString() : this.$t('update').toString()
         this.$notify({
-          title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}菜单成功`,
+          title: this.$t('congratulations').toString(),
+          message: message + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
@@ -537,7 +533,7 @@ export default class extends Vue {
     // 刷新菜单参数
     this.refreshMenuTreeOptions()
     // 修改标题
-    this.updateDialog.title = '创建新菜单'
+    this.updateDialog.title = this.$t('create').toString() + this.$t('menu').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -577,7 +573,7 @@ export default class extends Vue {
     // 刷新菜单参数
     this.refreshMenuTreeOptions()
     // 修改标题
-    this.updateDialog.title = '修改菜单信息'
+    this.updateDialog.title = this.$t('update').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -595,10 +591,10 @@ export default class extends Vue {
       names.push(row.name)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除菜单[${names.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('menu').toString()}[${names.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {

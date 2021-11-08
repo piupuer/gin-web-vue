@@ -18,7 +18,7 @@
         @click.middle.native="!isAffix(tag)?closeSelectedTag(tag):''"
         @contextmenu.prevent.native="openMenu(tag, $event)"
       >
-        {{ $t('route.' + tag.meta.name) === 'route.' + tag.meta.name ? tag.meta.title : $t('route.' + tag.meta.name) }}
+        {{ $t('menuRoute.' + tag.meta.name) === 'menuRoute.' + tag.meta.name ? tag.meta.title : $t('menuRoute.' + tag.meta.name) }}
         <span
           v-if="!isAffix(tag)"
           class="el-icon-close"
@@ -32,20 +32,20 @@
       class="contextmenu"
     >
       <li @click="refreshSelectedTag(selectedTag)">
-        {{ $t('tagsView.refresh') }}
+        {{ $t('tagsBtn.refresh') }}
       </li>
       <li
         v-if="!isAffix(selectedTag)"
         @click="closeSelectedTag(selectedTag)"
       >
         {{
-          $t('tagsView.close') }}
+          $t('tagsBtn.close') }}
       </li>
       <li @click="closeOthersTags">
-        {{ $t('tagsView.closeOthers') }}
+        {{ $t('tagsBtn.closeOthers') }}
       </li>
       <li @click="closeAllTags(selectedTag)">
-        {{ $t('tagsView.closeAll') }}
+        {{ $t('tagsBtn.closeAll') }}
       </li>
     </ul>
   </div>

@@ -8,61 +8,49 @@
       class="demo-form-inline"
     >
       <el-form-item
-        label="角色名称"
+        :label="$t('name')"
         prop="name"
       >
         <el-input
           v-model.trim="table.form.name"
-          placeholder="角色名称"
+          :placeholder="$t('pleaseEnter') + $t('name')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="关键字"
+        :label="$t('keyword')"
         prop="keyword"
       >
         <el-input
           v-model.trim="table.form.keyword"
-          placeholder="关键字"
+          :placeholder="$t('pleaseEnter') + $t('keyword')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
         />
       </el-form-item>
       <el-form-item
-        label="状态"
+        :label="$t('status')"
         prop="status"
       >
         <el-select
           v-model.trim="table.form.status"
           clearable
-          placeholder="角色状态"
+          :placeholder="$t('pleaseEnter') + $t('status')"
         >
           <el-option
             key="1"
-            label="正常"
+            :label="$t('available')"
             :value="1"
           />
           <el-option
             key="0"
-            label="禁用"
+            :label="$t('disabled')"
             :value="0"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item
-        label="创建人"
-        prop="creator"
-      >
-        <el-input
-          v-model.trim="table.form.creator"
-          placeholder="创建人"
-          clearable
-          @clear="doSearch"
-          @keyup.enter.native="doSearch"
-        />
       </el-form-item>
       <el-form-item>
         <el-button
@@ -70,10 +58,10 @@
           :loading="table.loading"
           @click="doSearch"
         >
-          查询
+          {{ $t('query') }}
         </el-button>
         <el-button @click="resetForm('searchForm')">
-          重置
+          {{ $t('reset') }}
         </el-button>
       </el-form-item>
       <el-row :gutter="10">
@@ -83,7 +71,7 @@
             icon="el-icon-plus"
             @click="handleCreate"
           >
-            新增
+            {{ $t('create') }}
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -93,7 +81,7 @@
             :disabled="table.batchDeleteBtnDisabled"
             @click="handleBatchDelete"
           >
-            批量删除
+            {{ $t('batchDel') }}
           </el-button>
         </el-col>
       </el-row>
@@ -111,25 +99,25 @@
         />
         <el-table-column
           prop="name"
-          label="名称"
+          :label="$t('name')"
           sortable
         />
         <el-table-column
           prop="keyword"
-          label="关键字"
+          :label="$t('keyword')"
           sortable
         />
         <el-table-column
           prop="sort"
-          label="排序"
+          :label="$t('sort')"
         />
         <el-table-column
           prop="desc"
-          label="说明"
+          :label="$t('desc')"
         />
         <el-table-column
           prop="status"
-          label="状态"
+          :label="$t('status')"
         >
           <template slot-scope="scope">
             <el-switch
@@ -141,12 +129,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="creator"
-          label="创建人"
-        />
-        <el-table-column
           fixed="right"
-          label="操作"
+          :label="$t('operation')"
           align="center"
           width="220"
         >
@@ -155,18 +139,18 @@
               type="primary"
               @click="handleRole(scope.row)"
             >
-              权限
+              {{ $t('permission') }}
             </el-button>
             <el-button
               @click="handleUpdate(scope.row)"
             >
-              编辑
+              {{ $t('edit') }}
             </el-button>
             <el-button
               type="danger"
               @click="handleDelete(scope.row)"
             >
-              删除
+              {{ $t('del') }}
             </el-button>
           </template>
         </el-table-column>
@@ -196,53 +180,53 @@
         label-width="80px"
       >
         <el-form-item
-          label="角色名称"
+          :label="$t('name')"
           prop="name"
         >
           <el-input
             v-model.trim="updateDialog.form.name"
-            placeholder="请输入角色名称"
+            :placeholder="$t('pleaseEnter') + $t('name')"
           />
         </el-form-item>
         <el-form-item
-          label="关键字"
+          :label="$t('keyword')"
           prop="keyword"
         >
           <el-input
             v-model.trim="updateDialog.form.keyword"
-            placeholder="请输入关键字"
+            :placeholder="$t('pleaseEnter') + $t('keyword')"
           />
         </el-form-item>
         <el-form-item
-          label="排序"
+          :label="$t('sort')"
           prop="sort"
         >
           <el-input-number
             v-model="updateDialog.form.sort"
             :min="defaultConfig.miniRoleSort"
-            label="请设置排序(值越大权限越小, 且不得比当前账号序号小)"
+            :placeholder="$t('pleaseEnter') + $t('sort')"
           />
         </el-form-item>
         <el-form-item
-          label="状态"
+          :label="$t('status')"
           prop="status"
         >
           <el-switch
             v-model.trim="updateDialog.form.status"
             :active-value="1"
             :inactive-value="0"
-            active-text="正常"
-            inactive-text="禁用"
+            :active-text="$t('available')"
+            :inactive-text="$t('disabled')"
           />
         </el-form-item>
         <el-form-item
-          label="说明"
+          :label="$t('desc')"
           prop="desc"
         >
           <el-input
             v-model.trim="updateDialog.form.desc"
             type="textarea"
-            placeholder="请输入内容"
+            :placeholder="$t('pleaseEnter') + $t('desc')"
           />
         </el-form-item>
       </el-form>
@@ -255,10 +239,10 @@
           :loading="updateDialog.loading"
           @click="doUpdate"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelUpdate">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -272,7 +256,7 @@
     >
       <el-tabs v-model.trim="roleDialog.tab.activeName">
         <el-tab-pane
-          label="菜单权限"
+          :label="$t('menu') + $t('permission')"
           name="menu"
         >
           <el-tree
@@ -285,7 +269,7 @@
           />
         </el-tab-pane>
         <el-tab-pane
-          label="接口权限"
+          :label="$t('api') + $t('permission')"
           name="api"
         >
           <el-tree
@@ -307,10 +291,10 @@
           :loading="roleDialog.loading"
           @click="doRoleUpdate"
         >
-          确 定
+          {{ $t('confirm') }}
         </el-button>
         <el-button @click="cancelRoleUpdate">
-          取 消
+          {{ $t('cancel') }}
         </el-button>
       </div>
     </el-dialog>
@@ -351,9 +335,9 @@ export default class extends Vue {
 
   private validateKeyword(rule: any, value: string, callback: Function) {
     if (!/^[a-zA-Z]/.test(value)) {
-      callback(new Error('必须以字母开头, 如a12345'))
+      callback(new Error(this.$t('formRules.keyword').toString()))
     } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
-      callback(new Error('不允许出现汉字或特殊字符, 如a+,sa、a张三'))
+      callback(new Error(this.$t('formRules.specialChar').toString()))
     } else {
       callback()
     }
@@ -383,21 +367,21 @@ export default class extends Vue {
     // 表单校验
     rules: {
       name: [
-        { required: true, message: '角色名称不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('name').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       keyword: [
-        { required: true, message: '关键字不能为空', trigger: 'blur' },
+        { required: true, message: this.$t('keyword').toString() + this.$t('required').toString(), trigger: 'blur' },
         { validator: this.validateKeyword, trigger: 'blur' }
       ],
       sort: [
-        { required: true, message: '角色排序不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('sort').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     }
   }
 
   private roleDialog: any = {
     loading: false,
-    title: '修改权限',
+    title: this.$t('update').toString() + this.$t('permission').toString(),
     // 是否打开
     visible: false,
     // 当前角色编号
@@ -479,7 +463,7 @@ export default class extends Vue {
           if (!update.id) {
             this.$message({
               type: 'warning',
-              message: '数据没有发生变化, 请重新输入~'
+              message: this.$t('noDiff').toString()
             })
             return
           }
@@ -496,9 +480,10 @@ export default class extends Vue {
         this.getData()
         // 清理字段
         this.resetUpdateForm()
+        const message = this.updateDialog.type === 0 ? this.$t('create').toString() : this.$t('update').toString()
         this.$notify({
-          title: '恭喜',
-          message: `${this.updateDialog.type === 0 ? '创建' : '更新'}角色成功`,
+          title: this.$t('congratulations').toString(),
+          message: message + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
@@ -531,7 +516,7 @@ export default class extends Vue {
     if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
       this.$message({
         type: 'warning',
-        message: '数据没有发生变化, 请重新输入~'
+        message: this.$t('noDiff').toString()
       })
       return
     }
@@ -561,7 +546,7 @@ export default class extends Vue {
     if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
       this.$message({
         type: 'warning',
-        message: '数据没有发生变化, 请重新输入~'
+        message: this.$t('noDiff').toString()
       })
       return
     }
@@ -598,7 +583,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 0
     // 修改标题
-    this.updateDialog.title = '创建新角色'
+    this.updateDialog.title = this.$t('create').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -618,7 +603,7 @@ export default class extends Vue {
     // 修改类型
     this.updateDialog.type = 1
     // 修改标题
-    this.updateDialog.title = '修改角色信息'
+    this.updateDialog.title = this.$t('update').toString()
     // 开启弹窗
     this.updateDialog.visible = true
   }
@@ -657,10 +642,10 @@ export default class extends Vue {
       names.push(row.name)
     }
     if (ids.length > 0) {
-      const msg = `确定要删除角色[${names.join(',')}]吗, 此操作不可逆?`
-      this.$confirm(msg, '请谨慎操作', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('role').toString()}[${names.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {
@@ -672,13 +657,13 @@ export default class extends Vue {
 
   // 改变角色状态
   private async handleStatusChange(row: any) {
-    let msg = `确定要恢复角色[${row.name}]吗?`
+    let msg = `${this.$t('sureToDo').toString()}${this.$t('recovery').toString()}[${row.name}]?`
     if (row.status === 0) {
-      msg = `确定要禁用角色[${row.name}]吗?该操作可能导致属于该角色的所有用户无法正常使用系统`
+      msg = `${this.$t('sureToDo').toString()}${this.$t('disabled').toString()}[${row.name}]?`
     }
-    this.$confirm(msg, '请谨慎操作', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    this.$confirm(msg, this.$t('caution').toString(), {
+      confirmButtonText: this.$t('confirm').toString(),
+      cancelButtonText: this.$t('cancel').toString(),
       type: 'warning'
     })
       .then(async() => {

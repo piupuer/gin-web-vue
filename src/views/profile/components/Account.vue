@@ -5,26 +5,32 @@
     :model="accountForm.form"
   >
     <el-form-item
-      :label="$t('profile.accountNickname')"
+      :label="$t('nickname')"
       prop="nickname"
     >
-      <el-input v-model.trim="accountForm.form.nickname" />
+      <el-input
+        v-model.trim="accountForm.form.nickname"
+        :placeholder="$t('pleaseEnter') + $t('nickname')"
+      />
     </el-form-item>
     <el-form-item
-      :label="$t('profile.accountMobile')"
+      :label="$t('mobile')"
       prop="mobile"
     >
-      <el-input v-model.trim="accountForm.form.mobile" />
+      <el-input
+        v-model.trim="accountForm.form.mobile"
+        :placeholder="$t('pleaseEnter') + $t('mobile')"
+      />
     </el-form-item>
     <el-form-item
-      :label="$t('profile.accountIntroduction')"
+      :label="$t('introduction')"
       prop="introduction"
     >
       <el-input
         v-model.trim="accountForm.form.introduction"
         type="textarea"
         :rows="2"
-        placeholder="简单描述一下自己吧~"
+        :placeholder="$t('pleaseEnter') + $t('mobile')"
       />
     </el-form-item>
     <el-form-item>
@@ -33,7 +39,7 @@
         type="primary"
         @click="doUpdate"
       >
-        {{ $t('profile.submit') }}
+        {{ $t('submit') }}
       </el-button>
     </el-form-item>
   </el-form>
@@ -65,7 +71,7 @@ export default class extends Vue {
     // 表单校验
     rules: {
       nickname: [
-        { required: true, message: '昵称不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('nickname').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     }
   }
@@ -75,8 +81,10 @@ export default class extends Vue {
   }
 
   private async getData() {
-    this.accountForm.form = this.user
-    this.accountForm.oldData = JSON.parse(JSON.stringify(this.user))
+    this.$nextTick(() => {
+      this.accountForm.form = this.user
+      this.accountForm.oldData = JSON.parse(JSON.stringify(this.user))
+    })
   }
 
   private async doUpdate() {
@@ -87,7 +95,7 @@ export default class extends Vue {
         if (!update.id) {
           this.$message({
             type: 'warning',
-            message: '数据没有发生变化, 请重新输入~'
+            message: this.$t('noDiff').toString()
           })
           return
         }
@@ -96,8 +104,8 @@ export default class extends Vue {
           // 更新用户信息
           await updateUser(update.id, update)
           this.$notify({
-            title: '恭喜',
-            message: '更新成功',
+            title: this.$t('congratulations').toString(),
+            message: this.$t('update').toString() + this.$t('success').toString(),
             type: 'success',
             duration: 2000
           })

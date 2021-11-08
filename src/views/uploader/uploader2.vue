@@ -9,14 +9,14 @@
     >
       <uploader-unsupport />
       <uploader-btn :attrs="uploader.attrs">
-        点我上传ZIP压缩文件
+        {{ $t('uploaderPage.zip') }}
       </uploader-btn>
       <el-button
         type="primary"
         :loading="uploader.unzipLoading"
         @click="doUnzip"
       >
-        全部解压<span>(已上传{{ uploader.merged.length }}, 已解压{{ uploader.unziped.length }})</span>
+        {{ $t('uploaderPage.startDecompress') }}<span>({{ $t('uploaderPage.uploaded') }}{{ uploader.merged.length }}, {{ $t('uploaderPage.decompressed') }}{{ uploader.unziped.length }})</span>
       </el-button>
       <uploader-list />
     </uploader>
@@ -53,11 +53,11 @@ export default class extends Vue {
       }
     },
     statusText: {
-      success: '上传成功',
-      error: '上传失败',
-      uploading: '上传中',
-      paused: '暂停中',
-      waiting: '等待中'
+      success: this.$t('upload').toString() + this.$t('success').toString(),
+      error: this.$t('upload').toString() + this.$t('fail').toString(),
+      uploading: this.$t('uploading').toString(),
+      paused: this.$t('paused').toString(),
+      waiting: this.$t('waiting').toString()
     },
     // 记录所有文件
     files: [],
@@ -77,7 +77,7 @@ export default class extends Vue {
     if (this.uploader.merged.length === 0) {
       this.$message({
         type: 'warning',
-        message: '请至少上传完成一个文件~'
+        message: this.$t('uploaderPage.validate[0]').toString()
       })
       return
     }
@@ -91,15 +91,15 @@ export default class extends Vue {
         })
         this.uploader.unziped.push(filename)
         this.$notify({
-          title: '恭喜',
-          message: `文件${filename}解压成功`,
+          title: this.$t('congratulations').toString(),
+          message: filename + this.$t('decompress').toString() + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
       } catch (e) {
         this.$notify({
-          title: '对不起',
-          message: `文件${filename}解压失败`,
+          title: this.$t('sorry').toString(),
+          message: filename + this.$t('decompress').toString() + this.$t('fail').toString(),
           type: 'error',
           duration: 2000
         })
@@ -134,15 +134,15 @@ export default class extends Vue {
         const { data } = await uploadMerge(resp.data)
         this.uploader.merged.push(data.filename)
         this.$notify({
-          title: '恭喜',
-          message: `文件${file.name}合并成功`,
+          title: this.$t('congratulations').toString(),
+          message: file.name + this.$t('merged').toString() + this.$t('success').toString(),
           type: 'success',
           duration: 2000
         })
       } catch (e) {
         this.$notify({
-          title: '对不起',
-          message: `文件${file.name}合并失败`,
+          title: this.$t('sorry').toString(),
+          message: file.name + this.$t('merged').toString() + this.$t('fail').toString(),
           type: 'error',
           duration: 2000
         })

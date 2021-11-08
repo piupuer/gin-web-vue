@@ -13,10 +13,9 @@
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <header-search class="right-menu-item" />
-        <error-log class="errLog-container right-menu-item hover-effect" />
         <screenfull class="right-menu-item hover-effect" />
         <el-tooltip
-          :content="$t('navbar.size')"
+          :content="$t('navbarBtn.size')"
           effect="dark"
           placement="bottom"
         >
@@ -24,14 +23,14 @@
         </el-tooltip>
         <lang-select class="right-menu-item hover-effect" />
         <el-tooltip
-          :content="$t('navbar.message')"
+          :content="$t('navbarBtn.message')"
           effect="dark"
           placement="bottom"
         >
           <message-center class="right-menu-item hover-effect" />
         </el-tooltip>
         <el-tooltip
-          :content="$t('navbar.loki')"
+          :content="$t('navbarBtn.loki')"
           effect="dark"
           placement="bottom"
         >
@@ -44,7 +43,7 @@
           </a>
         </el-tooltip>
         <el-tooltip
-          :content="$t('navbar.minio')"
+          :content="$t('navbarBtn.minio')"
           effect="dark"
           placement="bottom"
         >
@@ -69,14 +68,20 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/">
-            <el-dropdown-item>
-              {{ $t('navbar.profile') }}
-            </el-dropdown-item>
-          </router-link>
           <router-link to="/">
             <el-dropdown-item>
-              {{ $t('navbar.dashboard') }}
+              {{ $t('dashboard') }}
+            </el-dropdown-item>
+          </router-link>
+          <a
+            target="_blank"
+            href="https://github.com/piupuer/gin-web/blob/master/README.md"
+          >
+            <el-dropdown-item>{{ $t('navbarBtn.docs') }}</el-dropdown-item>
+          </a>
+          <router-link to="/profile/">
+            <el-dropdown-item>
+              {{ $t('navbarBtn.profile') }}
             </el-dropdown-item>
           </router-link>
           <a
@@ -84,21 +89,15 @@
             href="https://github.com/piupuer/gin-web"
           >
             <el-dropdown-item>
-              {{ $t('navbar.github') }}
+              {{ $t('navbarBtn.github') }}
             </el-dropdown-item>
-          </a>
-          <a
-            target="_blank"
-            href="https://github.com/piupuer/gin-web/blob/master/README.md"
-          >
-            <el-dropdown-item>Docs</el-dropdown-item>
           </a>
           <el-dropdown-item
             divided
             @click.native="logout"
           >
             <span style="display:block;">
-              {{ $t('navbar.logOut') }}
+              {{ $t('logout') }}
             </span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -112,7 +111,6 @@ import { Component, Vue } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
 import { UserModule } from '@/store/modules/user'
 import Breadcrumb from '@/components/Breadcrumb/index.vue'
-import ErrorLog from '@/components/ErrorLog/index.vue'
 import Hamburger from '@/components/Hamburger/index.vue'
 import HeaderSearch from '@/components/HeaderSearch/index.vue'
 import LangSelect from '@/components/LangSelect/index.vue'
@@ -124,7 +122,6 @@ import MessageCenter from '@/components/MessageCenter/index.vue'
   name: 'Navbar',
   components: {
     Breadcrumb,
-    ErrorLog,
     Hamburger,
     HeaderSearch,
     LangSelect,

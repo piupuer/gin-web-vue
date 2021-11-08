@@ -10,7 +10,7 @@
     >
       <div class="title-container">
         <h3 class="title">
-          {{ $t('login.title') }}
+          {{ $t('loginPage.title') }}
         </h3>
         <lang-select class="set-language" />
       </div>
@@ -22,7 +22,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          :placeholder="$t('login.username')"
+          :placeholder="$t('pleaseEnter') + $t('username')"
           name="username"
           type="text"
           tabindex="1"
@@ -45,7 +45,7 @@
             ref="password"
             v-model="loginForm.password"
             :type="passwordType"
-            :placeholder="$t('login.password')"
+            :placeholder="$t('pleaseEnter') + $t('password')"
             name="password"
             tabindex="2"
             autocomplete="on"
@@ -68,17 +68,21 @@
         style="width:100%; margin-bottom:30px;"
         @click.native.prevent="handleLogin"
       >
-        {{ $t('login.logIn') }}
+        {{ $t('login') }}
       </el-button>
 
       <div style="position:relative">
         <div class="tips">
-          <span>{{ $t('login.users[0].username') }} : super </span>
-          <span>{{ $t('login.users[0].password') }} : 123456 </span>
+          <span>{{ $t('loginPage.users[0]') }} : super </span>
+          <span>{{ $t('password') }} : 123456 </span>
         </div>
         <div class="tips">
-          <span>{{ $t('login.users[1].username') }} : guest </span>
-          <span>{{ $t('login.users[1].password') }} : 123456 </span>
+          <span>{{ $t('loginPage.users[1]') }} : guest </span>
+          <span>{{ $t('password') }} : 123456 </span>
+        </div>
+        <div class="tips">
+          <span>{{ $t('loginPage.users[2]') }} : leave </span>
+          <span>{{ $t('password') }} : 123456 </span>
         </div>
       </div>
     </el-form>

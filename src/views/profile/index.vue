@@ -15,13 +15,13 @@
           <el-card>
             <el-tabs v-model="activeTab">
               <el-tab-pane
-                :label="$t('profile.accountLabel')"
+                :label="$t('profilePage.info')"
                 name="account"
               >
                 <account :user="user" />
               </el-tab-pane>
               <el-tab-pane
-                :label="$t('profile.passwordLabel')"
+                :label="$t('profilePage.security')"
                 name="password"
               >
                 <password />

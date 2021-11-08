@@ -1,17 +1,17 @@
 <template>
   <div class="app-container">
     <div class="tips">
-      <h1>欢迎使用Gin Web</h1>
-      <h2>点击左侧菜单可试用系统各项功能</h2>
-      <h2>有问题欢迎提Issue或QQ群交流</h2>
-      <h2>科学上网联系群主(每月<span class="special">50G免费流量</span>)</h2>
+      <h1>{{ $t('dashboardPage.t1') }}</h1>
+      <h2>{{ $t('dashboardPage.t2') }}</h2>
+      <h2>{{ $t('dashboardPage.t3') }}</h2>
       <br>
       <br>
       <br>
       <br>
       <br>
-      <h5>广告: </h5>
-      <p>UCloud国内服务器(领劵最低只要<span class="special">59元/年</span>):</p>
+      <h5>{{ $t('dashboardPage.t4') }}: </h5>
+      <p>{{ $t('dashboardPage.t5') }}(<span class="special">{{ $t('dashboardPage.t6') }}</span>)</p>
+      <p>{{ $t('dashboardPage.t7') }}(<span class="special">{{ $t('dashboardPage.t8') }} ¥59 {{ $t('dashboardPage.t9') }}</span>):</p>
       <p>
         <el-link
           href="https://www.ucloud.cn/site/active/kuaijie.html?invitation_code=C1x8863BB6C7A1E"

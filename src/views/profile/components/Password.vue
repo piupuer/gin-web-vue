@@ -6,32 +6,32 @@
   >
     <el-form-item
       prop="oldPassword"
-      :label="$t('profile.passwordOldPassword')"
+      :label="$t('oldPassword')"
     >
       <el-input
         v-model.trim="passwordForm.form.oldPassword"
         type="password"
-        placeholder="请输入旧密码"
+        :placeholder="$t('pleaseEnter') + $t('oldPassword')"
       />
     </el-form-item>
     <el-form-item
       prop="newPassword"
-      :label="$t('profile.passwordNewPassword')"
+      :label="$t('newPassword')"
     >
       <el-input
         v-model.trim="passwordForm.form.newPassword"
         type="password"
-        placeholder="请输入新密码"
+        :placeholder="$t('pleaseEnter') + $t('newPassword')"
       />
     </el-form-item>
     <el-form-item
       prop="confirmPassword"
-      :label="$t('profile.passwordConfirmPassword')"
+      :label="$t('confirmPassword')"
     >
       <el-input
         v-model.trim="passwordForm.form.confirmPassword"
         type="password"
-        placeholder="再次确认密码"
+        :placeholder="$t('pleaseEnter') + $t('confirmPassword')"
       />
     </el-form-item>
     <el-form-item>
@@ -40,7 +40,7 @@
         :loading="passwordForm.loading"
         @click="doUpdate"
       >
-        {{ $t('profile.submit') }}
+        {{ $t('submit') }}
       </el-button>
     </el-form-item>
   </el-form>
@@ -57,7 +57,7 @@ import { changePwd } from '@/api/system/users'
 export default class extends Vue {
   private validatePassword(rule: any, value: string, callback: Function) {
     if (this.passwordForm.form.newPassword !== value) {
-      callback(new Error('两次输入的密码不一致'))
+      callback(new Error(this.$t('profilePage.passwordInconsistent').toString()))
     } else {
       callback()
     }
@@ -73,14 +73,14 @@ export default class extends Vue {
     // 表单校验
     rules: {
       oldPassword: [
-        { required: true, message: '旧密码不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('oldPassword').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       newPassword: [
-        { required: true, message: '新密码不能为空', trigger: 'blur' },
-        { min: 6, message: '新密码至少6个字符', trigger: 'blur' }
+        { required: true, message: this.$t('newPassword').toString() + this.$t('required').toString(), trigger: 'blur' },
+        { min: 6, message: this.$t('profilePage.newPasswordSmallLen').toString(), trigger: 'blur' }
       ],
       confirmPassword: [
-        { required: true, message: '确认密码不能为空', trigger: 'blur' },
+        { required: true, message: this.$t('confirmPassword').toString() + this.$t('required').toString(), trigger: 'blur' },
         { validator: this.validatePassword, trigger: 'blur' }
       ]
     }
@@ -93,8 +93,8 @@ export default class extends Vue {
         try {
           await changePwd(this.passwordForm.form)
           this.$notify({
-            title: '恭喜',
-            message: '修改密码成功',
+            title: this.$t('congratulations').toString(),
+            message: this.$t('update').toString() + this.$t('password').toString() + this.$t('success').toString(),
             type: 'success',
             duration: 2000
           })

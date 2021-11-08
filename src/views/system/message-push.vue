@@ -5,14 +5,14 @@
         slot="header"
         class="clearfix"
       >
-        <span>创建新消息</span>
+        <span>{{ $t('messagePushPage.sendMessage') }}</span>
         <el-button
           style="float: right; padding: 3px 0"
           type="text"
           :loading="table.pushLoading"
           @click="pushMessage"
         >
-          <i class="el-icon-s-promotion">立即发送</i>
+          <i class="el-icon-s-promotion">{{ $t('messagePushPage.sendNow') }}</i>
         </el-button>
       </div>
       <el-form
@@ -22,12 +22,12 @@
         :model="table.form"
       >
         <el-form-item
-          label="类型"
+          :label="$t('type')"
           prop="type"
         >
           <el-select
             v-model.trim="table.form.type"
-            placeholder="请选择消息类型"
+            :placeholder="$t('pleaseEnter') + $t('type')"
             clearable
           >
             <el-option
@@ -39,13 +39,13 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-if="table.form.type===0"
-          label="接收人"
+          v-if="table.form.type === 0"
+          :label="$t('messagePushPage.toUser')"
           prop="toUserIds"
         >
           <el-select
             v-model.trim="table.form.toUserIds"
-            placeholder="请选择消息接收人(输入用户昵称可直接搜索)"
+            :placeholder="$t('pleaseEnter') + $t('messagePushPage.toUser')"
             multiple
             filterable
             remote
@@ -56,19 +56,19 @@
             <el-option
               v-for="item in table.userSelectOptions"
               :key="item.id"
-              :label="item.nickname + '(用户名: ' + item.username + ', 手机号: ' + item.mobile + ')'"
+              :label="item.nickname + '('+$t('username')+': ' + item.username + ', '+$t('mobile')+': ' + item.mobile + ')'"
               :value="item.id"
             />
           </el-select>
         </el-form-item>
         <el-form-item
-          v-if="table.form.type===1"
-          label="接收角色"
+          v-if="table.form.type === 1"
+          :label="$t('messagePushPage.toRole')"
           prop="toRoleIds"
         >
           <el-select
             v-model.trim="table.form.toRoleIds"
-            placeholder="请选择消息接收角色(输入角色名可直接搜索)"
+            :placeholder="$t('pleaseEnter') + $t('messagePushPage.toRole')"
             multiple
             filterable
             remote
@@ -85,24 +85,24 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          label="标题"
+          :label="$t('title')"
           prop="title"
         >
           <el-input
             v-model.trim="table.form.title"
-            placeholder="请输入消息标题"
+            :placeholder="$t('pleaseEnter') + $t('title')"
             clearable
           />
         </el-form-item>
         <el-form-item
-          label="内容"
-          prop="title"
+          :label="$t('content')"
+          prop="content"
         >
           <el-input
             v-model.trim="table.form.content"
             type="textarea"
             :rows="5"
-            placeholder="请输入消息内容(255个字符以内)"
+            :placeholder="$t('pleaseEnter') + $t('content')"
             clearable
           />
         </el-form-item>
@@ -126,21 +126,21 @@ export default class extends Vue {
   private readonly defaultConfig: any = {
     types: [{
       name: 0,
-      label: '私信消息(一对一)'
+      label: this.$t('messagePushPage.one2one').toString()
     }, {
       name: 1,
-      label: '通知消息(一对多)'
+      label: this.$t('messagePushPage.one2more').toString()
     }, {
       name: 2,
-      label: '系统消息(一对全部)'
+      label: this.$t('messagePushPage.one2all').toString()
     }],
     status: [{
       name: 0,
-      label: '未读',
+      label: this.$t('messagePushPage.unRead').toString(),
       type: 'danger'
     }, {
       name: 1,
-      label: '已读',
+      label: this.$t('messagePushPage.read').toString(),
       type: 'success'
     }]
   }
@@ -164,19 +164,19 @@ export default class extends Vue {
     // 表单校验
     rules: {
       type: [
-        { required: true, message: '类型不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('type').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       toUserIds: [
-        { required: true, message: '接收人不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('messagePushPage.toUser').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       toRoleIds: [
-        { required: true, message: '接收角色不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('messagePushPage.toRole').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       title: [
-        { required: true, message: '标题不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('title').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
       content: [
-        { required: true, message: '内容不能为空', trigger: 'blur' }
+        { required: true, message: this.$t('content').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     }
   }
@@ -199,7 +199,7 @@ export default class extends Vue {
         } catch (e) {
           this.$message({
             type: 'error',
-            message: '发送消息失败: ' + e
+            message: this.$t('sendMessage').toString() + this.$t('fail').toString() + ': ' + e
           })
         } finally {
           this.table.pushLoading = false
@@ -222,7 +222,7 @@ export default class extends Vue {
       const { data } = await findUser(params)
       this.table.userSelectOptions = data.list
     } catch (e) {
-      this.$message.error('读取系统用户信息失败')
+      this.$message.error(this.$t('readDataFail').toString())
       return
     } finally {
       this.table.userLoading = false
@@ -241,45 +241,12 @@ export default class extends Vue {
         this.table.roleSelectOptions = data.list
       } catch (e) {
         console.warn(e)
-        this.$message.error('读取系统角色信息失败')
+        this.$message.error(this.$t('readDataFail').toString())
         return
       } finally {
         this.table.roleLoading = false
       }
     }
-  }
-
-  // 获取消息类型对应的tag label
-  private getTypeTagLabel(type: number) {
-    for (let i = 0, len = this.defaultConfig.types.length; i < len; i++) {
-      const item = this.defaultConfig.types[i]
-      if (type === item.name) {
-        return item.label
-      }
-    }
-    return ''
-  }
-
-  // 获取消息状态对应的tag颜色
-  private getStatusTagType(status: number) {
-    for (let i = 0, len = this.defaultConfig.status.length; i < len; i++) {
-      const item = this.defaultConfig.status[i]
-      if (status === item.name) {
-        return item.type
-      }
-    }
-    return ''
-  }
-
-  // 获取消息类型对应的tag label
-  private getStatusTagLabel(status: number) {
-    for (let i = 0, len = this.defaultConfig.status.length; i < len; i++) {
-      const item = this.defaultConfig.status[i]
-      if (status === item.name) {
-        return item.label
-      }
-    }
-    return ''
   }
 }
 </script>

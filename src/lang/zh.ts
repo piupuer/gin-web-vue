@@ -1,44 +1,89 @@
 export default {
-  profile: {
-    userCardTitle: '关于我',
-    userCardHello: '你好',
-    accountLabel: '资料',
-    accountUsername: '用户名',
-    accountNickname: '昵称',
-    accountMobile: '手机',
-    accountIntroduction: '个人简介',
-    passwordLabel: '密码',
-    passwordOldPassword: '旧密码',
-    passwordNewPassword: '新密码',
-    passwordConfirmPassword: '确认密码',
-    submit: '修改'
+  langSelect: '语言切换成功',
+  login: '登录',
+  logout: '登出',
+  hello: '你好',
+  dashboard: '首页',
+  username: '用户名',
+  password: '密码',
+  oldPassword: '旧密码',
+  newPassword: '新密码',
+  confirmPassword: '确认密码',
+  initPassword: '初始密码',
+  pleaseEnter: '请输入或选择',
+  query: '查询',
+  reset: '重置',
+  create: '新增',
+  update: '更新',
+  submit: '提交',
+  recovery: '恢复',
+  congratulations: '恭喜',
+  success: '成功',
+  fail: '失败',
+  readDataFail: '查询数据失败',
+  operation: '操作',
+  hidden: '隐藏',
+  show: '显示',
+  available: '可用',
+  disabled: '禁用',
+  edit: '编辑',
+  del: '删除',
+  batchDel: '批量删除',
+  permission: '权限',
+  sureToDo: '确定要',
+  caution: '请谨慎操作',
+  irreversible: '此操作不可逆',
+  confirm: '确定',
+  cancel: '取消',
+  noDiff: '数据没有发生变化, 请重新输入~',
+  required: '不允许为空',
+  createdAt: '创建时间',
+  updatedAt: '更新时间',
+  healthy: '健康',
+  yes: '是',
+  no: '否',
+  any: '无限制',
+  alreadyExists: '已存在',
+  name: '名称',
+  title: '标题',
+  content: '内容',
+  status: '状态',
+  sort: '排序',
+  keyword: '关键字',
+  desc: '说明',
+  icon: '图标',
+  nickname: '昵称',
+  mobile: '手机',
+  introduction: '简介',
+  message: '消息',
+  type: '类型',
+  category: '分类',
+  ip: 'IP',
+  port: '端口',
+  remark: '备注',
+  refresh: '刷新',
+  connect: '连接',
+  loginPage: {
+    title: '系统登录',
+    users: ['超级管理员', '访客', '请假人']
   },
-  route: {
-    dashboardRoot: '首页',
-    dashboard: '首页',
-    systemRoot: '系统管理',
-    menu: '菜单管理',
-    role: '角色管理',
-    user: '用户管理',
-    api: '接口管理',
-    workflow: '工作流管理',
-    'operation-log': '操作日志',
-    'message-push': '消息推送',
-    machine: '机器管理',
-    profile: '个人中心',
-    message: '消息中心',
-    testRoot: '测试页面',
-    test: '测试用例',
-    leave: '我的请假条',
-    approving: '待审批列表',
-    uploader: '上传组件',
-    uploader1: '上传示例1',
-    uploader2: '上传示例2'
+  tagsBtn: {
+    refresh: '刷新',
+    close: '关闭',
+    closeOthers: '关闭其它',
+    closeAll: '关闭所有'
   },
-  navbar: {
-    logOut: '退出登录',
-    dashboard: '首页',
+  settingsBtn: {
+    title: '系统布局配置',
+    theme: '主题色',
+    showTagsView: '显示 Tags-View',
+    showSidebarLogo: '显示侧边栏 Logo',
+    fixedHeader: '固定 Header',
+    sidebarTextTheme: '侧边栏文字主题色'
+  },
+  navbarBtn: {
     github: '项目地址',
+    docs: '文档',
     theme: '换肤',
     size: '布局大小',
     profile: '个人中心',
@@ -46,111 +91,184 @@ export default {
     loki: '系统日志(登录test/123456)',
     minio: '对象存储(登录minio/minio123)'
   },
-  login: {
-    title: '系统登录',
-    logIn: '登录',
-    username: '用户名',
-    password: '密码',
-    users: [{
-      username: '超级管理员',
-      password: '密码'
-    }, {
-      username: '访客',
-      password: '密码'
-    }],
-    any: '随便填',
-    thirdparty: '第三方登录',
-    thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！'
+  profilePage: {
+    aboutMe: '关于我',
+    info: '账户信息',
+    security: '账户安全',
+    passwordInconsistent: '两次输入的密码不一致',
+    newPasswordSmallLen: '新密码至少6个字符'
   },
-  documentation: {
-    documentation: '文档',
-    github: 'Github 地址'
+  menuRoute: {
+    dashboardRoot: '首页',
+    dashboard: '首页',
+    systemRoot: '系统管理',
+    menu: '菜单管理',
+    role: '角色管理',
+    user: '用户管理',
+    api: '接口管理',
+    operationLog: '操作日志',
+    messagePush: '消息推送',
+    machine: '机器管理',
+    profile: '个人中心',
+    message: '消息中心',
+    fsmRoot: '状态机',
+    fsm: '状态机',
+    leave: '我的请假条',
+    approving: '待审批列表',
+    testRoot: '测试页面',
+    test: '测试用例',
+    uploader: '上传组件',
+    uploader1: '上传示例1',
+    uploader2: '上传示例2'
   },
-  permission: {
-    createRole: '新增角色',
-    editPermission: '编辑权限',
-    roles: '你的权限',
-    switchRoles: '切换权限',
-    tips: '在某些情况下，不适合使用 v-permission。例如：Element-UI 的 el-tab 或 el-table-column 以及其它动态渲染 dom 的场景。你只能通过手动设置 v-if 来实现。',
-    delete: '删除',
-    confirm: '确定',
-    cancel: '取消'
+  dashboardPage: {
+    t1: '欢迎使用Gin Web',
+    t2: '点击左上角展开菜单试用各项功能',
+    t3: '有问题欢迎提Issue或QQ群交流',
+    t4: '广告',
+    t5: '科学上网联系群主',
+    t6: '每月50G免费流量',
+    t7: 'UCloud云服务器',
+    t8: '领劵最低只要',
+    t9: '每年'
   },
-  guide: {
-    description: '引导页对于一些第一次进入项目的人很有用，你可以简单介绍下项目的功能。本 Demo 是基于',
-    button: '打开引导'
+  menu: '菜单',
+  menuPage: {
+    path: 'URL路径',
+    rootPath: '根路径',
+    fullPath: '完整路径',
+    component: '组件路径',
+    redirect: '重定向地址',
+    visible: '菜单可见性',
+    breadcrumb: '面包屑导航',
+    parentId: '上级目录',
+    topPath: '顶级目录'
   },
-  components: {
-    documentation: '文档',
-    tinymceTips: '富文本是管理后台一个核心的功能，但同时又是一个有很多坑的地方。在选择富文本的过程中我也走了不少的弯路，市面上常见的富文本都基本用过了，最终权衡了一下选择了Tinymce。更详细的富文本比较和介绍见',
-    stickyTips: '当页面滚动到预设的位置会吸附在顶部',
-    backToTopTips1: '页面滚动到指定位置会在右下角出现返回顶部按钮',
-    backToTopTips2: '可自定义按钮的样式、show/hide、出现的高度、返回的位置 如需文字提示，可在外部使用Element的el-tooltip元素',
-    imageUploadTips: '由于我在使用时它只有vue@1版本，而且和mockjs不兼容，所以自己改造了一下，如果大家要使用的话，优先还是使用官方版本。'
+  role: '角色',
+  roleName: '角色名',
+  user: '用户',
+  userPage: {
+    validate: [
+      '必须以字母开头, 如a12345',
+      '不允许出现汉字或特殊字符, 如a+,sa、a张三',
+      '手机号格式不正确',
+      '用户名至少4个字符',
+      '用户名至多20个字符',
+      '初始密码至少6个字符',
+      '新密码至少6个字符'
+    ]
   },
-  table: {
-    dynamicTips1: '固定表头, 按照表头顺序排序',
-    dynamicTips2: '不固定表头, 按照点击顺序排序',
-    dragTips1: '默认顺序',
-    dragTips2: '拖拽后顺序',
-    title: '标题',
-    importance: '重要性',
-    type: '类型',
-    remark: '点评',
-    search: '搜索',
-    add: '添加',
-    export: '导出',
-    reviewer: '审核人',
-    id: '序号',
-    date: '时间',
-    author: '作者',
-    readings: '阅读数',
-    status: '状态',
-    actions: '操作',
-    edit: '编辑',
-    publish: '发布',
-    draft: '草稿',
-    delete: '删除',
-    cancel: '取 消',
-    confirm: '确 定'
+  api: '接口',
+  apiPage: {
+    path: '接口路径',
+    method: '请求方式',
+    showRoleTips: '可避免到角色管理中添加',
+    showRoleSelect: '访问授权',
+    get: '获取资源',
+    post: '创建资源',
+    put: '创建/更新资源',
+    patch: '创建/更新资源(区别于PUT, 增量更新)',
+    delete: '删除资源'
   },
-  example: {
-    warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
+  operationLog: '操作日志',
+  operationLogPage: {
+    apiDesc: '接口简介',
+    ipLocation: 'IP所在地',
+    latency: '请求耗时',
+    userAgent: '浏览器信息',
+    body: '请求体',
+    data: '响应数据',
+    showDetail: '查看详情'
   },
-  errorLog: {
-    tips: '请点击右上角bug小图标',
-    description: '现在的管理后台基本都是spa的形式了，它增强了用户体验，但同时也会增加页面出问题的可能性，可能一个小小的疏忽就导致整个页面的死锁。好在 Vue 官网提供了一个方法来捕获处理异常，你可以在其中进行错误处理或者异常上报。',
-    documentation: '文档介绍'
+  messagePushPage: {
+    sendNow: '立即发送',
+    sendMessage: '发送消息',
+    toUser: '接收人',
+    toRole: '接收角色',
+    one2one: '私信(一对一)',
+    one2more: '通知(一对多)',
+    one2all: '系统(一对全部)',
+    unRead: '未读',
+    read: '已读'
   },
-  excel: {
-    export: '导出',
-    selectedExport: '导出已选择项',
-    placeholder: '请输入文件名(默认excel-list)'
+  machine: '机器',
+  host: '主机',
+  terminal: '终端',
+  machinePage: {
+    cannotConnect: '无法连接',
+    version: '系统版本',
+    arch: '架构',
+    name: '机器名',
+    memory: '内存',
+    disk: '硬盘'
   },
-  zip: {
-    export: '导出',
-    placeholder: '请输入文件名(默认file)'
+  fsm: '状态机',
+  level: '层级',
+  fsmPage: {
+    submitterName: '提交人名称',
+    submitterEditFields: '提交人可编辑字段',
+    submitterConfirm: '提交人确认',
+    submitterConfirmEditFields: '提交人确认可编辑字段',
+    edit: '编辑权限',
+    editFields: '可编辑字段',
+    users: '可审批人',
+    roles: '可审批角色',
+    refuse: '拒绝权限',
+    validate: [
+      '分类必须为数字',
+      '用户或角色至少填一项'
+    ]
   },
-  pdf: {
-    tips: '这里使用 window.print() 来实现下载pdf的功能'
+  leave: '请假',
+  startTime: '开始时间',
+  endTime: '结束时间',
+  approveLogTrack: '审批轨迹',
+  leavePage: {
+    flowName: '请假流程',
+    submitted: '已提交',
+    approved: '已通过',
+    refusedNeedResubmit: '已拒绝, 需重新提交',
+    refusedNeedResubmitDesc: '请修改后重新提交~',
+    cancelled: '已手动取消',
+    approving: '审批中',
+    approvingDesc: '请耐心等待~',
+    approvedNeedConfirm: '已通过, 需确认',
+    approvedNeedConfirmDesc: '请点击确认~'
   },
-  theme: {
-    change: '换肤',
-    documentation: '换肤文档',
-    tips: 'Tips: 它区别于 navbar 上的 theme-pick, 是两种不同的换肤方法，各自有不同的应用场景，具体请参考文档。'
+  approvingPage: {
+    defaultOpinion: '通过',
+    opinion: '审批意见',
+    reason: '原因',
+    approve: '通过',
+    refuse: '拒绝',
+    confirm: '确认',
+    resubmit: '重新提交',
+    submitterUser: '提交人',
+    submitterRole: '提交人角色',
+    prevDetail: '状态',
+    logDetail: '提交明细',
+    viewLogDetail: '查看明细',
+    toApprove: '去审批',
+    toRefuse: '去拒绝'
   },
-  tagsView: {
-    refresh: '刷新',
-    close: '关闭',
-    closeOthers: '关闭其它',
-    closeAll: '关闭所有'
+  upload: '上传',
+  uploading: '上传中',
+  paused: '暂停中',
+  waiting: '等待中',
+  decompress: '解压',
+  merged: '合并',
+  uploaderPage: {
+    drag: '拖拽文件到此处或者手动上传',
+    file: '选择文件',
+    image: '选择图片',
+    folder: '选择目录',
+    zip: '上传ZIP',
+    startDecompress: '开始解压',
+    uploaded: '已上传',
+    decompressed: '已解压',
+    validate: [
+      '请至少上传完成一个文件再解压~'
+    ]
   },
-  settings: {
-    title: '系统布局配置',
-    theme: '主题色',
-    showTagsView: '显示 Tags-View',
-    showSidebarLogo: '显示侧边栏 Logo',
-    fixedHeader: '固定 Header',
-    sidebarTextTheme: '侧边栏文字主题色'
-  }
+  testCase: '测试用例'
 }
