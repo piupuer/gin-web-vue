@@ -133,7 +133,7 @@
               {{ $t('approvingPage.approve') }}
             </el-button>
             <el-button
-              v-if="scope.row.resubmit === 0 && scope.row.confirm === 0 && scope.row.refuse === 1"
+              v-if="scope.row.resubmit === 0 && scope.row.confirm === 0"
               type="danger"
               @click="handleApproval(scope.row, 1)"
             >
@@ -319,7 +319,6 @@ export default class extends Vue {
       submitterRole: {},
       resubmit: 0,
       confirm: 0,
-      refuse: 0,
       logDetail: []
     }
   }
@@ -526,7 +525,7 @@ export default class extends Vue {
         this.getData()
         this.$notify({
           title: this.$t('congratulations').toString(),
-          message: this.$t('doApproval').toString(),
+          message: this.$t('approvingPage.doApproval').toString(),
           type: 'success',
           duration: 2000
         })

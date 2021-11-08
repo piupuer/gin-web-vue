@@ -249,6 +249,7 @@ export default {
     prevDetail: '状态',
     logDetail: '提交明细',
     viewLogDetail: '查看明细',
+    doApproval: '审批',
     toApprove: '去审批',
     toRefuse: '去拒绝'
   },

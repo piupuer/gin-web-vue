@@ -441,18 +441,6 @@
               +
             </el-button>
           </el-form-item>
-          <el-form-item
-            :label="$t('fsmPage.refuse')"
-            prop="refuse"
-          >
-            <el-switch
-              v-model.trim="level.refuse"
-              :active-value="1"
-              :inactive-value="0"
-              :active-text="$t('available')"
-              :inactive-text="$t('disabled')"
-            />
-          </el-form-item>
         </el-form>
         <div
           class="level-form-plus-box"
@@ -509,7 +497,6 @@ export default class extends Vue {
       editFieldsVisible: false,
       editFieldsInput: '',
       editFieldsRef: 'editFieldsRef',
-      refuse: 1,
       roles: [],
       rolesVisible: false,
       rolesInput: '',
@@ -710,7 +697,6 @@ export default class extends Vue {
         name: row.levels[i].name,
         edit: row.levels[i].edit,
         editFields: '',
-        refuse: row.levels[i].refuse,
         roles: '',
         users: ''
       }

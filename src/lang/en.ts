@@ -249,6 +249,7 @@ export default {
     prevDetail: 'Status',
     logDetail: 'Submitter detail',
     viewLogDetail: 'view',
+    doApproval: 'Approval',
     toApprove: 'Go to approve',
     toRefuse: 'Go to refuse'
   },
