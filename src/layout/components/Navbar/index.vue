@@ -79,6 +79,12 @@
           >
             <el-dropdown-item>{{ $t('navbarBtn.docs') }}</el-dropdown-item>
           </a>
+          <a
+            target="_blank"
+            href="/swagger/index.html"
+          >
+            <el-dropdown-item>{{ $t('navbarBtn.swagger') }}</el-dropdown-item>
+          </a>
           <router-link to="/profile/">
             <el-dropdown-item>
               {{ $t('navbarBtn.profile') }}

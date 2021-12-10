@@ -84,6 +84,7 @@ export default {
   navbarBtn: {
     github: '项目地址',
     docs: '文档',
+    swagger: 'Api文档',
     theme: '换肤',
     size: '布局大小',
     profile: '个人中心',

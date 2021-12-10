@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export const findMessage = (params: any) =>
   request({
-    url: '/message/all',
+    url: '/message/list',
     method: 'get',
     params
   })

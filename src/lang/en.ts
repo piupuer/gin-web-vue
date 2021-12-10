@@ -84,6 +84,7 @@ export default {
   navbarBtn: {
     github: 'Github',
     docs: 'Docs',
+    swagger: 'Swagger',
     theme: 'Theme',
     size: 'Size',
     profile: 'Profile',
