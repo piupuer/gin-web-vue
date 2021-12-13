@@ -65,14 +65,14 @@
       </el-tooltip>
       <el-form-item
         v-if="loginForm.captchaId !== ''"
-        prop="captcha"
+        prop="captchaAnswer"
         class="captcha"
       >
         <span class="svg-container">
           <i class="el-icon-umbrella" />
         </span>
         <el-input
-          ref="captcha"
+          ref="captchaAnswer"
           v-model="loginForm.captchaAnswer"
           class="captcha-input"
           type="text"
@@ -150,7 +150,7 @@ export default class extends Vue {
     password: [
       { required: true, message: this.$t('password').toString() + this.$t('required').toString(), trigger: 'blur' }
     ],
-    captcha: [
+    captchaAnswer: [
       { required: true, message: this.$t('loginPage.captcha').toString() + this.$t('required').toString(), trigger: 'blur' }
     ]
   }
@@ -237,6 +237,9 @@ export default class extends Vue {
   }
 
   private async handleLogin() {
+    if (this.loginForm.captchaId !== '' && this.loginForm.captchaAnswer === '') {
+      return
+    }
     (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
       if (valid) {
         this.loading = true
@@ -247,6 +250,9 @@ export default class extends Vue {
             query: this.otherQuery
           })
         } catch (e) {
+          if (e.message.indexOf('the verification code is invalid or expired') > 0) {
+            this.oldUsername = ''
+          }
           await this.getUserStatus()
         } finally {
           // 不管是否异常自动停止loading
