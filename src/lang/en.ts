@@ -65,6 +65,7 @@ export default {
   connect: 'Connect',
   loginPage: {
     title: 'Log In',
+    captcha: 'Captcha',
     users: ['Super Admin', 'Guest', 'Leave Tester']
   },
   tagsBtn: {

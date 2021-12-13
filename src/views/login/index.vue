@@ -27,6 +27,8 @@
           type="text"
           tabindex="1"
           autocomplete="on"
+          @focus="saveOldUsername"
+          @blur="getUserStatus"
         />
       </el-form-item>
 
@@ -61,7 +63,41 @@
           </span>
         </el-form-item>
       </el-tooltip>
-
+      <el-form-item
+        v-if="loginForm.captchaId !== ''"
+        prop="captcha"
+        class="captcha"
+      >
+        <span class="svg-container">
+          <i class="el-icon-umbrella" />
+        </span>
+        <el-input
+          ref="captcha"
+          v-model="loginForm.captchaAnswer"
+          class="captcha-input"
+          type="text"
+          :placeholder="$t('pleaseEnter') + $t('loginPage.captcha')"
+          name="text"
+          tabindex="3"
+          @keyup.enter.native="handleLogin"
+        />
+        <span
+          v-if="loginForm.captchaImg!==''"
+          class="captcha-image"
+        >
+          <el-image
+            :src="loginForm.captchaImg"
+            @click.prevent="refreshCaptcha"
+          >
+            <div
+              slot="error"
+              class="image-slot"
+            >
+              <i class="el-icon-picture-outline" />
+            </div>
+          </el-image>
+        </span>
+      </el-form-item>
       <el-button
         :loading="loading"
         type="primary"
@@ -95,9 +131,9 @@ import { Route } from 'vue-router'
 import { Dictionary } from 'vue-router/types/router'
 import { Form as ElForm, Input } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
-import { isValidUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect/index.vue'
 import SocialSign from './components/SocialSignin.vue'
+import { captcha, userStatus } from '@/api/system/bases'
 
 @Component({
   name: 'Login',
@@ -107,35 +143,29 @@ import SocialSign from './components/SocialSignin.vue'
   }
 })
 export default class extends Vue {
-  private validateUsername = (rule: any, value: string, callback: Function) => {
-    if (!isValidUsername(value)) {
-      callback(new Error('Please enter the correct user name'))
-    } else {
-      callback()
-    }
-  }
-
-  private validatePassword = (rule: any, value: string, callback: Function) => {
-    if (value.length < 6) {
-      callback(new Error('The password can not be less than 6 digits'))
-    } else {
-      callback()
-    }
+  private loginRules = {
+    username: [
+      { required: true, message: this.$t('username').toString() + this.$t('required').toString(), trigger: 'blur' }
+    ],
+    password: [
+      { required: true, message: this.$t('password').toString() + this.$t('required').toString(), trigger: 'blur' }
+    ],
+    captcha: [
+      { required: true, message: this.$t('loginPage.captcha').toString() + this.$t('required').toString(), trigger: 'blur' }
+    ]
   }
 
   private loginForm = {
     username: 'super',
-    password: '123456'
-  }
-
-  private loginRules = {
-    username: [{ validator: this.validateUsername, trigger: 'blur' }],
-    password: [{ validator: this.validatePassword, trigger: 'blur' }]
+    password: '123456',
+    captchaId: '',
+    captchaImg: '',
+    captchaAnswer: ''
   }
 
   private passwordType = 'password'
   private loading = false
-  private showDialog = false
+  private oldUsername = ''
   private capsTooltip = false
   private redirect?: string
   private otherQuery: Dictionary<string> = {}
@@ -175,7 +205,38 @@ export default class extends Vue {
     })
   }
 
-  private handleLogin() {
+  private async saveOldUsername() {
+    this.oldUsername = this.loginForm.username
+  }
+
+  private async getUserStatus() {
+    if (this.oldUsername === this.loginForm.username) {
+      return
+    }
+    try {
+      const { data } = await userStatus({
+        username: this.loginForm.username
+      })
+      if (data.captcha) {
+        this.loginForm.captchaId = data.captcha.id
+        this.loginForm.captchaImg = data.captcha.img
+      }
+    } finally {
+    }
+  }
+
+  private async refreshCaptcha() {
+    try {
+      const { data } = await captcha()
+      if (data) {
+        this.loginForm.captchaId = data.id
+        this.loginForm.captchaImg = data.img
+      }
+    } finally {
+    }
+  }
+
+  private async handleLogin() {
     (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
       if (valid) {
         this.loading = true
@@ -185,6 +246,8 @@ export default class extends Vue {
             path: this.redirect || '/',
             query: this.otherQuery
           })
+        } catch (e) {
+          await this.getUserStatus()
         } finally {
           // 不管是否异常自动停止loading
           this.loading = false
@@ -261,6 +324,22 @@ export default class extends Vue {
     padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
+    .captcha {
+      .captcha-input, .captcha-image, .el-image {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .captcha-input {
+        width: 60%;
+      }
+      .captcha-image {
+        width: 30%;
+        background-color: #dddddd;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
   }
 
   .tips {

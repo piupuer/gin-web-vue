@@ -65,6 +65,7 @@ export default {
   connect: '连接',
   loginPage: {
     title: '系统登录',
+    captcha: '验证码',
     users: ['超级管理员', '访客', '请假人']
   },
   tagsBtn: {

@@ -99,8 +99,8 @@ class User extends VuexModule implements IUserState {
   }
 
   @Action
-  public async Login(userInfo: { username: string, password: string }) {
-    let { username, password } = userInfo
+  public async Login(userInfo: { username: string, password: string, captchaId: string, captchaAnswer: string }) {
+    let { username, password, captchaId, captchaAnswer } = userInfo
     username = username.trim()
     // 密码RSA加密处理
     const encryptor = new JSEncrypt({})
@@ -111,7 +111,12 @@ class User extends VuexModule implements IUserState {
     if (typeof res === 'string') {
       password = res
     }
-    const { data } = await login({ username, password })
+    const { data } = await login({
+      username,
+      password,
+      captchaId,
+      captchaAnswer
+    })
     setToken(data.token)
     this.SET_TOKEN(data.token)
   }

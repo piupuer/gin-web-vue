@@ -1,5 +1,18 @@
 import request from '@/utils/request'
 
+export const userStatus = (params: any) =>
+  request({
+    url: '/base/user/status',
+    method: 'get',
+    params
+  })
+
+export const captcha = () =>
+  request({
+    url: '/base/captcha',
+    method: 'get'
+  })
+
 export const login = (data: any) =>
   request({
     url: '/base/login',
