@@ -75,7 +75,7 @@
           </router-link>
           <a
             target="_blank"
-            href="https://github.com/piupuer/gin-web/blob/master/README.md"
+            href="https://piupuer.github.io/gin-web-slate"
           >
             <el-dropdown-item>{{ $t('navbarBtn.docs') }}</el-dropdown-item>
           </a>
