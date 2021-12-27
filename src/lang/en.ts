@@ -48,6 +48,8 @@ export default {
   title: 'Title',
   content: 'Content',
   status: 'Status',
+  locked: 'Locked',
+  unlock: 'Unlock',
   sort: 'Sort',
   keyword: 'Keyword',
   desc: 'Desc',

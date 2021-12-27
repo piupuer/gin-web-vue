@@ -64,6 +64,27 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item
+        :label="$t('locked')"
+        prop="status"
+      >
+        <el-select
+          v-model.trim="table.form.locked"
+          clearable
+          :placeholder="$t('pleaseEnter') + $t('locked')"
+        >
+          <el-option
+            key="1"
+            :label="$t('locked')"
+            :value="1"
+          />
+          <el-option
+            key="0"
+            :label="$t('unlock')"
+            :value="0"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button
           type="primary"
@@ -133,6 +154,19 @@
               :active-value="1"
               :inactive-value="0"
               @change="handleStatusChange(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="locked"
+          :label="$t('locked')"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model.trim="scope.row.locked"
+              :active-value="1"
+              :inactive-value="0"
+              @change="handleLockedChange(scope.row)"
             />
           </template>
         </el-table-column>
@@ -260,6 +294,18 @@
             :inactive-text="$t('disabled')"
           />
         </el-form-item>
+        <el-form-item
+          :label="$t('locked')"
+          prop="status"
+        >
+          <el-switch
+            v-model.trim="updateDialog.form.locked"
+            :active-value="1"
+            :inactive-value="0"
+            :active-text="$t('locked')"
+            :inactive-text="$t('unlock')"
+          />
+        </el-form-item>
       </el-form>
       <div
         slot="footer"
@@ -338,6 +384,7 @@ export default class extends Vue {
       mobile: '',
       nickname: '',
       status: 1,
+      locked: 0,
       creator: '',
       roleId: ''
     },
@@ -382,6 +429,7 @@ export default class extends Vue {
       mobile: '',
       nickname: '',
       status: '',
+      locked: '',
       creator: ''
     }
   }
@@ -522,6 +570,7 @@ export default class extends Vue {
     this.updateDialog.form.mobile = row.mobile
     this.updateDialog.form.nickname = row.nickname
     this.updateDialog.form.status = row.status
+    this.updateDialog.form.locked = row.locked
     this.updateDialog.form.roleId = row.roleId
     // 记录旧数据
     this.updateDialog.oldData = JSON.parse(JSON.stringify(this.updateDialog.form))
@@ -582,6 +631,27 @@ export default class extends Vue {
       })
       .catch(() => {
         row.status = row.status === 0 ? 1 : 0
+      })
+  }
+
+  private async handleLockedChange(row: any) {
+    let msg = `${this.$t('sureToDo').toString()}${this.$t('locked').toString()}[${row.username}]?`
+    if (row.locked === 0) {
+      msg = `${this.$t('sureToDo').toString()}${this.$t('unlock').toString()}[${row.username}]?`
+    }
+    this.$confirm(msg, this.$t('caution').toString(), {
+      confirmButtonText: this.$t('confirm').toString(),
+      cancelButtonText: this.$t('cancel').toString(),
+      type: 'warning'
+    })
+      .then(async() => {
+        await updateUser(row.id, {
+          locked: row.locked
+        })
+        this.getData()
+      })
+      .catch(() => {
+        row.locked = row.locked === 0 ? 1 : 0
       })
   }
 

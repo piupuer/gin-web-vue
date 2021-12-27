@@ -48,6 +48,8 @@ export default {
   title: '标题',
   content: '内容',
   status: '状态',
+  locked: '锁定',
+  unlock: '解锁',
   sort: '排序',
   keyword: '关键字',
   desc: '说明',
