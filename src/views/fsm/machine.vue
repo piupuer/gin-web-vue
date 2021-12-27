@@ -444,7 +444,7 @@
         </el-form>
         <div
           class="level-form-plus-box"
-          :title="$t('create')"
+          :title="$t('create') + ' ' + $t('level')"
         >
           <i
             class="el-icon-circle-plus-outline level-form-plus"
@@ -622,6 +622,13 @@ export default class extends Vue {
 
   private async doUpdate() {
     (this.$refs.updateForm as Form).validate(async(valid) => {
+      if (this.updateDialog.form.levels.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: this.$t('level').toString() + this.$t('required').toString()
+        })
+        return
+      }
       // validate all levelForm
       const forms = this.$refs.levelForm as Form[]
       // roles/users单独校验
@@ -679,6 +686,7 @@ export default class extends Vue {
   private encodeData(row: any) {
     const data: any = {
       id: row.id,
+      category: row.category,
       name: row.name,
       submitterName: row.submitterName,
       submitterEditFields: '',

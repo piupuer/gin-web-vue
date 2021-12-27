@@ -206,7 +206,7 @@ export default {
     disk: 'Disk'
   },
   fsm: 'Fsm',
-  level: 'Leave',
+  level: 'Level',
   fsmPage: {
     submitterName: 'Submitter Name',
     submitterEditFields: 'Submitter edit fields',
