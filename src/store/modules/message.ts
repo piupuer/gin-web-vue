@@ -4,6 +4,7 @@ import { Notification } from 'element-ui'
 import { voice } from '@/utils/voice'
 import { getWsPrefix } from '@/utils/url'
 import { UserModule } from '@/store/modules/user'
+import i18n from '@/lang'
 
 export interface IMessageState {
   unReadCount: number
@@ -12,7 +13,7 @@ export interface IMessageState {
 
 // 心跳间隔
 const heartBeatPeriod = 3
-// 短线重连间隔
+// 断线重连间隔
 const reConnectPeriod = 15
 // 主动发数据重连间隔
 const sendConnectPeriod = 3
@@ -23,31 +24,16 @@ let heartBeatInterval: any = null
 
 @Module({ dynamic: true, store, name: 'message' })
 class Message extends VuexModule implements IMessageState {
-  public unReadCount = 0
   public ws: any = null
   public active = false
   public lastActive = 0
+  public shutdown = false
+  public unReadCount = 0
   public retryCount = 0
 
   @Mutation
   private SET_WS(ws: any) {
     this.ws = ws
-    this.active = true
-  }
-
-  @Action
-  public Start(ws: any) {
-    this.SET_WS(ws)
-  }
-
-  @Mutation
-  private SET_UN_READ_COUNT(unReadCount: number) {
-    this.unReadCount = unReadCount
-  }
-
-  @Action
-  public SetUnReadCount(unReadCount: number) {
-    this.SET_UN_READ_COUNT(unReadCount)
   }
 
   @Mutation
@@ -55,19 +41,19 @@ class Message extends VuexModule implements IMessageState {
     this.active = active
   }
 
-  @Action
-  public SetActive(active: boolean) {
-    this.SET_ACTIVE(active)
-  }
-
   @Mutation
   private SET_LAST_ACTIVE(lastActive: number) {
     this.lastActive = lastActive
   }
 
-  @Action
-  public SetLastActive(lastActive: number) {
-    this.SET_LAST_ACTIVE(lastActive)
+  @Mutation
+  private SET_SHUTDOWN(shutdown: boolean) {
+    this.shutdown = shutdown
+  }
+
+  @Mutation
+  private SET_UN_READ_COUNT(unReadCount: number) {
+    this.unReadCount = unReadCount
   }
 
   @Mutation
@@ -76,39 +62,30 @@ class Message extends VuexModule implements IMessageState {
   }
 
   @Action
-  private SetRetryCount(retryCount: number) {
-    this.SET_RETRY_COUNT(retryCount)
-  }
-
-  @Action
-  public Close() {
-    if (heartBeatInterval) {
-      clearInterval(heartBeatInterval)
-    }
-    if (this.ws) {
-      this.ws.close()
-      this.SetActive(false)
-    }
-    this.SET_WS(null)
-  }
-
-  @Action
   public ReConnect(period: number) {
-    this.Close()
-    if (reConnectTimeout) {
-      clearTimeout(reConnectTimeout)
+    let message = i18n.t('messagePushPage.lost').toString()
+    if (!this.shutdown) {
+      this.close()
+      reConnectTimeout = setTimeout(() => {
+        this.connect()
+        this.SET_RETRY_COUNT(this.retryCount + 1)
+      }, (this.retryCount + 1) * period * 1000)
+      message = i18n.t('messagePushPage.lostReconnect').toString().replace('%s', ((this.retryCount + 1) * period).toString())
     }
-    reConnectTimeout = setTimeout(() => {
-      start()
-    }, period * 1000)
+    Notification({
+      title: i18n.t('sorry').toString(),
+      message,
+      type: 'warning',
+      duration: 2000
+    })
   }
 
   // 数据接收
   @Action
   public Receive(e: any) {
-    this.SetActive(true)
-    this.SetLastActive(new Date().getTime())
-    this.SetRetryCount(0)
+    this.SET_ACTIVE(true)
+    this.SET_LAST_ACTIVE(new Date().getTime())
+    this.SET_RETRY_COUNT(0)
     let data = e.data
     try {
       data = JSON.parse(data)
@@ -126,14 +103,14 @@ class Message extends VuexModule implements IMessageState {
           if (data.detail) {
             if (data.detail.code === 201) {
               Notification({
-                title: '提醒',
+                title: i18n.t('congratulations').toString(),
                 message: data.detail.msg,
                 type: 'success',
                 duration: 2000
               })
             } else {
               Notification({
-                title: '抱歉',
+                title: i18n.t('sorry').toString(),
                 message: data.detail.msg,
                 type: 'error',
                 duration: 2000
@@ -146,15 +123,15 @@ class Message extends VuexModule implements IMessageState {
           if (data.detail && data.detail.code === 201 && data.detail.data) {
             if (this.unReadCount < data.detail.data.unReadCount) {
               Notification({
-                title: '新消息提醒',
-                message: '有人给你发了新的消息',
+                title: i18n.t('messagePushPage.newMessage').toString(),
+                message: i18n.t('messagePushPage.newMessageDetail').toString(),
                 type: 'success',
                 duration: 5000
               })
               // 声音提醒
               voice.playUrl('/media/message.mp3', {}, {})
             }
-            this.SetUnReadCount(data.detail.data.unReadCount)
+            this.SET_UN_READ_COUNT(data.detail.data.unReadCount)
           }
           break
         // 新用户上线
@@ -163,8 +140,8 @@ class Message extends VuexModule implements IMessageState {
             if (data.detail.data.user) {
               const user = data.detail.data.user
               Notification({
-                title: '上线提醒',
-                message: `用户${user.nickname}(${user.username})刚刚上线啦`,
+                title: i18n.t('messagePushPage.online').toString(),
+                message: i18n.t('messagePushPage.onlineDetail').toString().replace('%s', user.nickname + `(${user.username})`),
                 type: 'success',
                 duration: 2000
               })
@@ -185,16 +162,11 @@ class Message extends VuexModule implements IMessageState {
   @Action
   public Heart() {
     const last = (new Date().getTime() - this.lastActive) / 1000
-    if (this.retryCount > heartBeatMaxRetryCount) {
-      this.ReConnect(reConnectPeriod)
-      return
-    }
     if (last > heartBeatPeriod) {
       this.Send({
         type: '1-1-1',
         data: this.retryCount
       })
-      this.SetRetryCount(this.retryCount + 1)
     }
   }
 
@@ -202,12 +174,11 @@ class Message extends VuexModule implements IMessageState {
   @Action
   public Send(data: any) {
     if (!this.active || !this.ws) {
-      if (data.type === '1-1-1') {
-        console.log(new Date().getTime(), '连接消息中心失败')
-      } else {
+      // 心跳数据不提示弹窗
+      if (data.type !== '1-1-1') {
         Notification({
-          title: '抱歉',
-          message: '连接消息中心失败, ' + sendConnectPeriod + '秒后主动重连',
+          title: i18n.t('sorry').toString(),
+          message: i18n.t('messagePushPage.lostRetry').toString().replace('%s', sendConnectPeriod.toString()),
           type: 'warning',
           duration: 2000
         })
@@ -217,47 +188,75 @@ class Message extends VuexModule implements IMessageState {
     }
     this.ws.send(JSON.stringify(data))
   }
+
+  @Action
+  public connect() {
+    this.close()
+    const websocket = new WebSocket(getWsPrefix() + '/message/ws?token=' + UserModule.token)
+    // 连接建立之后执行send方法发送数据
+    websocket.onopen = (e: any) => {
+      Notification({
+        title: i18n.t('congratulations').toString(),
+        message: i18n.t('messagePushPage.connected').toString(),
+        type: 'success',
+        duration: 2000
+      })
+    }
+
+    // 连接关闭后执行
+    websocket.onclose = (e: any) => {
+      this.ReConnect(reConnectPeriod)
+    }
+
+    // 连接错误
+    websocket.onerror = (e: any) => {
+      Notification({
+        title: i18n.t('sorry').toString(),
+        message: i18n.t('messagePushPage.cannotConnect').toString(),
+        type: 'warning',
+        duration: 2000
+      })
+    }
+
+    // 监听消息接收
+    websocket.onmessage = (e: any) => {
+      this.Receive(e)
+    }
+
+    // 心跳检测
+    heartBeatInterval = setInterval(this.Heart, heartBeatPeriod * 1000)
+    this.SET_WS(websocket)
+    this.SET_ACTIVE(true)
+  }
+
+  @Action
+  public close() {
+    if (reConnectTimeout) {
+      clearTimeout(reConnectTimeout)
+    }
+    if (heartBeatInterval) {
+      clearInterval(heartBeatInterval)
+    }
+    if (this.ws) {
+      this.ws.close()
+    }
+    this.SET_ACTIVE(false)
+    this.SET_WS(null)
+  }
+
+  @Action
+  public Start() {
+    this.SET_SHUTDOWN(false)
+    if (!this.active) {
+      this.connect()
+    }
+  }
+
+  @Action
+  public Stop() {
+    this.SET_SHUTDOWN(true)
+    this.close()
+  }
 }
 
 export const MessageModule = getModule(Message)
-
-function start() {
-  if (reConnectTimeout) {
-    clearTimeout(reConnectTimeout)
-  }
-  const websocket = new WebSocket(getWsPrefix() + '/message/ws?token=' + UserModule.token)
-
-  // 连接建立之后执行send方法发送数据
-  websocket.onopen = (e: any) => {
-    console.log('已建立连接: ' + e.currentTarget.url)
-    MessageModule.Start(websocket)
-  }
-
-  // 连接关闭后执行
-  websocket.onclose = (e: any) => {
-    console.error('连接已断开: ' + e.currentTarget.url)
-    MessageModule.ReConnect(reConnectPeriod)
-  }
-
-  // 连接错误
-  websocket.onerror = (e: any) => {
-    console.error('连接错误: ' + e.currentTarget.url)
-    Notification({
-      title: '抱歉',
-      message: '连接消息中心失败',
-      type: 'warning',
-      duration: 2000
-    })
-  }
-
-  // 监听消息接收
-  websocket.onmessage = (e: any) => {
-    MessageModule.Receive(e)
-  }
-
-  // 心跳检测
-  heartBeatInterval = setInterval(MessageModule.Heart, heartBeatPeriod * 1000)
-}
-
-// 开启websocket
-start()

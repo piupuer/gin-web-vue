@@ -6,6 +6,7 @@ import { UserModule } from '@/store/modules/user'
 import { PermissionModule } from '@/store/modules/permission'
 import i18n from '@/lang' // Internationalization
 import settings from './settings'
+import { MessageModule } from '@/store/modules/message'
 
 NProgress.configure({ showSpinner: false })
 
@@ -29,6 +30,7 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
 
   // Determine whether the user has logged in
   if (UserModule.token) {
+    MessageModule.Start()
     if (to.path === '/login') {
       // If is logged in, redirect to the home page
       next({ path: '/' })
@@ -61,6 +63,7 @@ router.beforeEach(async(to: Route, _: Route, next: any) => {
       }
     }
   } else {
+    MessageModule.Stop()
     // Has no token
     if (whiteList.indexOf(to.path) !== -1) {
       // In the free login whitelist, go directly
