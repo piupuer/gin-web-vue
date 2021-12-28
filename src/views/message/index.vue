@@ -13,7 +13,7 @@
       >
         <el-input
           v-model.trim="table.form.title"
-          :placeholder="$t('titlePlaceholder')"
+          :placeholder="$t('pleaseEnter') + $t('title')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
@@ -25,7 +25,7 @@
       >
         <el-input
           v-model.trim="table.form.content"
-          :placeholder="$t('contentPlaceholder')"
+          :placeholder="$t('pleaseEnter') + $t('content')"
           clearable
           @clear="doSearch"
           @keyup.enter.native="doSearch"
@@ -37,7 +37,7 @@
       >
         <el-select
           v-model.trim="table.form.type"
-          :placeholder="$t('typePlaceholder')"
+          :placeholder="$t('pleaseEnter') + $t('type')"
           clearable
           @clear="doSearch"
           @change="doSearch"
@@ -56,7 +56,7 @@
       >
         <el-select
           v-model.trim="table.form.status"
-          :placeholder="$t('statusPlaceholder')"
+          :placeholder="$t('pleaseEnter') + $t('status')"
           clearable
           @clear="doSearch"
           @change="doSearch"
@@ -115,7 +115,7 @@
             type="danger"
             @click="handleAllDelete"
           >
-            {{ $t('allDelete') }}
+            {{ $t('allDel') }}
           </el-button>
         </el-col>
       </el-row>
@@ -153,7 +153,7 @@
         </el-table-column>
         <el-table-column
           prop="fromUsername"
-          :label="$t('fromUsername')"
+          :label="$t('messagePushPage.fromUsername')"
         />
         <el-table-column
           prop="createdAt"
@@ -228,21 +228,21 @@ export default class extends Vue {
     pageSize: 5,
     types: [{
       name: 0,
-      label: this.$t('one2one').toString()
+      label: this.$t('messagePushPage.one2one').toString()
     }, {
       name: 1,
-      label: this.$t('one2more').toString()
+      label: this.$t('messagePushPage.one2more').toString()
     }, {
       name: 2,
-      label: this.$t('one2all').toString()
+      label: this.$t('messagePushPage.one2all').toString()
     }],
     status: [{
       name: 0,
-      label: this.$t('unRead').toString(),
+      label: this.$t('messagePushPage.unRead').toString(),
       type: 'danger'
     }, {
       name: 1,
-      label: this.$t('read').toString(),
+      label: this.$t('messagePushPage.read').toString(),
       type: 'success'
     }]
   }

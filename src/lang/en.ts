@@ -27,8 +27,12 @@ export default {
   available: 'Available',
   disabled: 'Disabled',
   edit: 'Edit',
+  read: 'Read',
   del: 'Delete',
+  batchRead: 'Batch read',
   batchDel: 'Batch delete',
+  allRead: 'All read',
+  allDel: 'All delete',
   permission: 'Permission',
   sureToDo: 'Are you sure you want to ',
   caution: 'Caution',
@@ -194,7 +198,8 @@ export default {
     one2more: 'one to more',
     one2all: 'one to all',
     unRead: 'un read',
-    read: 'read'
+    read: 'read',
+    fromUsername: 'Sender'
   },
   machine: 'Machine',
   host: 'Host',

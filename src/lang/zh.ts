@@ -27,8 +27,12 @@ export default {
   available: '可用',
   disabled: '禁用',
   edit: '编辑',
+  read: '已读',
   del: '删除',
+  batchRead: '批量已读',
   batchDel: '批量删除',
+  allRead: '全部已读',
+  allDel: '全部删除',
   permission: '权限',
   sureToDo: '确定要',
   caution: '请谨慎操作',
@@ -194,7 +198,8 @@ export default {
     one2more: '通知(一对多)',
     one2all: '系统(一对全部)',
     unRead: '未读',
-    read: '已读'
+    read: '已读',
+    fromUsername: '发送人'
   },
   machine: '机器',
   host: '主机',
