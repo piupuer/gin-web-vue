@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
 import { IdempotenceModule } from '@/store/modules/idempotence'
+import i18n from '@/lang'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -38,13 +39,13 @@ service.interceptors.response.use(
     // code == 401: 登录失效
     const res = response.data
     if (res.code !== 201) {
-      let msg = '网络异常, 请稍后再试'
+      let msg = i18n.t('requestPage.networkError').toString()
       if (res.code === 401) {
         const config = response.config
         // 记录本次请求内容
         if (refreshing) {
-          if (config.url == '/base/refreshToken') {
-            msg = '登录超时'
+          if (config.url === '/base/refreshToken') {
+            msg = i18n.t('requestPage.loginExpired').toString()
             return Promise.reject(new Error(msg))
           }
           // 将当前请求记录到队列
@@ -65,11 +66,11 @@ service.interceptors.response.use(
           }).catch(() => {
             // 刷新token失败, 必须重新登录
             MessageBox.confirm(
-              '登录超时, 重新登录或继续停留在当前页？',
-              '登录状态已失效',
+              i18n.t('requestPage.loginAgainOrStayHere').toString(),
+              i18n.t('requestPage.loginStatusExpired').toString(),
               {
-                confirmButtonText: '重新登录',
-                cancelButtonText: '继续停留',
+                confirmButtonText: i18n.t('requestPage.loginAgain').toString(),
+                cancelButtonText: i18n.t('requestPage.stayHere').toString(),
                 type: 'warning'
               }
             ).then(() => {

@@ -70,6 +70,14 @@ export default {
   remark: 'Remark',
   refresh: 'Refresh',
   connect: 'Connect',
+  requestPage: {
+    networkError: 'Network error, please try again later',
+    loginExpired: 'Login expired, please login again',
+    loginStatusExpired: 'Login status has expired',
+    loginAgainOrStayHere: 'Login expired, Login again or stay on the current page?',
+    loginAgain: 'Login again',
+    stayHere: 'Stay here'
+  },
   loginPage: {
     title: 'Log In',
     captcha: 'Captcha',

@@ -70,6 +70,14 @@ export default {
   remark: '备注',
   refresh: '刷新',
   connect: '连接',
+  requestPage: {
+    networkError: '网络异常, 请稍后再试',
+    loginExpired: '登录超时, 请稍后再试',
+    loginStatusExpired: '登录状态已失效',
+    loginAgainOrStayHere: '登录超时, 重新登录或继续停留在当前页?',
+    loginAgain: '重新登录',
+    stayHere: '继续停留'
+  },
   loginPage: {
     title: '系统登录',
     captcha: '验证码',
