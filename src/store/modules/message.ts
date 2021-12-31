@@ -2,7 +2,7 @@ import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-dec
 import store from '@/store'
 import { Notification } from 'element-ui'
 import { voice } from '@/utils/voice'
-import { getWsPrefix } from '@/utils/url'
+import { getOssPrefix, getWsPrefix } from '@/utils/url'
 import { UserModule } from '@/store/modules/user'
 import i18n from '@/lang'
 
@@ -17,8 +17,6 @@ const heartBeatPeriod = 3
 const reConnectPeriod = 15
 // 主动发数据重连间隔
 const sendConnectPeriod = 3
-// 心跳最大重试次数
-const heartBeatMaxRetryCount = 5
 let reConnectTimeout: any = null
 let heartBeatInterval: any = null
 
@@ -129,7 +127,7 @@ class Message extends VuexModule implements IMessageState {
                 duration: 5000
               })
               // 声音提醒
-              voice.playUrl('/media/message.mp3', {}, {})
+              voice.playUrl(getOssPrefix() + '/media/message.mp3', {}, {})
             }
             this.SET_UN_READ_COUNT(data.detail.data.unReadCount)
           }

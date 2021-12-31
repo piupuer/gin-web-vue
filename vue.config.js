@@ -17,11 +17,13 @@ const name = 'Gin Web Vue' // TODO: get this variable from setting.ts
 //   export WEBPACK_ALIOSS_PLUGIN_REGION='' && \
 //   export WEBPACK_ALIOSS_PLUGIN_OSS_BASE_DIR=go
 let publicPath = './'
+let ossUri = ''
 let plugins = []
 
 if (process.env.NODE_ENV === 'production' && process.env.WEBPACK_ALIOSS_OPEN === 'true') {
-  publicPath = '//piupuer.oss-cn-shenzhen.aliyuncs.com/go/gin-web-vue/'
+  publicPath = `//${process.env.WEBPACK_ALIOSS_PLUGIN_BUCKET}.${process.env.WEBPACK_ALIOSS_PLUGIN_REGION}.aliyuncs.com/go/gin-web-vue/`
   plugins = [new WebpackAliossPlugin()]
+  ossUri = publicPath
 }
 
 module.exports = {
@@ -82,6 +84,13 @@ module.exports = {
       .use(require.resolve('simple-progress-webpack-plugin'), [{
         format: 'compact'
       }])
+
+    config.plugin('define').tap(args => {
+      Object.assign(args[0]['process.env'], {
+        OSS_URI: JSON.stringify(ossUri)
+      })
+      return args
+    })
 
     config
       .when(process.env.NODE_ENV !== 'development',
