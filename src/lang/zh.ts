@@ -70,6 +70,9 @@ export default {
   remark: '备注',
   refresh: '刷新',
   connect: '连接',
+  key: '键',
+  val: '值',
+  addition: '附加参数',
   requestPage: {
     networkError: '网络异常, 请稍后再试',
     loginExpired: '登录超时, 请稍后再试',
@@ -123,6 +126,7 @@ export default {
     role: '角色管理',
     user: '用户管理',
     api: '接口管理',
+    dict: '数据字典',
     operationLog: '操作日志',
     messagePush: '消息推送',
     machine: '机器管理',
@@ -163,6 +167,9 @@ export default {
   },
   role: '角色',
   roleName: '角色名',
+  rolePage: {
+    permissionDialogTitle: '更新权限'
+  },
   user: '用户',
   userPage: {
     validate: [
@@ -186,6 +193,11 @@ export default {
     put: '创建/更新资源',
     patch: '创建/更新资源(区别于PUT, 增量更新)',
     delete: '删除资源'
+  },
+  dictPage: {
+    dict: '字典',
+    dictData: '字典数据',
+    dictDialogTitle: '字典数据'
   },
   operationLog: '操作日志',
   operationLogPage: {

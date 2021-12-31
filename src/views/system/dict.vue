@@ -20,18 +20,6 @@
         />
       </el-form-item>
       <el-form-item
-        :label="$t('keyword')"
-        prop="keyword"
-      >
-        <el-input
-          v-model.trim="table.form.keyword"
-          :placeholder="$t('pleaseEnter') + $t('keyword')"
-          clearable
-          @clear="doSearch"
-          @keyup.enter.native="doSearch"
-        />
-      </el-form-item>
-      <el-form-item
         :label="$t('status')"
         prop="status"
       >
@@ -103,15 +91,6 @@
           sortable
         />
         <el-table-column
-          prop="keyword"
-          :label="$t('keyword')"
-          sortable
-        />
-        <el-table-column
-          prop="sort"
-          :label="$t('sort')"
-        />
-        <el-table-column
           prop="desc"
           :label="$t('desc')"
         />
@@ -132,14 +111,14 @@
           fixed="right"
           :label="$t('operation')"
           align="center"
-          width="220"
+          width="300"
         >
           <template slot-scope="scope">
             <el-button
               type="primary"
-              @click="handleRole(scope.row)"
+              @click="handleDictData(scope.row)"
             >
-              {{ $t('permission') }}
+              {{ $t('dictPage.dictData') }}
             </el-button>
             <el-button
               @click="handleUpdate(scope.row)"
@@ -167,7 +146,6 @@
       />
     </el-form>
 
-    <!-- 角色配置对话框 -->
     <el-dialog
       :title="updateDialog.title"
       :visible.sync="updateDialog.visible"
@@ -189,22 +167,12 @@
           />
         </el-form-item>
         <el-form-item
-          :label="$t('keyword')"
-          prop="keyword"
+          :label="$t('desc')"
+          prop="desc"
         >
           <el-input
-            v-model.trim="updateDialog.form.keyword"
-            :placeholder="$t('pleaseEnter') + $t('keyword')"
-          />
-        </el-form-item>
-        <el-form-item
-          :label="$t('sort')"
-          prop="sort"
-        >
-          <el-input-number
-            v-model="updateDialog.form.sort"
-            :min="defaultConfig.miniRoleSort"
-            :placeholder="$t('pleaseEnter') + $t('sort')"
+            v-model.trim="updateDialog.form.desc"
+            :placeholder="$t('pleaseEnter') + $t('desc')"
           />
         </el-form-item>
         <el-form-item
@@ -217,16 +185,6 @@
             :inactive-value="0"
             :active-text="$t('available')"
             :inactive-text="$t('disabled')"
-          />
-        </el-form-item>
-        <el-form-item
-          :label="$t('desc')"
-          prop="desc"
-        >
-          <el-input
-            v-model.trim="updateDialog.form.desc"
-            type="textarea"
-            :placeholder="$t('pleaseEnter') + $t('desc')"
           />
         </el-form-item>
       </el-form>
@@ -247,53 +205,164 @@
       </div>
     </el-dialog>
 
-    <!-- 权限对话框 -->
     <el-dialog
-      :title="roleDialog.title"
-      :visible.sync="roleDialog.visible"
-      custom-class="role-dialog"
+      :title="dictDataDialog.title"
+      :visible.sync="dictDataDialog.visible"
+      custom-class="dict-dialog"
+      width="1200px"
+    >
+      <el-row :gutter="10">
+        <el-col :span="1.5">
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="handleDataCreate"
+          >
+            {{ $t('create') }}
+          </el-button>
+        </el-col>
+      </el-row>
+      <el-table
+        :data="dataTable.list"
+        style="width: 100%;margin-bottom: 20px;"
+        row-key="id"
+        border
+        stripe
+      >
+        <el-table-column
+          prop="key"
+          :label="$t('key')"
+        />
+        <el-table-column
+          prop="val"
+          :label="$t('val')"
+        />
+        <el-table-column
+          prop="addition"
+          :label="$t('addition')"
+        />
+        <el-table-column
+          prop="sort"
+          :label="$t('sort')"
+        />
+        <el-table-column
+          prop="status"
+          :label="$t('status')"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model.trim="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
+              @change="handleDataStatusChange(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          :label="$t('operation')"
+          align="center"
+          width="300"
+        >
+          <template slot-scope="scope">
+            <el-button
+              @click="handleDataUpdate(scope.row)"
+            >
+              {{ $t('edit') }}
+            </el-button>
+            <el-button
+              type="danger"
+              @click="handleDataDelete(scope.row)"
+            >
+              {{ $t('del') }}
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        :current-page="dataTable.pageNum"
+        :page-sizes="[1, 5, 20, 50]"
+        :page-size="dataTable.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="dataTable.total"
+        background
+        @size-change="handleDataPagSizeChange"
+        @current-change="handleDataPageNumChange"
+      />
+    </el-dialog>
+
+    <el-dialog
+      :title="dataUpdateDialog.title"
+      :visible.sync="dataUpdateDialog.visible"
       width="500px"
     >
-      <el-tabs v-model.trim="roleDialog.tab.activeName">
-        <el-tab-pane
-          :label="$t('menu') + $t('permission')"
-          name="menu"
+      <el-form
+        ref="dataUpdateForm"
+        :model="dataUpdateDialog.form"
+        :rules="dataUpdateDialog.rules"
+        label-width="80px"
+      >
+        <el-form-item
+          :label="$t('key')"
+          prop="key"
         >
-          <el-tree
-            ref="roleMenuTree"
-            :data="roleDialog.tab.menus"
-            :props="defaultConfig.roleMenuTreeProps"
-            :default-checked-keys="roleDialog.tab.checkedMenus"
-            show-checkbox
-            node-key="id"
+          <el-input
+            v-model.trim="dataUpdateDialog.form.key"
+            :placeholder="$t('pleaseEnter') + $t('key')"
           />
-        </el-tab-pane>
-        <el-tab-pane
-          :label="$t('api') + $t('permission')"
-          name="api"
+        </el-form-item>
+        <el-form-item
+          :label="$t('val')"
+          prop="val"
         >
-          <el-tree
-            ref="roleApiTree"
-            :data="roleDialog.tab.apis"
-            :props="defaultConfig.roleApiTreeProps"
-            :default-checked-keys="roleDialog.tab.checkedApis"
-            show-checkbox
-            node-key="id"
+          <el-input
+            v-model.trim="dataUpdateDialog.form.val"
+            :placeholder="$t('pleaseEnter') + $t('val')"
           />
-        </el-tab-pane>
-      </el-tabs>
+        </el-form-item>
+        <el-form-item
+          :label="$t('addition')"
+          prop="addition"
+        >
+          <el-input
+            v-model.trim="dataUpdateDialog.form.addition"
+            :placeholder="$t('pleaseEnter') + $t('addition')"
+          />
+        </el-form-item>
+        <el-form-item
+          :label="$t('sort')"
+          prop="sort"
+        >
+          <el-input
+            v-model.trim="dataUpdateDialog.form.sort"
+            :placeholder="$t('pleaseEnter') + $t('sort')"
+          />
+        </el-form-item>
+        <el-form-item
+          :label="$t('status')"
+          prop="status"
+        >
+          <el-switch
+            v-model.trim="dataUpdateDialog.form.status"
+            :active-value="1"
+            :inactive-value="0"
+            :active-text="$t('available')"
+            :inactive-text="$t('disabled')"
+          />
+        </el-form-item>
+      </el-form>
       <div
         slot="footer"
         class="dialog-footer"
       >
         <el-button
           type="primary"
-          :loading="roleDialog.loading"
-          @click="doRoleUpdate"
+          :loading="updateDialog.loading"
+          @click="doDataUpdate"
         >
           {{ $t('confirm') }}
         </el-button>
-        <el-button @click="cancelRoleUpdate">
+        <el-button @click="cancelDataUpdate">
           {{ $t('cancel') }}
         </el-button>
       </div>
@@ -303,17 +372,21 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Pagination from '@/components/Pagination/index.vue'
-import { Form, Tree } from 'element-ui'
-import { batchDeleteRole, createRole, findRole, updateRole } from '@/api/system/roles'
-import { findApiGroupByCategoryByRoleId, updateApiByRoleId } from '@/api/system/apis'
-import { findMenuByRoleId, updateMenuByRoleId } from '@/api/system/menus'
-import { diffArrUpdate, diffObjUpdate } from '@/utils/diff'
-import { UserModule } from '@/store/modules/user'
+import { Form } from 'element-ui'
+import {
+  batchDeleteDict, batchDeleteDictData,
+  createDict,
+  createDictData,
+  findDict,
+  findDictData,
+  updateDict,
+  updateDictData
+} from '@/api/system/dicts'
+import { diffObjUpdate } from '@/utils/diff'
 import { IdempotenceModule } from '@/store/modules/idempotence'
 
 @Component({
-  // 组件名称首字母需大写, 否则会报警告
-  name: 'Role',
+  name: 'Dict',
   components: {
     Pagination
   }
@@ -321,26 +394,7 @@ import { IdempotenceModule } from '@/store/modules/idempotence'
 export default class extends Vue {
   private readonly defaultConfig: any = {
     pageNum: 1,
-    pageSize: 5,
-    miniRoleSort: 0,
-    roleMenuTreeProps: {
-      children: 'children',
-      label: 'title'
-    },
-    roleApiTreeProps: {
-      children: 'children',
-      label: 'title'
-    }
-  }
-
-  private validateKeyword(rule: any, value: string, callback: Function) {
-    if (!/^[a-zA-Z]/.test(value)) {
-      callback(new Error(this.$t('formRules.keyword').toString()))
-    } else if (!/^[a-zA-Z]([-_a-zA-Z0-9])+$/.test(value)) {
-      callback(new Error(this.$t('formRules.specialChar').toString()))
-    } else {
-      callback()
-    }
+    pageSize: 5
   }
 
   private updateDialog: any = {
@@ -355,47 +409,53 @@ export default class extends Vue {
     defaultForm: {
       id: 0,
       name: '',
-      keyword: '',
-      sort: 0,
-      status: 1,
-      desc: ''
+      desc: '',
+      status: 1
     },
     // 表单
     form: {},
-    // 旧数据
     oldData: {},
     // 表单校验
     rules: {
       name: [
         { required: true, message: this.$t('name').toString() + this.$t('required').toString(), trigger: 'blur' }
       ],
-      keyword: [
-        { required: true, message: this.$t('keyword').toString() + this.$t('required').toString(), trigger: 'blur' },
-        { validator: this.validateKeyword, trigger: 'blur' }
-      ],
-      sort: [
-        { required: true, message: this.$t('sort').toString() + this.$t('required').toString(), trigger: 'blur' }
+      desc: [
+        { required: true, message: this.$t('desc').toString() + this.$t('required').toString(), trigger: 'blur' }
       ]
     }
   }
 
-  private roleDialog: any = {
+  private dataUpdateDialog: any = {
     loading: false,
-    title: this.$t('rolePage.permissionDialogTitle').toString(),
-    // 是否打开
+    type: 0,
     visible: false,
-    // 当前角色编号
-    roleId: 0,
-    // 标签页
-    tab: {
-      activeName: 'menu',
-      // 权限菜单集合
-      menus: [],
-      checkedMenus: [],
-      // 权限api集合
-      apis: [],
-      checkedApis: []
+    title: '',
+    defaultForm: {
+      id: 0,
+      key: '',
+      val: '',
+      addition: '',
+      sort: 0,
+      status: 1
+    },
+    form: {},
+    oldData: {},
+    rules: {
+      key: [
+        { required: true, message: this.$t('key').toString() + this.$t('required').toString(), trigger: 'blur' }
+      ],
+      val: [
+        { required: true, message: this.$t('val').toString() + this.$t('required').toString(), trigger: 'blur' }
+      ]
     }
+  }
+
+  private dictDataDialog: any = {
+    loading: false,
+    title: this.$t('dictPage.dictDialogTitle').toString(),
+    visible: false,
+    dictId: 0
   }
 
   private table: any = {
@@ -408,15 +468,29 @@ export default class extends Vue {
     total: 0,
     form: {
       name: '',
-      keyword: '',
-      status: '',
-      creator: ''
+      desc: '',
+      status: ''
+    }
+  }
+
+  private dataTable: any = {
+    loading: false,
+    list: [],
+    pageNum: 1,
+    pageSize: 5,
+    total: 0,
+    form: {
+      dictId: '',
+      key: '',
+      val: '',
+      addition: '',
+      sort: ''
     }
   }
 
   created() {
     this.resetUpdateForm()
-    this.defaultConfig.miniRoleSort = UserModule.roleSort
+    this.resetDataUpdateForm()
     this.getData()
     IdempotenceModule.RefreshIdempotenceToken()
   }
@@ -432,13 +506,35 @@ export default class extends Vue {
       if (params.status === '') {
         delete params.status
       }
-      const { data } = await findRole(params)
+      const { data } = await findDict(params)
       this.table.list = data.list
       this.table.pageNum = data.pageNum
       this.table.pageSize = data.pageSize
       this.table.total = data.total
     } finally {
       this.table.loading = false
+    }
+  }
+
+  private async getDictData() {
+    this.dataTable.loading = true
+    try {
+      const params: any = {
+        ...this.dataTable.form,
+        pageNum: this.dataTable.pageNum,
+        pageSize: this.dataTable.pageSize
+      }
+      if (params.status === '') {
+        delete params.status
+      }
+      params.dictId = this.dictDataDialog.dictId
+      const { data } = await findDictData(params)
+      this.dataTable.list = data.list
+      this.dataTable.pageNum = data.pageNum
+      this.dataTable.pageSize = data.pageSize
+      this.dataTable.total = data.total
+    } finally {
+      this.dataTable.loading = false
     }
   }
 
@@ -452,9 +548,10 @@ export default class extends Vue {
         if (this.updateDialog.type === 0) {
           try {
             this.updateDialog.loading = true
-            await createRole(this.updateDialog.form)
+            await createDict(this.updateDialog.form)
           } finally {
             this.updateDialog.loading = false
+            // 刷新token
             IdempotenceModule.RefreshIdempotenceToken()
           }
         } else {
@@ -469,7 +566,7 @@ export default class extends Vue {
           }
           try {
             this.updateDialog.loading = true
-            await updateRole(update.id, update)
+            await updateDict(update.id, update)
           } finally {
             this.updateDialog.loading = false
           }
@@ -491,6 +588,52 @@ export default class extends Vue {
     })
   }
 
+  private async doDataUpdate() {
+    (this.$refs.dataUpdateForm as Form).validate(async(valid) => {
+      if (valid) {
+        if (this.dataUpdateDialog.type === 0) {
+          try {
+            this.dataUpdateDialog.loading = true
+            await createDictData(this.dataUpdateDialog.form)
+          } finally {
+            this.dataUpdateDialog.loading = false
+            // 刷新token
+            IdempotenceModule.RefreshIdempotenceToken()
+          }
+        } else {
+          const update = diffObjUpdate(this.dataUpdateDialog.oldData, this.dataUpdateDialog.form)
+          // 编号存在则更新, 不存在给出提示
+          if (!update.id) {
+            this.$message({
+              type: 'warning',
+              message: this.$t('noDiff').toString()
+            })
+            return
+          }
+          try {
+            this.dataUpdateDialog.loading = true
+            await updateDictData(update.id, update)
+          } finally {
+            this.dataUpdateDialog.loading = false
+          }
+        }
+        // 关闭弹窗
+        this.dataUpdateDialog.visible = false
+        // 重新查询
+        this.getDictData()
+        // 清理字段
+        this.resetDataUpdateForm()
+        const message = this.dataUpdateDialog.type === 0 ? this.$t('create').toString() : this.$t('update').toString()
+        this.$notify({
+          title: this.$t('congratulations').toString(),
+          message: message + this.$t('success').toString(),
+          type: 'success',
+          duration: 2000
+        })
+      }
+    })
+  }
+
   private resetUpdateForm() {
     this.$nextTick(() => {
       // 重置校验信息
@@ -502,64 +645,15 @@ export default class extends Vue {
     this.updateDialog.form = JSON.parse(JSON.stringify(this.updateDialog.defaultForm))
   }
 
-  private async doRoleUpdate() {
-    if (this.roleDialog.tab.activeName === 'menu') {
-      await this.doRoleMenuUpdate()
-    } else if (this.roleDialog.tab.activeName === 'api') {
-      await this.doRoleApiUpdate()
-    }
-  }
-
-  private async doRoleMenuUpdate() {
-    const newMenus = (this.$refs.roleMenuTree as Tree).getCheckedKeys()
-    const diff = diffArrUpdate(this.roleDialog.tab.checkedMenus, newMenus)
-    if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
-      this.$message({
-        type: 'warning',
-        message: this.$t('noDiff').toString()
-      })
-      return
-    }
-    try {
-      this.roleDialog.loading = true
-      await updateMenuByRoleId(this.roleDialog.roleId, diff)
-    } finally {
-      this.roleDialog.loading = false
-    }
-    // 关闭弹窗
-    this.roleDialog.visible = false
-    // 重新查询
-    this.getData()
-  }
-
-  private async doRoleApiUpdate() {
-    const checkedApis = (this.$refs.roleApiTree as Tree).getCheckedKeys()
-    const newApis: any[] = []
-    // 由于根目录为空, 需要去除无效元素
-    for (let i = 0, len = checkedApis.length; i < len; i++) {
-      const api = checkedApis[i]
-      if (api) {
-        newApis.push(api)
+  private resetDataUpdateForm() {
+    this.$nextTick(() => {
+      // 重置校验信息
+      const form = this.$refs.dataUpdateForm as Form
+      if (form) {
+        form.clearValidate()
       }
-    }
-    const diff = diffArrUpdate(this.roleDialog.tab.checkedApis, newApis)
-    if (diff.create.length === 0 && diff.update.length === 0 && diff.delete.length === 0) {
-      this.$message({
-        type: 'warning',
-        message: this.$t('noDiff').toString()
-      })
-      return
-    }
-    try {
-      this.roleDialog.loading = true
-      await updateApiByRoleId(this.roleDialog.roleId, diff)
-    } finally {
-      this.roleDialog.loading = false
-    }
-    // 关闭弹窗
-    this.roleDialog.visible = false
-    // 重新查询
-    this.getData()
+    })
+    this.dataUpdateDialog.form = JSON.parse(JSON.stringify(this.dataUpdateDialog.defaultForm))
   }
 
   private async cancelUpdate() {
@@ -567,11 +661,8 @@ export default class extends Vue {
     this.updateDialog.visible = false
   }
 
-  private async cancelRoleUpdate() {
-    // 关闭弹窗
-    this.roleDialog.visible = false
-    this.roleDialog.roleId = 0
-    this.roleDialog.tab.activeName = 'menu'
+  private async cancelDataUpdate() {
+    this.dataUpdateDialog.visible = false
   }
 
   private async handleCreate() {
@@ -588,16 +679,30 @@ export default class extends Vue {
     this.updateDialog.visible = true
   }
 
+  private async handleDataCreate() {
+    if (this.dataUpdateDialog.type === 1) {
+      this.resetDataUpdateForm()
+    }
+    this.dataUpdateDialog.form.dictId = this.dictDataDialog.dictId
+    this.dataUpdateDialog.type = 0
+    this.dataUpdateDialog.title = this.$t('create').toString()
+    this.dataUpdateDialog.visible = true
+  }
+
+  private async handleDictData(row: any) {
+    this.dictDataDialog.dictId = row.id
+    this.getDictData()
+    this.dictDataDialog.visible = true
+  }
+
   private async handleUpdate(row: any) {
     // 清理字段
     this.resetUpdateForm()
     // 弹窗表单赋值
     this.updateDialog.form.id = row.id
     this.updateDialog.form.name = row.name
-    this.updateDialog.form.keyword = row.keyword
-    this.updateDialog.form.sort = row.sort
-    this.updateDialog.form.status = row.status
     this.updateDialog.form.desc = row.desc
+    this.updateDialog.form.status = row.status
     // 记录旧数据
     this.updateDialog.oldData = JSON.parse(JSON.stringify(this.updateDialog.form))
     // 修改类型
@@ -608,25 +713,27 @@ export default class extends Vue {
     this.updateDialog.visible = true
   }
 
-  private async handleRole(row: any) {
-    // 刷新权限菜单
-    const { data: data1 } = await findMenuByRoleId(row.id)
-    const { data: data2 } = await findApiGroupByCategoryByRoleId(row.id)
-    this.roleDialog.tab.menus = data1.list
-    this.roleDialog.tab.checkedMenus = data1.accessIds
-    this.roleDialog.tab.oldCheckedMenus = data1.accessIds
-    // 刷新权限接口
-    this.roleDialog.tab.apis = data2.list
-    this.roleDialog.tab.checkedApis = data2.accessIds
-    this.roleDialog.tab.oldCheckedApis = data2.accessIds
-    // 记录当前权限编号
-    this.roleDialog.roleId = row.id
-    // 打开弹窗
-    this.roleDialog.visible = true
+  private async handleDataUpdate(row: any) {
+    this.resetDataUpdateForm()
+    this.dataUpdateDialog.form.id = row.id
+    this.dataUpdateDialog.form.dictId = row.dictId
+    this.dataUpdateDialog.form.key = row.key
+    this.dataUpdateDialog.form.val = row.val
+    this.dataUpdateDialog.form.addition = row.addition
+    this.dataUpdateDialog.form.sort = row.sort
+    this.dataUpdateDialog.form.status = row.status
+    this.dataUpdateDialog.oldData = JSON.parse(JSON.stringify(this.dataUpdateDialog.form))
+    this.dataUpdateDialog.type = 1
+    this.dataUpdateDialog.title = this.$t('update').toString()
+    this.dataUpdateDialog.visible = true
   }
 
   private handleDelete(row: any) {
     this.batchDelete([row])
+  }
+
+  private handleDataDelete(row: any) {
+    this.batchDataDelete([row])
   }
 
   private handleBatchDelete() {
@@ -635,27 +742,48 @@ export default class extends Vue {
 
   private async batchDelete(rows: any) {
     const ids: number[] = []
-    const names: string[] = []
+    const list: string[] = []
     for (let i = 0, len = rows.length; i < len; i++) {
       const row = rows[i]
       ids.push(row.id)
-      names.push(row.name)
+      list.push(row.name)
     }
     if (ids.length > 0) {
-      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('role').toString()}[${names.join(',')}], ${this.$t('irreversible').toString()}?`
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('dictPage.dict').toString()}[${list.join(',')}], ${this.$t('irreversible').toString()}?`
       this.$confirm(msg, this.$t('caution').toString(), {
         confirmButtonText: this.$t('confirm').toString(),
         cancelButtonText: this.$t('cancel').toString(),
         type: 'warning'
       })
         .then(async() => {
-          await batchDeleteRole(ids.join(','))
+          await batchDeleteDict(ids.join(','))
           this.getData()
         })
     }
   }
 
-  // 改变角色状态
+  private async batchDataDelete(rows: any) {
+    const ids: number[] = []
+    const list: string[] = []
+    for (let i = 0, len = rows.length; i < len; i++) {
+      const row = rows[i]
+      ids.push(row.id)
+      list.push(row.key)
+    }
+    if (ids.length > 0) {
+      const msg = `${this.$t('sureToDo').toString()}${this.$t('del').toString()}${this.$t('dictPage.dictData').toString()}[${list.join(',')}], ${this.$t('irreversible').toString()}?`
+      this.$confirm(msg, this.$t('caution').toString(), {
+        confirmButtonText: this.$t('confirm').toString(),
+        cancelButtonText: this.$t('cancel').toString(),
+        type: 'warning'
+      })
+        .then(async() => {
+          await batchDeleteDictData(ids.join(','))
+          this.getDictData()
+        })
+    }
+  }
+
   private async handleStatusChange(row: any) {
     let msg = `${this.$t('sureToDo').toString()}${this.$t('recovery').toString()}[${row.name}]?`
     if (row.status === 0) {
@@ -667,10 +795,31 @@ export default class extends Vue {
       type: 'warning'
     })
       .then(async() => {
-        await updateRole(row.id, {
+        await updateDict(row.id, {
           status: row.status
         })
         this.getData()
+      })
+      .catch(() => {
+        row.status = row.status === 0 ? 1 : 0
+      })
+  }
+
+  private async handleDataStatusChange(row: any) {
+    let msg = `${this.$t('sureToDo').toString()}${this.$t('recovery').toString()}[${row.key}]?`
+    if (row.status === 0) {
+      msg = `${this.$t('sureToDo').toString()}${this.$t('disabled').toString()}[${row.key}]?`
+    }
+    this.$confirm(msg, this.$t('caution').toString(), {
+      confirmButtonText: this.$t('confirm').toString(),
+      cancelButtonText: this.$t('cancel').toString(),
+      type: 'warning'
+    })
+      .then(async() => {
+        await updateDictData(row.id, {
+          status: row.status
+        })
+        this.getDictData()
       })
       .catch(() => {
         row.status = row.status === 0 ? 1 : 0
@@ -703,6 +852,16 @@ export default class extends Vue {
     this.table.pageNum = val
     this.doSearch()
   }
+
+  private handleDataPagSizeChange(val: number) {
+    this.dataTable.pageSize = val
+    this.getDictData()
+  }
+
+  private handleDataPageNumChange(val: number) {
+    this.dataTable.pageNum = val
+    this.getDictData()
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -710,10 +869,5 @@ export default class extends Vue {
     .el-row {
       margin-bottom: 15px;
     }
-  }
-</style>
-<style lang="scss">
-  .role-dialog > .el-dialog__body {
-    padding: 0 20px 30px;
   }
 </style>

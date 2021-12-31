@@ -70,6 +70,9 @@ export default {
   remark: 'Remark',
   refresh: 'Refresh',
   connect: 'Connect',
+  key: 'Key',
+  val: 'Val',
+  addition: 'Addition',
   requestPage: {
     networkError: 'Network error, please try again later',
     loginExpired: 'Login expired, please login again',
@@ -123,6 +126,7 @@ export default {
     role: 'Roles',
     user: 'Users',
     api: 'Apis',
+    dict: 'Dictionaries',
     operationLog: 'Operation Logs',
     messagePush: 'Message Push',
     machine: 'Machines',
@@ -163,6 +167,9 @@ export default {
   },
   role: 'Role',
   roleName: 'Role name',
+  rolePage: {
+    permissionDialogTitle: 'Update Permission'
+  },
   user: 'User',
   userPage: {
     validate: [
@@ -186,6 +193,11 @@ export default {
     put: 'create or update resources',
     patch: 'create or update resources(incremental update)',
     delete: 'delete resources'
+  },
+  dictPage: {
+    dict: 'Dictionary',
+    dictData: 'Dictionary map',
+    dictDialogTitle: 'Dictionary Map'
   },
   operationLog: 'Operation Log',
   operationLogPage: {
