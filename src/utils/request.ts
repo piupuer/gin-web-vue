@@ -3,6 +3,8 @@ import { Message, MessageBox } from 'element-ui'
 import { UserModule } from '@/store/modules/user'
 import { IdempotenceModule } from '@/store/modules/idempotence'
 import i18n from '@/lang'
+import { signToken } from '@/utils/url'
+import { ConstantModule } from '@/store/modules/constant'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -20,6 +22,13 @@ service.interceptors.request.use(
     if (IdempotenceModule.idempotenceToken) {
       config.headers[IdempotenceModule.idempotenceTokenName] = IdempotenceModule.idempotenceToken
     }
+    config.headers[ConstantModule.headerSignToken] = signToken({
+      base: config.baseURL,
+      url: config.url,
+      method: config.method,
+      params: config.params,
+      data: config.data
+    })
     return config
   },
   (error) => {
