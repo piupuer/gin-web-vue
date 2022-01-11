@@ -314,12 +314,7 @@ export default class extends Vue {
     pageSize: 5,
     total: 0,
     form: {
-      category: '',
-      submitterUser: {},
-      submitterRole: {},
-      resubmit: 0,
-      confirm: 0,
-      logDetail: []
+      category: ''
     }
   }
 
