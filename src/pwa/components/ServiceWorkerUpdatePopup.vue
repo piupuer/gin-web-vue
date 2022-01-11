@@ -11,14 +11,18 @@ export default class extends Vue {
   private registration: ServiceWorkerRegistration | null = null
 
   created() {
-    // Listen for swUpdated event and display refresh notification as required.
-    document.addEventListener('swUpdated', this.showRefreshUI, { once: true })
-    // Refresh all open app tabs when a new service worker is installed.
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (this.refreshing) return
-      this.refreshing = true
-      window.location.reload()
-    })
+    if (navigator && navigator.serviceWorker) {
+      // Listen for swUpdated event and display refresh notification as required.
+      document.addEventListener('swUpdated', this.showRefreshUI, { once: true })
+      // Refresh all open app tabs when a new service worker is installed.
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (this.refreshing) return
+        this.refreshing = true
+        window.location.reload()
+      })
+    } else {
+      console.warn(`protocol '${location.protocol.replace(':', '')}' not support 'navigator.serviceWorker', if your browser is chrome, please add custom domain: chrome://flags/#unsafely-treat-insecure-origin-as-secure, more: https://stackoverflow.com/questions/52299246/cant-find-serviceworker-in-navigator-anymore`)
+    }
   }
 
   render() {
