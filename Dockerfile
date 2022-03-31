@@ -78,4 +78,5 @@ RUN apk update \
 #     RUN指令创建的中间镜像会被缓存, 并会在下次构建中使用.
 #     如果不想使用这些缓存镜像, 可以在构建时指定--no-cache参数, 如：docker build --no-cache
 
-CMD ["nginx"]
+# 使用daemon off的方式将nginx运行在前台保证镜像不至于退出
+CMD ["nginx", "-g", "daemon off;"]
