@@ -41,6 +41,13 @@ export const signToken = (cfg: {
   data?: any
 }) => {
   let uri = '/' + cfg.base + cfg.url
+  try {
+    const url = new URL(cfg.base)
+    uri = url.pathname + cfg.url
+  } catch (e) {
+
+  }
+
   if (cfg.params) {
     const s = qs.stringify(cfg.params)
     if (s !== '') {
